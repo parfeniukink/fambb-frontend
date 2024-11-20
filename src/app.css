@@ -1,0 +1,36 @@
+/* normal style */
+@font-face {
+  font-family: "Comic Mono";
+  src: url("/src/assets/fonts/ComicMono.ttf");
+}
+
+/* bold style */
+@font-face {
+  font-family: "Comic Mono";
+  src: url("/src/assets/fonts/ComicMono-Bold.ttf");
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: white;
+  font-family: "Comic Mono";
+  max-width: 1170px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Comic Mono";
+  color: white;
+}
+
+a {
+  text-decoration: none;
+}
