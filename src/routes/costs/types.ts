@@ -30,7 +30,7 @@ export class Input {
 export class CostCreateRequestBody {
   name: string | null = null;
   value: number | null = null;
-  timestamp: Date = new Date();
+  timestamp: string = this.today();
   currency_id: number | null = null;
   category_id: number | null = null;
 
@@ -41,7 +41,11 @@ export class CostCreateRequestBody {
     this.category_id = configuration.defaultCostCategory
       ? configuration.defaultCostCategory.id
       : null;
-    this.timestamp = new Date();
+    this.timestamp = this.today();
+  }
+
+  private today() {
+    return new Date().toISOString().slice(0, 10);
   }
 
   // defines if the data is ready to be sent

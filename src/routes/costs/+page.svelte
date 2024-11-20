@@ -1,40 +1,43 @@
 <script lang="ts">
-  import  Modal  from "../../components/Modal.svelte";
   import { Input, CostCreateRequestBody } from "./types";
 
-  // get from props
-  const input = new Input();
+  // Initiate mocked props
+  const mocked = new Input();
 
   // API outcome data structure
-  let body = new CostCreateRequestBody(input.user.configuration);
+  let body = new CostCreateRequestBody(mocked.user.configuration);
 
   // UI changes
-  let modalRef: Modal;
+  let errorMessage = "";
 
   // if the HTTP body is ready to go - send the API call
   function handleSuccess() {
       if (!body.readyToGo()) {
           console.error("data is not full", body);
+          errorMessage = "complete input";
       } else {
           // TODO: Perform the real API call
           console.info("Cost API call creation", body);
+          body = new CostCreateRequestBody(mocked.user.configuration);
+          errorMessage = "";
       }
   }
 
   // clear the body and the UI respectively
   function handleReject() {
-      body = new CostCreateRequestBody(input.user.configuration);
+      body = new CostCreateRequestBody(mocked.user.configuration);
+      errorMessage = "";
   }
-
 </script>
 
-
 <div class="content">
-
-  <Modal bind:this={modalRef} />
-
   <div class="section">
-    <p>add cost</p>
+      <div class="title">
+        <p>add cost</p>
+        {#if errorMessage !== ""}
+            <p id="errorMessage">{errorMessage}</p>
+        {/if}
+      </div>
 
     <!-- Date Picker -->
     <div class="input-group">
@@ -45,15 +48,15 @@
     <div class="groupOfItems">
       <select
         class="categorySelector"
-        value={input.user.configuration.defaultCostCategory
-          ? input.user.configuration.defaultCostCategory.id
+        value={mocked.user.configuration.defaultCostCategory
+          ? mocked.user.configuration.defaultCostCategory.id
           : null}
         on:change={(e) => {
           const target = e.target as HTMLSelectElement;
           body.category_id = Number(target.value);
         }}
       >
-        {#each input.costCategories as category}
+        {#each mocked.costCategories as category}
           <option value={category.id}>{category.name}</option>
         {/each}
       </select>
@@ -76,8 +79,8 @@
           target.value = "";
         }}
       >
-        {#if input.user.configuration.costTemplates}
-          {#each input.user.configuration.costTemplates as template}
+        {#if mocked.user.configuration.costTemplates}
+          {#each mocked.user.configuration.costTemplates as template}
             <option value={template}>{template}</option>
           {/each}
         {/if}
@@ -96,15 +99,15 @@
       />
       <select
         class="currencySelector"
-        value={input.user.configuration.defaultCurrency
-          ? input.user.configuration.defaultCurrency.id
+        value={mocked.user.configuration.defaultCurrency
+          ? mocked.user.configuration.defaultCurrency.id
           : null}
         on:change={(e) => {
           let target = e.target as HTMLSelectElement;
           body.currency_id = Number(target.value);
         }}
       >
-        {#each input.currencies as currency}
+        {#each mocked.currencies as currency}
           <option value={currency.id}>{currency.sign}</option>
         {/each}
       </select>
@@ -121,75 +124,5 @@
 </div>
 
 <style>
-  input,
-  select {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  button {
-    padding: 20px 40px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .content {
-    padding: 20px;
-    text-align: left;
-    max-width: 600px;
-    margin-top: calc(10%);
-  }
-
-  .section {
-    border: 2px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-    font-size: x-large;
-  }
-
-  .section p {
-    color: #7ed4ad;
-  }
-
-  .groupOfItems {
-    display: flex;
-    flex-flow: row wrap;
-    width: 100%;
-    gap: 20px;
-  }
-
-  /* Input forms */
-  .categorySelector {
-    flex: 8;
-  }
-  #value {
-      flex: 8;
-  }
-  .currencySelector {
-    flex: 2;
-  }
-
-  #costName {
-    flex: 8;
-  }
-  .costNameSelector {
-    flex: 2;
-  }
-
-  /* Buttons */
-  .buttons {
-    margin-top: 30px;
-  }
-
-  .reject {
-    background: #b03052;
-    flex: 5;
-  }
-  .confirm {
-    background: #7ed4ad;
-    flex: 5;
-  }
+    @import './styles.css';
 </style>
