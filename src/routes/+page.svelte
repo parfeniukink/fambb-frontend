@@ -1,65 +1,71 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import "../app.css";
     import { formatAmount } from "../services";
+    import type { Equity, Transaction } from "../data/types";
+    import {
+        initStore,
+        equityStore,
+        lastTransactionsStore,
+    } from "../data/store";
     import Section from "../components/Section.svelte";
 
-    // data variables
-    let equityData = [];
-    let lastTransactions = [];
+    // Reactive store values
 
-    // make async
-    function fetchEquity() {
-        return [
-            {
-                id: 1,
-                value: 14671.23,
-                currency: "$",
-                lastTransactionsUrl: "/analytics/last-transactions",
-            },
-            {
-                id: 2,
-                value: 500.44,
-                currency: "₴",
-                lastTransactionsUrl: "/analytics/last-transactions",
-            },
-        ];
-    }
-
-    function fetchLastTransactions() {
-        return ["something", "something else"];
-    }
-
-    onMount(() => {
-        equityData = fetchEquity();
-        lastTransactions = fetchLastTransactions();
+    // Load the state on root page mount
+    onMount(async () => {
+        await initStore();
     });
+
+    // UI changes
+    function transactionRepr(transaction: Transaction): string {
+        const message = `${transaction.name} ${formatAmount(transaction.value)}${transaction.currency}`;
+
+        switch (transaction.operation) {
+            case "cost": {
+                return ["-", message].join(" ");
+            }
+            case "income": {
+                return ["+", message].join(" ");
+            }
+            case "exchange": {
+                return ["=", message].join(" ");
+            }
+            default: {
+                throw Error(
+                    `Unrecoginzed transaction operation: ${transaction.operation}`,
+                );
+            }
+        }
+    }
 </script>
 
 <div class="homePage">
-    <Section title="equity">
+    <Section title="🏦 Equity">
         <div class="equityItems">
-            {#each equityData as equity}
-                <a href={equity.lastTransactionsUrl}>
-                    {formatAmount(equity.value)}{equity.currency}
+            {#each $equityStore as equity}
+                <a
+                    href="/analytics/transactions/?currencyId={equity.currency.id.toString()}"
+                >
+                    {formatAmount(equity.amount)}
+                    {equity.currency.sign}
                 </a>
             {/each}
         </div>
     </Section>
-    <Section title="last transactions">
+    <Section title="📝 Last Transactions">
         <div class="lastTransactions">
-            {#each lastTransactions as item}
-                <p>{item}</p>
+            {#each $lastTransactionsStore as item}
+                <p>{transactionRepr(item)}</p>
             {/each}
         </div>
     </Section>
-    <Section title="actions">
+    <Section title="🏃‍♂️ Actions">
         <div class="quickActions">
             <a href="/costs" class="quickActionButton addCostButton">cost</a>
             <a href="/incomes" class="quickActionButton addIncomeButton"
                 >income</a
             >
-            <a href="/transactions" class="quickActionButton addExchangeButton"
+            <a href="/exchange" class="quickActionButton addExchangeButton"
                 >exchange</a
             >
         </div>
@@ -67,50 +73,5 @@
 </div>
 
 <style>
-    /* General */
-    .homePage {
-        align-items: center;
-        padding: 10px;
-    }
-
-    /* Equity Section */
-    .equityItems {
-        display: flex;
-        justify-content: space-around;
-        text-align: center;
-        align-content: center;
-    }
-
-    /* Last Transactions Section */
-    .lastTransactions {
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Quick Actions Section */
-    .quickActions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .quickActionButton {
-        padding: 20px;
-        font-weight: normal;
-        font-size: x-large;
-        width: calc(100% - 50px);
-        text-align: center;
-        border: solid white;
-        border-radius: 4px;
-    }
-    .addCostButton {
-        background: #ba535f;
-    }
-    .addIncomeButton {
-        background: #5cb565;
-    }
-    .addExchangeButton {
-        background: #5b9fd3;
-    }
+    @import "./page.css";
 </style>

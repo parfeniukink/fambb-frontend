@@ -1,8 +1,8 @@
 <script>
-    let { title, border = 4 } = $props();
+    let { title, border = 2 } = $props();
 </script>
 
-<div class="section" style=" {border}px;">
+<div class="section" style="border:solid {border}px white;">
     <h2 class="section-title">{title}</h2>
 
     <div class="section-content">
@@ -11,19 +11,17 @@
 </div>
 
 <style>
+    h2 {
+        font-weight: normal;
+        font-size: x-large;
+        /* hcolor: #7ed4ad; */
+        color: white;
+    }
     .section {
         margin: 20px 0;
         padding: 26px;
-        border: solid white;
         border-radius: 4px;
-        border-style: solid;
     }
-
-    .section-title {
-        font-weight: normal;
-        color: #7ed4ad;
-    }
-
     .section-content {
         margin-top: 36px; /* Space between title and child content */
     }

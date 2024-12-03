@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Input, CostCreateRequestBody } from "./types";
+  import { Input, CostCreateRequestBody } from "./services";
 
   // Initiate mocked props
   const mocked = new Input();
@@ -44,7 +44,7 @@
       <input id="date" type="date" bind:value={body.timestamp} />
     </div>
 
-    <!-- Select 'cost category' and 'currency' -->
+    <!-- Select 'cost category' --> 
     <div class="groupOfItems">
       <select
         class="categorySelector"
@@ -62,7 +62,7 @@
       </select>
     </div>
 
-    <!-- Select 'cost category' and 'currency' -->
+    <!-- Select 'cost name' -->
     <div class="groupOfItems">
       <input
         id="costName"
@@ -76,7 +76,7 @@
         on:change={(e) => {
           const target = e.target as HTMLSelectElement;
           body.name = target.value;
-          target.value = "";
+          target.value = "not existing";
         }}
       >
         {#if mocked.user.configuration.costTemplates}
@@ -88,7 +88,8 @@
     </div>
 
     <div class="groupOfItems price">
-      <!-- Select 'cost name' -->
+
+      <!-- Set 'cost value' -->
       <input
         id="value"
         type="number"
@@ -124,5 +125,5 @@
 </div>
 
 <style>
-    @import './styles.css';
+    @import './page.css';
 </style>

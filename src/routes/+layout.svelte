@@ -1,19 +1,21 @@
 <script lang="ts">
     import "../app.css";
+    let { children } = $props();
 </script>
 
 <div class="rootPage">
     <div class="viewport">
-        <slot />
+        {@render children()}
     </div>
 
     <nav>
         <a href="/">home</a>
-        <a href="/analytics">shortcuts</a>
+        <a href="/analytics">analytics</a>
         <a href="/shortcuts">shortcuts</a>
         <a href="/settings">settings</a>
     </nav>
 </div>
+
 
 <style>
     nav {
