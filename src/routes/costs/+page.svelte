@@ -1,62 +1,67 @@
 <script lang="ts">
-  import { Input, CostCreateRequestBody } from "./services";
+  import { goto } from "$app/navigation";
 
-  // Initiate mocked props
-  const mocked = new Input();
+  import { addCost } from "../../data/requests";
+  import {
+    costCategoriesStore,
+    equityStore,
+    userStore,
+  } from "../../data/store";
+  import { CostCreateRequestBody } from "./services";
 
-  // API outcome data structure
-  let body = new CostCreateRequestBody(mocked.user.configuration);
+  let body = new CostCreateRequestBody(
+    $userStore ? $userStore.configuration : null,
+  );
 
   // UI changes
   let errorMessage = "";
 
   // if the HTTP body is ready to go - send the API call
-  function handleSuccess() {
-      if (!body.readyToGo()) {
-          console.error("data is not full", body);
-          errorMessage = "complete input";
-      } else {
-          // TODO: Perform the real API call
-          console.info("Cost API call creation", body);
-          body = new CostCreateRequestBody(mocked.user.configuration);
-          errorMessage = "";
-      }
+  async function handleSuccess() {
+    if (!body.readyToGo()) {
+      console.error("data is not full", body);
+      errorMessage = "complete input";
+    } else {
+      console.log(body);
+      errorMessage = "";
+      await Promise.all([addCost(body), goto("/")]);
+    }
   }
 
   // clear the body and the UI respectively
   function handleReject() {
-      body = new CostCreateRequestBody(mocked.user.configuration);
-      errorMessage = "";
+    body = new CostCreateRequestBody($userStore.configuration);
+    errorMessage = "";
   }
 </script>
 
 <div class="content">
   <div class="section">
-      <div class="title">
-        <p>add cost</p>
-        {#if errorMessage !== ""}
-            <p id="errorMessage">{errorMessage}</p>
-        {/if}
-      </div>
+    <div class="title">
+      <p>add cost</p>
+      {#if errorMessage !== ""}
+        <p id="errorMessage">{errorMessage}</p>
+      {/if}
+    </div>
 
     <!-- Date Picker -->
     <div class="input-group">
       <input id="date" type="date" bind:value={body.timestamp} />
     </div>
 
-    <!-- Select 'cost category' --> 
+    <!-- Select 'cost category' -->
     <div class="groupOfItems">
       <select
         class="categorySelector"
-        value={mocked.user.configuration.defaultCostCategory
-          ? mocked.user.configuration.defaultCostCategory.id
+        value={$userStore.configuration.defaultCostCategory
+          ? $userStore.configuration.defaultCostCategory.id
           : null}
         on:change={(e) => {
           const target = e.target as HTMLSelectElement;
-          body.category_id = Number(target.value);
+          body.categoryId = Number(target.value);
         }}
       >
-        {#each mocked.costCategories as category}
+        {#each $costCategoriesStore as category}
           <option value={category.id}>{category.name}</option>
         {/each}
       </select>
@@ -79,8 +84,8 @@
           target.value = "not existing";
         }}
       >
-        {#if mocked.user.configuration.costTemplates}
-          {#each mocked.user.configuration.costTemplates as template}
+        {#if $userStore.configuration.costSnippets}
+          {#each $userStore.configuration.costSnippets as template}
             <option value={template}>{template}</option>
           {/each}
         {/if}
@@ -88,7 +93,6 @@
     </div>
 
     <div class="groupOfItems price">
-
       <!-- Set 'cost value' -->
       <input
         id="value"
@@ -100,30 +104,27 @@
       />
       <select
         class="currencySelector"
-        value={mocked.user.configuration.defaultCurrency
-          ? mocked.user.configuration.defaultCurrency.id
+        value={$userStore.configuration.defaultCurrency
+          ? $userStore.configuration.defaultCurrency.id
           : null}
         on:change={(e) => {
           let target = e.target as HTMLSelectElement;
-          body.currency_id = Number(target.value);
+          body.currencyId = Number(target.value);
         }}
       >
-        {#each mocked.currencies as currency}
-          <option value={currency.id}>{currency.sign}</option>
+        {#each $equityStore as equity}
+          <option value={equity.currency.id}>{equity.currency.sign}</option>
         {/each}
       </select>
     </div>
 
     <div class="groupOfItems buttons">
       <button class="reject" on:click={handleReject}>reject</button>
-      <button
-        class="confirm"
-        on:click={handleSuccess}>confirm</button
-      >
+      <button class="confirm" on:click={handleSuccess}>confirm</button>
     </div>
   </div>
 </div>
 
 <style>
-    @import './page.css';
+  @import "./page.css";
 </style>

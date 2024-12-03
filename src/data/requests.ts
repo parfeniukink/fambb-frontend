@@ -1,23 +1,26 @@
-import { Equity, ResponseMultiPaginated, ResponseMulti } from "./types";
+import {
+  Equity,
+  ResponseMultiPaginated,
+  ResponseMulti,
+  Response,
+  Currency,
+  CostCategory,
+  User,
+} from "./types";
 import { Transaction } from "./types";
 
 const BASE_URL = "http://localhost:8000";
 // const BASE_URL = "http://0.0.0.0:8000";
 // const BASE_URL = "http://192.168.50.161:8000";
 
-async function validateResponse(response: Response) {
-  const data = await response.json();
-  if (response.status == 200) {
-    return data;
-  } else {
-    throw new Error(data["message"]);
-  }
-}
-
+// **********************************************
+// HTTP request factory
+// **********************************************
 async function makeRequest(
   url: string,
   method: string = "GET",
   headers: Record<string, string> = {},
+  body: Record<string, any> = {},
 ) {
   // TODO: Use the secret from the session storage instead
   const token = "secret";
@@ -27,10 +30,31 @@ async function makeRequest(
     Authorization: `Bearer ${token}`,
   };
 
-  return await fetch(url, {
+  const response = await fetch(url, {
     method: method,
     headers: { ...defaultHeaders, ...headers },
+    body:
+      body && ["POST", "PATCH"].find((item) => item == method)
+        ? JSON.stringify(body)
+        : null,
   });
+
+  const data = await response.json();
+  if (response.status == 200) {
+    return data;
+  } else {
+    throw new Error(data["message"]);
+  }
+}
+
+// ==============================================
+// fetch analytics information
+// ==============================================
+
+export async function fetchEquity(): Promise<ResponseMulti<Equity>> {
+  return (await makeRequest(
+    `${BASE_URL}/analytics/equity`,
+  )) as ResponseMulti<Equity>;
 }
 
 export async function fetchTransactions(
@@ -44,24 +68,39 @@ export async function fetchTransactions(
   if (currencyId != null) {
     url = [url, `&currencyId=${currencyId}`].join("");
   }
-  const response = await makeRequest(url);
-  const result: ResponseMultiPaginated<Transaction> =
-    await validateResponse(response);
-
-  return result;
+  return (await makeRequest(url)) as ResponseMultiPaginated<Transaction>;
 }
 
-export async function fetchEquity(): Promise<ResponseMulti<Equity>> {
-  const mockedResults = [
-    {
-      amount: 14671.23,
-      currency: { id: 1, name: "USD", sign: "$" },
-    },
-    {
-      amount: 500.44,
-      currency: { id: 2, name: "UAH", sign: "₴" },
-    },
-  ];
+// ==============================================
+// fetch currencies
+// ==============================================
+export async function fetchCurrencies(): Promise<ResponseMulti<Currency>> {
+  return (await makeRequest(
+    `${BASE_URL}/currencies`,
+  )) as ResponseMulti<Currency>;
+}
 
-  return { result: mockedResults } as ResponseMulti<Equity>;
+// ==============================================
+// fetch cost categories
+// ==============================================
+export async function fetchCostCategories(): Promise<
+  ResponseMulti<CostCategory>
+> {
+  return (await makeRequest(
+    `${BASE_URL}/costs/categories`,
+  )) as ResponseMulti<CostCategory>;
+}
+
+// ==============================================
+// fetch user information
+// ==============================================
+export async function fetchUser(): Promise<Response<User>> {
+  return (await makeRequest(`${BASE_URL}/users`)) as Response<User>;
+}
+
+// ==============================================
+// transactions operations
+// ==============================================
+export async function addCost(requestBody: Record<string, any>) {
+  await makeRequest(`${BASE_URL}/costs`, "POST", {}, requestBody);
 }

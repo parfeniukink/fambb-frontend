@@ -1,47 +1,27 @@
-import { Currency, CostCategory, User, Configuration } from "../../data/types";
-
-export class Input {
-  currencies: Currency[] = [
-    { id: 1, name: "USD", sign: "$" },
-    { id: 2, name: "UAH", sign: "#" },
-  ];
-
-  costCategories: CostCategory[] = [
-    { id: 1, name: "Food" },
-    { id: 2, name: "Services" },
-    { id: 3, name: "Taxes" },
-    { id: 4, name: "Gifts" },
-  ];
-
-  user: User = {
-    id: 1,
-    name: "John",
-    configuration: {
-      defaultCurrency: this.currencies[0],
-      defaultCostCategory: this.costCategories[1],
-      costTemplates: ["Pizza delivery", "Fuel", "Other"],
-    },
-  };
-
-  costTempaltes: string[] = ["Silpo", "Food", "Fuel"];
-}
+import { Configuration } from "../../data/types";
 
 // Use this structure to create a "Cost" by sending the request to the backend
 export class CostCreateRequestBody {
   name: string | null = null;
   value: number | null = null;
   timestamp: string = this.today();
-  currency_id: number | null = null;
-  category_id: number | null = null;
+  currencyId: number | null = null;
+  categoryId: number | null = null;
 
-  constructor(configuration: Configuration) {
-    this.currency_id = configuration.defaultCurrency
-      ? configuration.defaultCurrency.id
-      : null;
-    this.category_id = configuration.defaultCostCategory
-      ? configuration.defaultCostCategory.id
-      : null;
-    this.timestamp = this.today();
+  constructor(configuration: Configuration | null = null) {
+    if (configuration != null) {
+      this.name =
+        configuration.costSnippets && configuration.costSnippets.length >= 1
+          ? configuration.costSnippets[0]
+          : null;
+      this.currencyId = configuration.defaultCurrency
+        ? configuration.defaultCurrency.id
+        : null;
+      this.categoryId = configuration.defaultCostCategory
+        ? configuration.defaultCostCategory.id
+        : null;
+      this.timestamp = this.today();
+    }
   }
 
   private today() {
@@ -53,9 +33,9 @@ export class CostCreateRequestBody {
     if (
       this.name &&
       this.value &&
-      this.currency_id &&
-      this.category_id &&
-      this.timestamp
+      this.timestamp &&
+      this.currencyId &&
+      this.categoryId
     ) {
       return true;
     } else {

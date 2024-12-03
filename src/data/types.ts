@@ -1,6 +1,10 @@
 export interface Response<T> {
   result: T;
 }
+export interface Response<T> {
+  result: T;
+}
+
 export interface ResponseMulti<T> {
   result: T[];
 }
@@ -31,7 +35,8 @@ export interface CostCategory {
 export interface Configuration {
   defaultCurrency: Currency | null;
   defaultCostCategory: CostCategory | null;
-  costTemplates: string[] | null;
+  costSnippets: string[] | null;
+  incomeSnippets: string[] | null;
 }
 
 export interface User {

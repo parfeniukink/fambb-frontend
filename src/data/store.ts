@@ -1,22 +1,34 @@
 import { writable } from "svelte/store";
 
-import { fetchTransactions, fetchEquity } from "./requests";
-import type { Equity, Transaction, CostCategory } from "./types";
+import {
+  fetchTransactions,
+  fetchEquity,
+  fetchCostCategories,
+  fetchUser,
+} from "./requests";
+import type { Equity, Transaction, CostCategory, User } from "./types";
 
-export const equityStore = writable<Equity[]>([], () => {
-  console.debug("a new equityStore subscriber");
-  return () => console.debug("no more equityStore subscibers");
-});
-export const lastTransactionsStore = writable<Transaction[]>([], () => {
-  console.debug("a new lastTransactionStore subscriber");
-  return () => console.debug("no more lastTransactionsStore subscribers");
-});
-export const costCategories = writable<CostCategory[]>([]);
+// analytics
+export const equityStore = writable<Equity[]>([]);
+export const lastTransactionsStore = writable<Transaction[]>([]);
+
+// cost categories
+export const costCategoriesStore = writable<CostCategory[]>([]);
+
+// user along with configuration
+export const userStore = writable<User | null>(null);
 
 /* Populate the whole state on the first startup */
 export async function initStore() {
-  const results = await Promise.all([fetchEquity(), fetchTransactions()]);
+  const results = await Promise.all([
+    fetchUser(),
+    fetchEquity(),
+    fetchTransactions(),
+    fetchCostCategories(),
+  ]);
 
-  equityStore.set(results[0]["result"]);
-  lastTransactionsStore.set(results[1]["result"]);
+  userStore.set(results[0]["result"]);
+  equityStore.set(results[1]["result"]);
+  lastTransactionsStore.set(results[2]["result"]);
+  costCategoriesStore.set(results[3]["result"]);
 }

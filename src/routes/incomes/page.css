@@ -1,0 +1,79 @@
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+button {
+  padding: 20px 40px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.content {
+  padding: 20px;
+  text-align: left;
+  max-width: 600px;
+  margin-top: calc(10%);
+}
+
+.section {
+  border: 2px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: x-large;
+}
+
+.section p {
+  color: #7ed4ad;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#errorMessage {
+  color: #b03052;
+  font-weight: lighter;
+  font-size: medium;
+}
+
+.groupOfItems {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  gap: 20px;
+}
+
+/* Input forms */
+#value {
+  flex: 7;
+}
+
+#incomeName {
+  flex: 7;
+}
+.incomeNameSelector {
+  flex: 3;
+}
+.currencySelector {
+  flex: 3;
+}
+
+/* Buttons */
+.buttons {
+  margin-top: 30px;
+}
+
+.reject {
+  background: #b03052;
+  flex: 5;
+}
+.confirm {
+  background: #7ed4ad;
+  flex: 5;
+}
