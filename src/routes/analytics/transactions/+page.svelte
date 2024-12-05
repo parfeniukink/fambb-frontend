@@ -17,7 +17,10 @@
   });
 
   const loadTransactions = async () => {
-    const result = await fetchTransactions(currencyId, context, 10);
+    const result = await fetchTransactions({
+      currencyId: Number(currencyId),
+      context: context,
+    });
 
     if (result) {
       for (const item of result.result) {
@@ -57,6 +60,8 @@
               <span class="money">
                 {formatAmount(transaction.value)}
                 {transaction.currency}
+                <span class="username">by {transaction.user.toLowerCase()}</span
+                >
               </span>
             </p>
           {/each}
@@ -107,5 +112,10 @@
   }
   .money {
     margin-left: 10px;
+  }
+  .username {
+    font-style: italic;
+    font-size: x-small;
+    color: gray;
   }
 </style>

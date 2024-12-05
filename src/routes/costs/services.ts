@@ -10,10 +10,6 @@ export class CostCreateRequestBody {
 
   constructor(configuration: Configuration | null = null) {
     if (configuration != null) {
-      this.name =
-        configuration.costSnippets && configuration.costSnippets.length >= 1
-          ? configuration.costSnippets[0]
-          : null;
       this.currencyId = configuration.defaultCurrency
         ? configuration.defaultCurrency.id
         : null;

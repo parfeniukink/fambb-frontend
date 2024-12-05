@@ -4,11 +4,12 @@ import { Configuration } from "../../data/types";
 export class IncomeCreateRequestBody {
   name: string | null = null;
   value: number | null = null;
-  source: string | null = null;
+  source: string = "revenue";
   timestamp: string | null = null;
   currencyId: number | null = null;
 
   constructor(configuration: Configuration) {
+    this.source = "revenue";
     this.currencyId = configuration.defaultCurrency
       ? configuration.defaultCurrency.id
       : null;

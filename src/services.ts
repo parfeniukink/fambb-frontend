@@ -1,3 +1,5 @@
+import * as sessionStorageRepository from "./data/sessionStorageRepository";
+
 export function formatAmount(amount: number): string {
   let formatted = amount.toFixed(2);
   let [integerPart, decimalPart] = formatted.split(".");
@@ -11,4 +13,11 @@ export function formatAmount(amount: number): string {
   }
 
   return `${formattedIntegetr}.${decimalPart}`;
+}
+
+export function isAuthorized(): boolean {
+  const user = sessionStorageRepository.getUser();
+  const costCategories = sessionStorageRepository.getCostCategories();
+  const secret = sessionStorageRepository.getSecret();
+  return user && costCategories && secret ? true : false;
 }

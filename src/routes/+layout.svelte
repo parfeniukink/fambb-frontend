@@ -1,20 +1,56 @@
 <script lang="ts">
+  import { writable } from "svelte/store";
   import "../app.css";
+  import { initPersistentStore } from "../data/store";
+  import { isAuthorized } from "../services";
+
   let { children } = $props();
+
+  let secret = $state("");
+  let authErrorMessage = $state("");
+  let authorized = $state(isAuthorized());
+
+  async function handleSecretSubmit() {
+    try {
+      await initPersistentStore(secret);
+      authorized = true;
+    } catch (e) {
+      console.error(e);
+      authErrorMessage = "invalid secret";
+      authorized = false;
+    }
+  }
 </script>
 
-<div class="rootPage">
-  <div class="viewport">
-    {@render children()}
+{#if !authorized}
+  <div class="authBlock">
+    {#if authErrorMessage != ""}
+      <p class="authError">{authErrorMessage}</p>
+    {/if}
+    <form onsubmit={handleSecretSubmit}>
+      <input
+        type="password"
+        bind:value={secret}
+        placeholder="enter secret"
+        required
+      />
+      <button type="submit">submit</button>
+    </form>
   </div>
+{:else}
+  <div class="rootPage">
+    <div class="viewport">
+      {@render children()}
+    </div>
 
-  <nav>
-    <a href="/">home</a>
-    <a href="/analytics">analytics</a>
-    <a href="/shortcuts">shortcuts</a>
-    <a href="/settings">settings</a>
-  </nav>
-</div>
+    <nav>
+      <a href="/">home</a>
+      <a href="/analytics">analytics</a>
+      <a href="/shortcuts">shortcuts</a>
+      <a href="/settings">settings</a>
+    </nav>
+  </div>
+{/if}
 
 <style>
   nav {
@@ -48,5 +84,33 @@
   }
   .viewport {
     padding: 0 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  input {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .authBlock {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: calc(50%) 0 auto;
+  }
+
+  p {
+    color: #ba535f;
+    text-align: left;
   }
 </style>

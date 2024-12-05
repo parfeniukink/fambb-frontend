@@ -52,4 +52,5 @@ export interface Transaction {
   value: number;
   timestamp: string;
   currency: string;
+  user: string;
 }

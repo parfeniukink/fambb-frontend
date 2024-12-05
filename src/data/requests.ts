@@ -1,3 +1,4 @@
+import * as sessionStorageRepository from "./sessionStorageRepository";
 import {
   Equity,
   ResponseMultiPaginated,
@@ -10,7 +11,6 @@ import {
 import { Transaction } from "./types";
 
 const BASE_URL = "http://localhost:8000";
-// const BASE_URL = "http://0.0.0.0:8000";
 // const BASE_URL = "http://192.168.50.161:8000";
 
 // **********************************************
@@ -22,12 +22,16 @@ async function makeRequest(
   headers: Record<string, string> = {},
   body: Record<string, any> = {},
 ) {
-  // TODO: Use the secret from the session storage instead
-  const token = "secret";
+  const secret: string | null = sessionStorageRepository.getSecret();
+
+  if (!secret) {
+    sessionStorage.clear();
+    throw new Error("user unauthorized");
+  }
 
   let defaultHeaders: Record<string, string> = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${secret}`,
   };
 
   const response = await fetch(url, {
@@ -40,10 +44,14 @@ async function makeRequest(
   });
 
   const data = await response.json();
-  if (response.status == 200) {
+  if (response.status >= 200 && response.status < 300) {
     return data;
+  } else if (response.status == 401) {
+    // clear data after unauthorized
+    sessionStorage.clear();
+    throw new Error("user unauthorized");
   } else {
-    throw new Error(data["message"]);
+    throw new Error(`Unhandled error. Status code: ${response.status}}`);
   }
 }
 
@@ -57,11 +65,16 @@ export async function fetchEquity(): Promise<ResponseMulti<Equity>> {
   )) as ResponseMulti<Equity>;
 }
 
-export async function fetchTransactions(
-  currencyId: number | null = null,
-  context: number = 0,
-  limit: number = 10,
-): Promise<ResponseMultiPaginated<Transaction>> {
+// TODO: Make input optional
+export async function fetchTransactions({
+  currencyId = null,
+  context = 0,
+  limit = 10,
+}: {
+  currencyId?: number | null;
+  context?: number;
+  limit?: number;
+}): Promise<ResponseMultiPaginated<Transaction>> {
   let url = `${BASE_URL}/analytics/transactions?context=${context}&limit=${limit}`;
 
   // add currency id filter if specified
@@ -102,5 +115,9 @@ export async function fetchUser(): Promise<Response<User>> {
 // transactions operations
 // ==============================================
 export async function addCost(requestBody: Record<string, any>) {
-  await makeRequest(`${BASE_URL}/costs`, "POST", {}, requestBody);
+  return await makeRequest(`${BASE_URL}/costs`, "POST", {}, requestBody);
+}
+
+export async function addIncome(requestBody: Record<string, any>) {
+  return await makeRequest(`${BASE_URL}/incomes`, "POST", {}, requestBody);
 }

@@ -1,29 +1,36 @@
 <script lang="ts">
   import { IncomeCreateRequestBody } from "./services";
   import { userStore, equityStore } from "../../data/store";
+  import { writable } from "svelte/store";
+  import { addIncome } from "../../data/requests";
   const incomeSources: string[] = ["revenue", "gift", "debt", "other"];
 
   // API outcome data structure
-  let body = new IncomeCreateRequestBody($userStore.configuration);
+  let body = writable(
+    new IncomeCreateRequestBody($userStore ? $userStore.configuration : null),
+  );
 
   // UI changes
   let errorMessage = "";
 
   // if the HTTP body is ready to go - send the API call
   function handleSuccess() {
-    if (!body.readyToGo()) {
-      console.error("data is not full", body);
-      errorMessage = "complete input";
-    } else {
-      // TODO: Perform the real API call
-      body = new IncomeCreateRequestBody($userStore.configuration);
+    if ($body.readyToGo()) {
+      // add task to the event loop
+      addIncome($body);
+
+      // empty the page without redirection
+      $body = new IncomeCreateRequestBody($userStore.configuration);
       errorMessage = "";
+    } else {
+      console.error("data is not full", $body);
+      errorMessage = "complete input";
     }
   }
 
   // clear the body and the UI respectively
   function handleReject() {
-    body = new IncomeCreateRequestBody($userStore.configuration);
+    $body = new IncomeCreateRequestBody($userStore.configuration);
     errorMessage = "";
   }
 </script>
@@ -39,19 +46,13 @@
 
     <!-- Date Picker -->
     <div class="input-group">
-      <input id="date" type="date" bind:value={body.timestamp} />
+      <input id="date" type="date" bind:value={$body.timestamp} />
     </div>
 
     <!-- Select 'income source' -->
-    <select
-      bind:value={body.source}
-      on:change={(e) => {
-        const target = e.target as HTMLSelectElement;
-        body.source = target.value;
-      }}
-    >
+    <select bind:value={$body.source}>
       {#each incomeSources as source}
-        <option value="source">{source}</option>
+        <option value={source}>{source}</option>
       {/each}
     </select>
 
@@ -61,17 +62,18 @@
         id="incomeName"
         type="text"
         placeholder="name..."
-        bind:value={body.name}
+        bind:value={$body.name}
       />
       <select
         class="incomeNameSelector"
         value=""
         on:change={(e) => {
           const target = e.target as HTMLSelectElement;
-          body.name = target.value;
+          $body.name = target.value;
           target.value = "not existing";
         }}
       >
+        <option value="" selected></option>
         {#if $userStore.configuration.incomeSnippets}
           {#each $userStore.configuration.incomeSnippets as template}
             <option value={template}>{template}</option>
@@ -87,17 +89,10 @@
         type="number"
         inputmode="decimal"
         pattern="\d*"
-        bind:value={body.value}
+        bind:value={$body.value}
         placeholder="value..."
       />
-      <select
-        class="currencySelector"
-        bind:value={body.currencyId}
-        on:change={(e) => {
-          let target = e.target as HTMLSelectElement;
-          body.currencyId = Number(target.value);
-        }}
-      >
+      <select class="currencySelector" bind:value={$body.currencyId}>
         {#each $equityStore as equity}
           <option value={equity.currency.id}>{equity.currency.sign}</option>
         {/each}

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-
+  import { writable } from "svelte/store";
   import { addCost } from "../../data/requests";
+  import { redirect } from "@sveltejs/kit";
   import {
     costCategoriesStore,
     equityStore,
@@ -9,28 +9,31 @@
   } from "../../data/store";
   import { CostCreateRequestBody } from "./services";
 
-  let body = new CostCreateRequestBody(
-    $userStore ? $userStore.configuration : null,
+  let body = writable(
+    new CostCreateRequestBody($userStore ? $userStore.configuration : null),
   );
 
   // UI changes
-  let errorMessage = "";
+  let errorMessage = $state("");
 
   // if the HTTP body is ready to go - send the API call
-  async function handleSuccess() {
-    if (!body.readyToGo()) {
-      console.error("data is not full", body);
-      errorMessage = "complete input";
-    } else {
-      console.log(body);
+  function handleSuccess() {
+    if ($body.readyToGo()) {
+      // add task to the event loop
+      addCost($body);
+
+      // empty the page without redirection
+      $body = new CostCreateRequestBody($userStore.configuration);
       errorMessage = "";
-      await Promise.all([addCost(body), goto("/")]);
+    } else {
+      console.error("data is not full", $body);
+      errorMessage = "complete input";
     }
   }
 
   // clear the body and the UI respectively
   function handleReject() {
-    body = new CostCreateRequestBody($userStore.configuration);
+    $body = new CostCreateRequestBody($userStore.configuration);
     errorMessage = "";
   }
 </script>
@@ -46,21 +49,12 @@
 
     <!-- Date Picker -->
     <div class="input-group">
-      <input id="date" type="date" bind:value={body.timestamp} />
+      <input id="date" type="date" bind:value={$body.timestamp} />
     </div>
 
     <!-- Select 'cost category' -->
     <div class="groupOfItems">
-      <select
-        class="categorySelector"
-        value={$userStore.configuration.defaultCostCategory
-          ? $userStore.configuration.defaultCostCategory.id
-          : null}
-        on:change={(e) => {
-          const target = e.target as HTMLSelectElement;
-          body.categoryId = Number(target.value);
-        }}
-      >
+      <select class="categorySelector" bind:value={$body.categoryId}>
         {#each $costCategoriesStore as category}
           <option value={category.id}>{category.name}</option>
         {/each}
@@ -73,18 +67,19 @@
         id="costName"
         type="text"
         placeholder="name..."
-        bind:value={body.name}
+        bind:value={$body.name}
       />
       <select
         class="costNameSelector"
         value=""
-        on:change={(e) => {
+        onchange={(e) => {
           const target = e.target as HTMLSelectElement;
-          body.name = target.value;
-          target.value = "not existing";
+          $body.name = target.value;
+          target.value = "";
         }}
       >
         {#if $userStore.configuration.costSnippets}
+          <option selected value=""></option>
           {#each $userStore.configuration.costSnippets as template}
             <option value={template}>{template}</option>
           {/each}
@@ -99,19 +94,10 @@
         type="number"
         inputmode="decimal"
         pattern="\d*"
-        bind:value={body.value}
+        bind:value={$body.value}
         placeholder="value..."
       />
-      <select
-        class="currencySelector"
-        value={$userStore.configuration.defaultCurrency
-          ? $userStore.configuration.defaultCurrency.id
-          : null}
-        on:change={(e) => {
-          let target = e.target as HTMLSelectElement;
-          body.currencyId = Number(target.value);
-        }}
-      >
+      <select class="currencySelector" bind:value={$body.currencyId}>
         {#each $equityStore as equity}
           <option value={equity.currency.id}>{equity.currency.sign}</option>
         {/each}
@@ -119,8 +105,8 @@
     </div>
 
     <div class="groupOfItems buttons">
-      <button class="reject" on:click={handleReject}>reject</button>
-      <button class="confirm" on:click={handleSuccess}>confirm</button>
+      <button class="reject" onclick={handleReject}>reject</button>
+      <button class="confirm" onclick={handleSuccess}>confirm</button>
     </div>
   </div>
 </div>
