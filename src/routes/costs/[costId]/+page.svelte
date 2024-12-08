@@ -70,7 +70,7 @@
 <div class="content">
   <div class="section">
     <div class="title">
-      <p>cost #{instance ? instance.user : ""}</p>
+      <p>cost #{instance ? instance.user.toLowerCase() : ""}</p>
       {#if errorMessage !== ""}
         <p id="errorMessage">{errorMessage}</p>
       {/if}
