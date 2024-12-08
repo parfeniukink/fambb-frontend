@@ -56,7 +56,9 @@
     <div class="lastTransactions">
       {#if $lastTransactionsStore}
         {#each $lastTransactionsStore as item}
-          <p>{transactionRepr(item)}</p>
+          <p>
+            {transactionRepr(item)} <span> by {item.user.toLowerCase()}</span>
+          </p>
         {/each}
       {:else}
         <p>loading...</p>

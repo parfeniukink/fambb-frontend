@@ -9,9 +9,13 @@
     "@sveltejs/adapter-auto": "^3.3.1",
     "@sveltejs/kit": "^2.8.0",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/node": "^22.10.1",
     "prettier": "^3.4.1",
     "prettier-plugin-svelte": "^3.3.2",
     "svelte": "^5",
+    "svelte-language-server": "^0.17.7",
+    "typescript": "^5.7.2",
     "vite": "^5.4.11"
   }
 }

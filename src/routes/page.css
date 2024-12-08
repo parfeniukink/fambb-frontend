@@ -1,5 +1,6 @@
 /* General */
 .homePage {
+  width: 100%;
   align-items: center;
   padding: 10px;
   margin-bottom: 100px;
@@ -7,11 +8,11 @@
 
 /* Equity Section */
 .equityItems {
-  width: 100%;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: start;
-  gap: 70px;
+  gap: 30px;
   text-align: center;
   align-content: center;
 }
@@ -28,6 +29,13 @@
 
 .lastTransactions p {
   margin: 3px 0;
+}
+
+.lastTransactions span {
+  font-style: italic;
+  font-size: x-small;
+  color: gray;
+  margin-left: 20px;
 }
 
 /* Quick Actions Section */
@@ -50,8 +58,8 @@
   background: #ba535f;
 }
 .addIncomeButton {
-  background: #5cb565;
+  background: #32c181;
 }
 .addExchangeButton {
-  background: #5b9fd3;
+  background: #2c7bb7;
 }

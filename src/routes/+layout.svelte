@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { writable } from "svelte/store";
   import "../app.css";
   import { initPersistentStore } from "../data/store";
   import { isAuthorized } from "../services";
@@ -67,7 +66,7 @@
   }
 
   nav a {
-    color: #7ed4ad;
+    color: #32c181;
     text-align: center;
     text-decoration: none;
     flex-grow: 1;

@@ -1,5 +1,5 @@
 import * as sessionStorageRepository from "./sessionStorageRepository";
-import {
+import type {
   Equity,
   ResponseMultiPaginated,
   ResponseMulti,
@@ -7,11 +7,12 @@ import {
   Currency,
   CostCategory,
   User,
+  Transaction,
 } from "./types";
-import { Transaction } from "./types";
 
 const BASE_URL = "http://localhost:8000";
 // const BASE_URL = "http://192.168.50.161:8000";
+// const BASE_URL = "http://192.168.0.112:8000";
 
 // **********************************************
 // HTTP request factory
@@ -112,12 +113,61 @@ export async function fetchUser(): Promise<Response<User>> {
 }
 
 // ==============================================
-// transactions operations
+// transactions CRUD
 // ==============================================
 export async function addCost(requestBody: Record<string, any>) {
   return await makeRequest(`${BASE_URL}/costs`, "POST", {}, requestBody);
 }
+export async function getCost(itemId: number) {
+  return await makeRequest(`${BASE_URL}/costs/${itemId}`, "GET");
+}
+
+export async function updateCost(
+  costId: number,
+  requestBody: Record<string, any>,
+) {
+  return await makeRequest(
+    `${BASE_URL}/costs/${costId}`,
+    "PATCH",
+    {},
+    requestBody,
+  );
+}
+
+export async function deleteCost(costId: number) {
+  await makeRequest(`${BASE_URL}/costs/${costId}`, "DELETE");
+}
 
 export async function addIncome(requestBody: Record<string, any>) {
   return await makeRequest(`${BASE_URL}/incomes`, "POST", {}, requestBody);
+}
+export async function getIncome(itemId: number) {
+  return await makeRequest(`${BASE_URL}/incomes/${itemId}`, "GET");
+}
+
+export async function updateIncome(
+  incomeId: number,
+  requestBody: Record<string, any>,
+) {
+  return await makeRequest(
+    `${BASE_URL}/incomes/${incomeId}`,
+    "PATCH",
+    {},
+    requestBody,
+  );
+}
+
+export async function deleteIncome(incomeId: number) {
+  await makeRequest(`${BASE_URL}/incomes/${incomeId}`, "DELETE");
+}
+
+export async function currencyExchange(requestBody: Record<string, any>) {
+  return await makeRequest(`${BASE_URL}/exchange`, "POST", {}, requestBody);
+}
+export async function getExchange(itemId: number) {
+  return await makeRequest(`${BASE_URL}/exchange/${itemId}`, "GET");
+}
+
+export async function deleteExchange(exchangeId: number) {
+  return await makeRequest(`${BASE_URL}/exchange/${exchangeId}`, "DELETE");
 }

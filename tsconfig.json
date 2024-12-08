@@ -1,0 +1,14 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+      "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      // "$app/*": ["node_modules/@sveltejs/kit/types/*"],
+      "$components/*": ["src/components/*"],
+      "$data/*": ["src/data/*"]
+    }
+  },
+  "include": ["src/**/*.svelte", "src/**/*.ts", "src/**/*.js", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "**/node_modules/*"]
+}

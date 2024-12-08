@@ -1,3 +1,11 @@
+// NOTE: improvement for the sessionStorage
+// function sessionStorageItemSerialized(key: string) {
+//   if (typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
+//     return sessionStorage.getItem(key);
+//   }
+//   return null; // or a default value
+// }
+//
 import type { CostCategory, Equity, User } from "./types";
 
 function sessionStorageItemSerialized(key: string): object | null {

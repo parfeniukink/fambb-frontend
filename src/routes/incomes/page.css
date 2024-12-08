@@ -28,7 +28,7 @@ button {
 }
 
 .section p {
-  color: #7ed4ad;
+  color: #32c181;
 }
 
 .title {
@@ -70,10 +70,14 @@ button {
 }
 
 .reject {
-  background: #b03052;
+  background: #ba535f;
+  flex: 5;
+}
+.reset {
+  background: #d3af54;
   flex: 5;
 }
 .confirm {
-  background: #7ed4ad;
+  background: #32c181;
   flex: 5;
 }

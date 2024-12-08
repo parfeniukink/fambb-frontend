@@ -12,6 +12,20 @@
   let context = 0;
   let left = 0;
 
+  function endRoute(transaction: Transaction) {
+    if (transaction.operation === "cost") {
+      return `/costs/${transaction.id.toString()}`;
+    } else if (transaction.operation === "income") {
+      return `/incomes/${transaction.id.toString()}`;
+    } else if (transaction.operation === "exchange") {
+      return `/exchange/${transaction.id.toString()}`;
+    } else {
+      throw Error(
+        `Unrecognized transaction operation: ${transaction.operation}`,
+      );
+    }
+  }
+
   onMount(async () => {
     await loadTransactions();
   });
@@ -38,32 +52,36 @@
   };
 </script>
 
-<div class="p-6">
+<div class="container">
   {#if isLoading}
-    <div>loading...</div>
+    <p>loading...</p>
   {:else}
     <div class="transactions">
       {#each Object.keys(transactions) as timestamp}
         <div class="timestamp-group">
+          <!-- Display the timestamp  -->
           <h3>[ {timestamp} ]</h3>
-          <!-- Display the timestamp (or formatted date) -->
+          <!-- Display each transaction in the block  -->
           {#each transactions[timestamp] as transaction}
-            <p class={transaction.operation}>
-              {#if transaction.operation === "cost"}
-                -
-              {:else if transaction.operation === "income"}
-                +
-              {:else if transaction.operation === "exchange"}
-                =
-              {/if}
-              {transaction.name}
-              <span class="money">
-                {formatAmount(transaction.value)}
-                {transaction.currency}
-                <span class="username">by {transaction.user.toLowerCase()}</span
-                >
-              </span>
-            </p>
+            <a href={endRoute(transaction)}
+              ><p class={transaction.operarion}>
+                {#if transaction.operation === "cost"}
+                  -
+                {:else if transaction.operation === "income"}
+                  +
+                {:else if transaction.operation === "exchange"}
+                  =
+                {/if}
+                {transaction.name}
+                <span class="money">
+                  {formatAmount(transaction.value)}
+                  {transaction.currency}
+                  <span class="username"
+                    >by {transaction.user.toLowerCase()}</span
+                  >
+                </span>
+              </p>
+            </a>
           {/each}
         </div>
       {/each}
@@ -75,6 +93,10 @@
 </div>
 
 <style>
+  .container {
+    width: 100%;
+  }
+
   .transactions {
     display: flex;
     flex-direction: column;
@@ -117,5 +139,6 @@
     font-style: italic;
     font-size: x-small;
     color: gray;
+    margin-left: 20px;
   }
 </style>

@@ -28,7 +28,7 @@ button {
 }
 
 .section p {
-  color: #7ed4ad;
+  color: #ba535f;
 }
 
 .title {
@@ -37,7 +37,7 @@ button {
   align-items: center;
 }
 #errorMessage {
-  color: #b03052;
+  color: #ba535f;
   font-weight: lighter;
   font-size: medium;
 }
@@ -73,10 +73,19 @@ button {
 }
 
 .reject {
-  background: #b03052;
+  background: #ba535f;
+  flex: 5;
+}
+.reset {
+  background: #d3af54;
   flex: 5;
 }
 .confirm {
-  background: #7ed4ad;
+  background: #32c181;
   flex: 5;
+}
+.deleteButton {
+  color: #ba535f;
+  background-color: transparent;
+  font-style: italic;
 }

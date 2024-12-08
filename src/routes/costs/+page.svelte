@@ -1,16 +1,15 @@
 <script lang="ts">
   import { writable } from "svelte/store";
   import { addCost } from "../../data/requests";
-  import { redirect } from "@sveltejs/kit";
   import {
     costCategoriesStore,
     equityStore,
     userStore,
   } from "../../data/store";
-  import { CostCreateRequestBody } from "./services";
+  import { CostPayloadRequestBody } from "../../data/types";
 
   let body = writable(
-    new CostCreateRequestBody($userStore ? $userStore.configuration : null),
+    new CostPayloadRequestBody($userStore ? $userStore.configuration : null),
   );
 
   // UI changes
@@ -23,7 +22,7 @@
       addCost($body);
 
       // empty the page without redirection
-      $body = new CostCreateRequestBody($userStore.configuration);
+      $body = new CostPayloadRequestBody($userStore!.configuration);
       errorMessage = "";
     } else {
       console.error("data is not full", $body);
@@ -33,7 +32,7 @@
 
   // clear the body and the UI respectively
   function handleReject() {
-    $body = new CostCreateRequestBody($userStore.configuration);
+    $body = new CostPayloadRequestBody($userStore!.configuration);
     errorMessage = "";
   }
 </script>
@@ -78,9 +77,9 @@
           target.value = "";
         }}
       >
-        {#if $userStore.configuration.costSnippets}
+        {#if $userStore!.configuration.costSnippets}
           <option selected value=""></option>
-          {#each $userStore.configuration.costSnippets as template}
+          {#each $userStore!.configuration.costSnippets as template}
             <option value={template}>{template}</option>
           {/each}
         {/if}
@@ -105,7 +104,7 @@
     </div>
 
     <div class="groupOfItems buttons">
-      <button class="reject" onclick={handleReject}>reject</button>
+      <button class="reset" onclick={handleReject}>reset</button>
       <button class="confirm" onclick={handleSuccess}>confirm</button>
     </div>
   </div>

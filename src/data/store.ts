@@ -1,10 +1,5 @@
 import { writable } from "svelte/store";
-import {
-  fetchTransactions,
-  fetchEquity,
-  fetchCostCategories,
-  fetchUser,
-} from "./requests";
+import { fetchEquity, fetchCostCategories, fetchUser } from "./requests";
 import type { Equity, Transaction, CostCategory, User } from "./types";
 import * as sessionStorageRepository from "./sessionStorageRepository";
 

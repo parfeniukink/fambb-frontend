@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { IncomeCreateRequestBody } from "./services";
+  import { IncomeCreateRequestBody } from "../../data/types";
   import { userStore, equityStore } from "../../data/store";
   import { writable } from "svelte/store";
   import { addIncome } from "../../data/requests";
+
   const incomeSources: string[] = ["revenue", "gift", "debt", "other"];
 
   // API outcome data structure
-  let body = writable(
-    new IncomeCreateRequestBody($userStore ? $userStore.configuration : null),
-  );
+  let body = writable(new IncomeCreateRequestBody($userStore!.configuration));
 
   // UI changes
   let errorMessage = "";
@@ -20,7 +19,7 @@
       addIncome($body);
 
       // empty the page without redirection
-      $body = new IncomeCreateRequestBody($userStore.configuration);
+      $body = new IncomeCreateRequestBody($userStore!.configuration);
       errorMessage = "";
     } else {
       console.error("data is not full", $body);
@@ -29,10 +28,10 @@
   }
 
   // clear the body and the UI respectively
-  function handleReject() {
-    $body = new IncomeCreateRequestBody($userStore.configuration);
-    errorMessage = "";
-  }
+  function handleReset() {
+    $body = new IncomeCreateRequestBody($userStore!.configuration);
+errorMessage = "";
+}
 </script>
 
 <div class="content">
@@ -74,8 +73,8 @@
         }}
       >
         <option value="" selected></option>
-        {#if $userStore.configuration.incomeSnippets}
-          {#each $userStore.configuration.incomeSnippets as template}
+        {#if $userStore!.configuration.incomeSnippets}
+          {#each $userStore!.configuration.incomeSnippets as template}
             <option value={template}>{template}</option>
           {/each}
         {/if}
@@ -100,7 +99,7 @@
     </div>
 
     <div class="groupOfItems buttons">
-      <button class="reject" on:click={handleReject}>reject</button>
+      <button class="reset" on:click={handleReset}>reset</button>
       <button class="confirm" on:click={handleSuccess}>confirm</button>
     </div>
   </div>
