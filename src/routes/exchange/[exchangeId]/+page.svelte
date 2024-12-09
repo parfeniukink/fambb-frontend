@@ -19,16 +19,16 @@
 
   async function fetchExistingInstance(instanceId: number): Promise<Exchange> {
     const response = await getExchange(instanceId);
-    const instance: Exchange = response.result;
-    return instance;
+    return response.result as Exchange;
   }
 
   async function handleDelete() {
     goto(`/analytics/transactions?currencyId=${instance!.toCurrency.id}`);
+
     try {
       deleteExchange(instance!.id);
     } catch (e) {
-      console.error("Error", e);
+      console.error(e);
     }
   }
 </script>

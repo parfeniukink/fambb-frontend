@@ -63,10 +63,6 @@ button {
   margin-top: 30px;
 }
 
-.reject {
-  background: #ba535f;
-  flex: 5;
-}
 .reset {
   background: #d3af54;
   flex: 5;

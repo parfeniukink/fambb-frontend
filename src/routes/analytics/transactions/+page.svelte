@@ -93,10 +93,6 @@
 </div>
 
 <style>
-  .container {
-    width: 100%;
-  }
-
   .transactions {
     display: flex;
     flex-direction: column;
@@ -109,10 +105,8 @@
   }
 
   button {
-    margin-top: 30px;
-    margin-bottom: 170px;
-    margin-right: 50px;
     width: 100%;
+    margin: 50px auto;
     text-align: right;
     background: none;
     border: none;

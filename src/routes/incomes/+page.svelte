@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { IncomeCreateRequestBody } from "../../data/types";
+  import { IncomePayloadRequestBody } from "../../data/types";
   import { userStore, equityStore } from "../../data/store";
   import { writable } from "svelte/store";
   import { addIncome } from "../../data/requests";
@@ -7,7 +7,7 @@
   const incomeSources: string[] = ["revenue", "gift", "debt", "other"];
 
   // API outcome data structure
-  let body = writable(new IncomeCreateRequestBody($userStore!.configuration));
+  let body = writable(new IncomePayloadRequestBody($userStore!.configuration));
 
   // UI changes
   let errorMessage = "";
@@ -19,7 +19,7 @@
       addIncome($body);
 
       // empty the page without redirection
-      $body = new IncomeCreateRequestBody($userStore!.configuration);
+      $body = new IncomePayloadRequestBody($userStore!.configuration);
       errorMessage = "";
     } else {
       console.error("data is not full", $body);
@@ -29,9 +29,9 @@
 
   // clear the body and the UI respectively
   function handleReset() {
-    $body = new IncomeCreateRequestBody($userStore!.configuration);
-errorMessage = "";
-}
+    $body = new IncomePayloadRequestBody($userStore!.configuration);
+    errorMessage = "";
+  }
 </script>
 
 <div class="content">
@@ -66,7 +66,7 @@ errorMessage = "";
       <select
         class="incomeNameSelector"
         value=""
-        on:change={(e) => {
+        onchange={(e) => {
           const target = e.target as HTMLSelectElement;
           $body.name = target.value;
           target.value = "not existing";
@@ -99,8 +99,8 @@ errorMessage = "";
     </div>
 
     <div class="groupOfItems buttons">
-      <button class="reset" on:click={handleReset}>reset</button>
-      <button class="confirm" on:click={handleSuccess}>confirm</button>
+      <button class="reset" onclick={handleReset}>reset</button>
+      <button class="confirm" onclick={handleSuccess}>confirm</button>
     </div>
   </div>
 </div>

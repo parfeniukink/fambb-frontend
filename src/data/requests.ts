@@ -10,9 +10,9 @@ import type {
   Transaction,
 } from "./types";
 
-const BASE_URL = "http://localhost:8000";
+// const BASE_URL = "http://localhost:8000";
 // const BASE_URL = "http://192.168.50.161:8000";
-// const BASE_URL = "http://192.168.0.112:8000";
+const BASE_URL = "http://192.168.0.130:8000";
 
 // **********************************************
 // HTTP request factory
@@ -22,7 +22,7 @@ async function makeRequest(
   method: string = "GET",
   headers: Record<string, string> = {},
   body: Record<string, any> = {},
-) {
+): Promise<any> {
   const secret: string | null = sessionStorageRepository.getSecret();
 
   if (!secret) {
@@ -35,7 +35,7 @@ async function makeRequest(
     Authorization: `Bearer ${secret}`,
   };
 
-  const response = await fetch(url, {
+  const response = await fetch(url.toString(), {
     method: method,
     headers: { ...defaultHeaders, ...headers },
     body:
@@ -66,7 +66,6 @@ export async function fetchEquity(): Promise<ResponseMulti<Equity>> {
   )) as ResponseMulti<Equity>;
 }
 
-// TODO: Make input optional
 export async function fetchTransactions({
   currencyId = null,
   context = 0,
@@ -78,7 +77,6 @@ export async function fetchTransactions({
 }): Promise<ResponseMultiPaginated<Transaction>> {
   let url = `${BASE_URL}/analytics/transactions?context=${context}&limit=${limit}`;
 
-  // add currency id filter if specified
   if (currencyId != null) {
     url = [url, `&currencyId=${currencyId}`].join("");
   }
@@ -134,7 +132,7 @@ export async function updateCost(
   );
 }
 
-export async function deleteCost(costId: number) {
+export async function deleteCost(costId: number): Promise<void> {
   await makeRequest(`${BASE_URL}/costs/${costId}`, "DELETE");
 }
 
@@ -169,5 +167,8 @@ export async function getExchange(itemId: number) {
 }
 
 export async function deleteExchange(exchangeId: number) {
-  return await makeRequest(`${BASE_URL}/exchange/${exchangeId}`, "DELETE");
+  return await makeRequest(
+    `${BASE_URL}/exchange/${exchangeId}`.toString(),
+    "DELETE",
+  );
 }

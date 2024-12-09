@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { writable } from "svelte/store";
   import { currencyExchange } from "../../data/requests";
-  import { equityStore } from "../../data/store";
+  import { equityStore, lastTransactionsStore } from "../../data/store";
   import { ExchangePayloadRequestBody } from "../../data/types";
 
   let body = writable(new ExchangePayloadRequestBody());
@@ -13,6 +14,8 @@
   function handleSuccess() {
     try {
       $body.readyToGo();
+
+      goto(`/analytics/transactions?currencyId=${$body!.toCurrencyId}`);
       currencyExchange($body);
       $body = new ExchangePayloadRequestBody();
       errorMessage = "";

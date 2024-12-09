@@ -3,33 +3,34 @@
   import { goto } from "$app/navigation";
 
   import { onMount } from "svelte";
-  import { CostPayloadRequestBody, type Cost } from "../../../data/types";
+  import { IncomePayloadRequestBody, type Income } from "../../../data/types";
+  import { userStore, equityStore } from "../../../data/store";
   import {
-    costCategoriesStore,
-    userStore,
-    equityStore,
-  } from "../../../data/store";
-  import { getCost, updateCost, deleteCost } from "../../../data/requests";
+    getIncome,
+    updateIncome,
+    deleteIncome,
+  } from "../../../data/requests";
   import { writable } from "svelte/store";
 
-  let body = writable(new CostPayloadRequestBody());
+  const incomeSources: string[] = ["revenue", "gift", "debt", "other"];
+  let body = writable(new IncomePayloadRequestBody());
   let errorMessage = $state("");
-  let instance: Cost | null = $state(null);
+  let instance: Income | null = $state(null);
 
   onMount(async () => {
-    instance = await fetchExistingInstance(Number($page.params.costId));
+    instance = await fetchExistingInstance(Number($page.params.incomeId));
 
     // update the body with default data
-    $body.timestamp = instance.timestamp;
     $body.name = instance.name;
     $body.value = instance.value;
+    $body.source = instance.source;
+    $body.timestamp = instance.timestamp;
     $body.currencyId = instance.currency.id;
-    $body.categoryId = instance.category.id;
   });
 
-  async function fetchExistingInstance(instanceId: number): Promise<Cost> {
-    const response = await getCost(instanceId);
-    const instance: Cost = response.result;
+  async function fetchExistingInstance(instanceId: number): Promise<Income> {
+    const response = await getIncome(instanceId);
+    const instance: Income = response.result;
     return instance;
   }
 
@@ -38,7 +39,7 @@
 
     try {
       if ($body.readyToGo()) {
-        await updateCost(instance!.id, $body);
+        await updateIncome(instance!.id, $body);
       }
     } catch (e) {
       console.error(e);
@@ -49,18 +50,18 @@
     if (!instance) {
       errorMessage = "server error";
     } else {
-      $body.timestamp = instance.timestamp;
       $body.name = instance.name;
       $body.value = instance.value;
+      $body.source = instance.source;
+      $body.timestamp = instance.timestamp;
       $body.currencyId = instance.currency.id;
-      $body.categoryId = instance.category.id;
     }
   }
 
   async function handleDelete() {
     goto(`/analytics/transactions?currencyId=${instance!.currency.id}`);
     try {
-      deleteCost(instance!.id);
+      deleteIncome(instance!.id);
     } catch (e) {
       console.error("Error", e);
     }
@@ -70,7 +71,7 @@
 <div class="content">
   <div class="section">
     <div class="title">
-      <p>cost #{instance ? instance.user.toLowerCase() : ""}</p>
+      <p>income @{instance ? instance.user.toLowerCase() : ""}</p>
       {#if errorMessage !== ""}
         <p id="errorMessage">{errorMessage}</p>
       {/if}
@@ -82,44 +83,48 @@
       <input id="date" type="date" bind:value={$body.timestamp} />
     </div>
 
-    <!-- select 'cost category' -->
-    <div class="groupOfItems">
-      <select class="categorySelector" bind:value={$body.categoryId}>
-        {#each $costCategoriesStore as category}
-          <option value={category.id}>{category.name}</option>
-        {/each}
-      </select>
-    </div>
+    <!-- select 'income source' -->
+    <select bind:value={$body.source}>
+      {#each incomeSources as source}
+        <option value={source}>{source}</option>
+      {/each}
+    </select>
 
-    <!-- Select 'cost name' -->
+    <!-- Select 'income name' -->
     <div class="groupOfItems">
-      <input id="costName" type="text" bind:value={$body.name} />
+      <input
+        id="incomeName"
+        type="text"
+        placeholder="name..."
+        bind:value={$body.name}
+      />
       <select
-        class="costNameSelector"
+        class="incomeNameSelector"
         value=""
         onchange={(e) => {
           const target = e.target as HTMLSelectElement;
           $body.name = target.value;
-          target.value = "";
+          target.value = "not existing";
         }}
       >
-        {#if $userStore!.configuration.costSnippets}
-          <option selected value=""></option>
-          {#each $userStore!.configuration.costSnippets as template}
+        <option value="" selected></option>
+        {#if $userStore!.configuration.incomeSnippets}
+          {#each $userStore!.configuration.incomeSnippets as template}
             <option value={template}>{template}</option>
           {/each}
         {/if}
       </select>
     </div>
 
-    <div class="groupOfItems price">
-      <!-- Set 'cost value' -->
+    <!-- Set 'money' -->
+    <div class="groupOfItems">
       <input
         id="value"
         type="number"
         inputmode="decimal"
         pattern="\d*"
         bind:value={$body.value}
+        placeholder="value..."
       />
       <select class="currencySelector" bind:value={$body.currencyId}>
         {#each $equityStore as equity}
@@ -137,4 +142,10 @@
 
 <style>
   @import "../page.css";
+
+  .deleteButton {
+    color: #ba535f;
+    background-color: transparent;
+    font-style: italic;
+  }
 </style>

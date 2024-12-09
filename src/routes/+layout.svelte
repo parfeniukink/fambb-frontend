@@ -52,6 +52,14 @@
 {/if}
 
 <style>
+  .rootPage {
+    margin-bottom: 30px;
+    height: 100%;
+  }
+  .viewport {
+    padding: 0 20px;
+  }
+
   nav {
     position: fixed;
     height: 60px;
@@ -75,14 +83,6 @@
 
   nav a:hover {
     color: white;
-  }
-
-  .rootPage {
-    margin-bottom: 30px;
-    height: 100%;
-  }
-  .viewport {
-    padding: 0 20px;
   }
 
   form {

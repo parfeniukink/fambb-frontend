@@ -77,5 +77,69 @@
 </div>
 
 <style>
-  @import "./page.css";
+  /* General */
+  .homePage {
+    width: 100%;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 100px;
+  }
+
+  /* Equity Section */
+  .equityItems {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: start;
+    gap: 30px;
+    text-align: center;
+    align-content: center;
+  }
+  .equityItems a {
+    color: #a07a60;
+    font-weight: bold;
+  }
+
+  /* Last Transactions Section */
+  .lastTransactions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lastTransactions p {
+    margin: 3px 0;
+  }
+
+  .lastTransactions span {
+    font-style: italic;
+    font-size: x-small;
+    color: gray;
+    margin-left: 20px;
+  }
+
+  /* Quick Actions Section */
+  .quickActions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .quickActionButton {
+    padding: 20px;
+    font-weight: normal;
+    font-size: x-large;
+    width: calc(100% - 50px);
+    text-align: center;
+    border-radius: 4px;
+  }
+  .addCostButton {
+    background: #ba535f;
+  }
+  .addIncomeButton {
+    background: #32c181;
+  }
+  .addExchangeButton {
+    background: #2c7bb7;
+  }
 </style>

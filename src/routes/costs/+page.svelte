@@ -31,7 +31,7 @@
   }
 
   // clear the body and the UI respectively
-  function handleReject() {
+  function handleReset() {
     $body = new CostPayloadRequestBody($userStore!.configuration);
     errorMessage = "";
   }
@@ -104,7 +104,7 @@
     </div>
 
     <div class="groupOfItems buttons">
-      <button class="reset" onclick={handleReject}>reset</button>
+      <button class="reset" onclick={handleReset}>reset</button>
       <button class="confirm" onclick={handleSuccess}>confirm</button>
     </div>
   </div>

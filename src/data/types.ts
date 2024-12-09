@@ -121,6 +121,35 @@ export class CostPayloadRequestBody {
   }
 }
 
+export class IncomePayloadRequestBody {
+  name: string | null = null;
+  value: number | null = null;
+  source: string = "revenue";
+  timestamp: string = new Date().toISOString().slice(0, 10);
+  currencyId: number | null = null;
+
+  constructor(configuration: Configuration | null = null) {
+    if (configuration != null) {
+      this.currencyId = configuration.defaultCurrency
+        ? configuration.defaultCurrency.id
+        : null;
+    }
+  }
+
+  // defines if the data is ready to be sent
+  public readyToGo() {
+    if (
+      this.name &&
+      this.value &&
+      this.source &&
+      this.timestamp &&
+      this.currencyId
+    ) {
+      return true;
+    } else return false;
+  }
+}
+
 export class ExchangePayloadRequestBody {
   fromValue: number | null = null;
   toValue: number | null = null;
@@ -146,32 +175,5 @@ export class ExchangePayloadRequestBody {
     } else {
       throw new Error("complete input");
     }
-  }
-}
-
-export class IncomeCreateRequestBody {
-  name: string | null = null;
-  value: number | null = null;
-  source: string = "revenue";
-  timestamp: string = new Date().toISOString().slice(0, 10);
-  currencyId: number | null = null;
-
-  constructor(configuration: Configuration) {
-    this.currencyId = configuration.defaultCurrency
-      ? configuration.defaultCurrency.id
-      : null;
-  }
-
-  // defines if the data is ready to be sent
-  public readyToGo() {
-    if (
-      this.name &&
-      this.value &&
-      this.source &&
-      this.timestamp &&
-      this.currencyId
-    ) {
-      return true;
-    } else return false;
   }
 }

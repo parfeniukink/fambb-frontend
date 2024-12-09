@@ -8,7 +8,6 @@
 
 <style>
   .analyticsPage {
-    width: 100%;
     align-items: center;
     padding: 10px;
   }

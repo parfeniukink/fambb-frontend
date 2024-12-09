@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	pnpm run dev --host
+	pnpm run dev
 
 .PHONY: install 
 install:
