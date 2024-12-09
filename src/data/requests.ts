@@ -10,9 +10,9 @@ import type {
   Transaction,
 } from "./types";
 
-// const BASE_URL = "http://localhost:8000";
+const BASE_URL = "http://localhost:8000";
 // const BASE_URL = "http://192.168.50.161:8000";
-const BASE_URL = "http://192.168.0.130:8000";
+// const BASE_URL = "http://192.168.0.130:8000";
 
 // **********************************************
 // HTTP request factory
