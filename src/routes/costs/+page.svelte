@@ -17,6 +17,8 @@
 
   // if the HTTP body is ready to go - send the API call
   function handleSuccess() {
+    console.info($body);
+
     if ($body.readyToGo()) {
       // add task to the event loop
       addCost($body);

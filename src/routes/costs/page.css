@@ -37,9 +37,11 @@ button {
   align-items: center;
 }
 #errorMessage {
-  color: #ba535f;
+  color: #8e2531;
   font-weight: lighter;
   font-size: medium;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .groupOfItems {

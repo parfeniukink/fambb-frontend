@@ -51,6 +51,10 @@ async function makeRequest(
     // clear data after unauthorized
     sessionStorage.clear();
     throw new Error("user unauthorized");
+  } else if (response.status == 400 || response.status == 422) {
+    if (response) {
+      throw new Error(data.message);
+    }
   } else {
     throw new Error(`Unhandled error. Status code: ${response.status}}`);
   }
@@ -170,5 +174,15 @@ export async function deleteExchange(exchangeId: number) {
   return await makeRequest(
     `${BASE_URL}/exchange/${exchangeId}`.toString(),
     "DELETE",
+  );
+}
+
+// ==============================================
+// basic analytics
+// ==============================================
+export async function getBasicAnalytics(period: string) {
+  return await makeRequest(
+    `${BASE_URL}/analytics/basic?period=${period}`,
+    "GET",
   );
 }

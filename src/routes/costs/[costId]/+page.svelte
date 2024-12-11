@@ -34,14 +34,16 @@
   }
 
   async function handleUpdate() {
-    goto(`/analytics/transactions?currencyId=${instance!.currency.id}`);
-
     try {
       if ($body.readyToGo()) {
         await updateCost(instance!.id, $body);
+        goto(`/analytics/transactions?currencyId=${instance!.currency.id}`);
+      } else {
+        errorMessage = "some fields are invalid";
       }
     } catch (e) {
       console.error(e);
+      errorMessage = e.message;
     }
   }
 
@@ -62,7 +64,7 @@
     try {
       deleteCost(instance!.id);
     } catch (e) {
-      console.error("Error", e);
+      console.error("Error", e)
     }
   }
 </script>
@@ -71,9 +73,6 @@
   <div class="section">
     <div class="title">
       <p>cost #{instance ? instance.user.toLowerCase() : ""}</p>
-      {#if errorMessage !== ""}
-        <p id="errorMessage">{errorMessage}</p>
-      {/if}
       <button class="deleteButton" onclick={handleDelete}>delete</button>
     </div>
 
@@ -133,6 +132,10 @@
       <button class="confirm" onclick={handleUpdate}>update</button>
     </div>
   </div>
+
+  {#if errorMessage !== ""}
+    <p id="errorMessage">{errorMessage}</p>
+  {/if}
 </div>
 
 <style>

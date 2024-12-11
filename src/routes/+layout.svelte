@@ -43,10 +43,10 @@
     </div>
 
     <nav>
-      <a href="/">home</a>
-      <a href="/analytics">analytics</a>
-      <a href="/shortcuts">shortcuts</a>
-      <a href="/settings">settings</a>
+      <a href="/">🏠 home</a>
+      <a href="/analytics">📊 analytics</a>
+      <a href="/shortcuts">📝 shortcuts</a>
+      <a href="/settings">🛠️ settings</a>
     </nav>
   </div>
 {/if}

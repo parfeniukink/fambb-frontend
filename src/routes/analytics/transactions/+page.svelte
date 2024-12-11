@@ -27,7 +27,10 @@
   }
 
   onMount(async () => {
-    await loadTransactions();
+    // TODO: remove the if statement after the page with all the transactions is available
+    if (currencyId != null) {
+      await loadTransactions();
+    }
   });
 
   const loadTransactions = async () => {
@@ -53,7 +56,11 @@
 </script>
 
 <div class="container">
-  {#if isLoading}
+  {#if currencyId == null}
+    <div class="wip">
+      <p>🚧 work in progress</p>
+    </div>
+  {:else if isLoading}
     <p>loading...</p>
   {:else}
     <div class="transactions">
@@ -64,7 +71,7 @@
           <!-- Display each transaction in the block  -->
           {#each transactions[timestamp] as transaction}
             <a href={endRoute(transaction)}
-              ><p class={transaction.operarion}>
+              ><p class={transaction.operation}>
                 {#if transaction.operation === "cost"}
                   -
                 {:else if transaction.operation === "income"}
@@ -111,6 +118,13 @@
     background: none;
     border: none;
     color: #b29849;
+  }
+
+  .wip {
+    text-align: center;
+    width: center;
+    height: calc(100%);
+    margin-top: calc(50%);
   }
 
   .cost {

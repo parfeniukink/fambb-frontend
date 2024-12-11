@@ -177,3 +177,67 @@ export class ExchangePayloadRequestBody {
     }
   }
 }
+
+// analytics
+export class CostByCategory {
+  name: string;
+  total: number;
+  ratio: number;
+
+  constructor(name: string, total: number, ratio: number) {
+    this.name = name;
+    this.total = total;
+    this.ratio = ratio;
+  }
+}
+export class CostsAnalytics {
+  total: number;
+  categories: CostByCategory[];
+
+  constructor(total: number, categories: CostByCategory[]) {
+    this.total = total;
+    this.categories = categories;
+  }
+}
+
+export class IncomeBySource {
+  source: string;
+  total: number;
+
+  constructor(source: string, total: number) {
+    this.source = source;
+    this.total = total;
+  }
+}
+
+export class IncomesAnalytics {
+  total: number;
+  sources: IncomeBySource[];
+
+  constructor(total: number, sources: IncomeBySource[]) {
+    this.total = total;
+    this.sources = sources;
+  }
+}
+
+export class TransactionBasicAnalytics {
+  currency: Currency;
+  costs: CostsAnalytics;
+  incomes: IncomesAnalytics;
+  fromExchagnes: number;
+  totalRatio: number;
+
+  constructor(
+    currency: Currency,
+    costs: CostsAnalytics,
+    incomes: IncomesAnalytics,
+    fromExchagnes: number,
+    totalRatio: number,
+  ) {
+    this.currency = currency;
+    this.costs = costs;
+    this.incomes = incomes;
+    this.fromExchagnes = fromExchagnes;
+    this.totalRatio = totalRatio;
+  }
+}

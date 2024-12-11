@@ -3,8 +3,9 @@
   import { formatAmount } from "../services";
   import type { Transaction } from "../data/types";
   import { equityStore, lastTransactionsStore } from "../data/store";
-  import Section from "../components/Section.svelte";
+
   import { fetchEquity, fetchTransactions } from "../data/requests";
+  import Section from "../components/Section.svelte";
 
   onMount(async () => {
     const results = await Promise.all([fetchEquity(), fetchTransactions({})]);
