@@ -10,7 +10,7 @@
   let body = writable(new IncomePayloadRequestBody($userStore!.configuration));
 
   // UI changes
-  let errorMessage = "";
+  let errorMessage = $state("");
 
   // if the HTTP body is ready to go - send the API call
   function handleSuccess() {

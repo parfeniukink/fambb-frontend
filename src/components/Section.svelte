@@ -14,15 +14,32 @@
   h2 {
     font-weight: normal;
     font-size: x-large;
-    /* hcolor: #7ed4ad; */
+    /* color: #7ed4ad; */
     color: white;
   }
   .section {
     margin: 20px 0;
     padding: 26px;
     border-radius: 4px;
+    overflow: hidden;
   }
   .section-content {
-    margin-top: 36px; /* Space between title and child content */
+    /* Space between title and child content */
+    margin-top: 36px;
+    /* Allow horizontal scrolling */
+    overflow-x: scroll;
+    /* Prevent wrapping */
+    white-space: nowrap;
+    /* Avoid overlap with scrollbar */
+    /* padding-bottom: 10px; */
+
+    /* Hide scrollbar for WebKit browsers (Chrome, Safari) */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+      /* Hide scrollbar for Firefox */
+    scrollbar-width: none;
+    scroll-behavior: smooth;
   }
 </style>

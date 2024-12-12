@@ -1,3 +1,5 @@
+import type { argv0 } from "process";
+
 /* Generics */
 export interface Response<T> {
   result: T;
@@ -224,20 +226,33 @@ export class TransactionBasicAnalytics {
   currency: Currency;
   costs: CostsAnalytics;
   incomes: IncomesAnalytics;
-  fromExchagnes: number;
+  fromExchanges: number;
   totalRatio: number;
 
   constructor(
     currency: Currency,
     costs: CostsAnalytics,
     incomes: IncomesAnalytics,
-    fromExchagnes: number,
+    fromExchanges: number,
     totalRatio: number,
   ) {
     this.currency = currency;
     this.costs = costs;
     this.incomes = incomes;
-    this.fromExchagnes = fromExchagnes;
+    this.fromExchanges = fromExchanges;
     this.totalRatio = totalRatio;
+  }
+}
+
+export class CustomDatesRange {
+  startDate: string | null = null;
+  endDate: string = new Date().toISOString().slice(0, 10);
+
+  public validate() {
+    if (!this.startDate) {
+      throw Error("start date not specified");
+    } else if (this.startDate >= this.endDate) {
+      throw Error("start date > end date");
+    }
   }
 }

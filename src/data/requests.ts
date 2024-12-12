@@ -186,3 +186,10 @@ export async function getBasicAnalytics(period: string) {
     "GET",
   );
 }
+
+export async function getBasicAnalyticsByRange(start: string, end: string) {
+  return await makeRequest(
+    `${BASE_URL}/analytics/basic?startDate=${start}&endDate=${end}`,
+    "GET",
+  );
+}

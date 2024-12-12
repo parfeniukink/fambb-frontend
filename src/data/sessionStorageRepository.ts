@@ -8,14 +8,14 @@
 //
 import type { CostCategory, Equity, User } from "./types";
 
-function sessionStorageItemSerialized(key: string): object | null {
+function sessionStorageItemSerialized<T>(key: string): T | null {
   const payload: string | null = sessionStorage.getItem(key);
 
   if (!payload) {
     return null;
   } else {
     try {
-      return JSON.parse(payload);
+      return JSON.parse(payload) as T;
     } catch (e) {
       console.error(`Can't parse ${payload}. Error: ${e}`);
       return null;
@@ -37,7 +37,7 @@ export const setEquity = (data: Equity[]): void => {
 };
 
 export const getEquity = (): Equity[] => {
-  const data = sessionStorageItemSerialized("equity");
+  const data = sessionStorageItemSerialized<{ items: Equity[] }>("equity");
   return data ? (data["items"] as Equity[]) : [];
 };
 
@@ -46,12 +46,13 @@ export const setCostCategories = (data: CostCategory[]): void => {
 };
 
 export const getCostCategories = (): CostCategory[] => {
-  const data = sessionStorageItemSerialized("costCategories");
+  const data = sessionStorageItemSerialized<{ items: CostCategory[] }>(
+    "costCategories",
+  );
   return data ? (data["items"] as CostCategory[]) : [];
 };
 
 export const setSecret = (data: string): void => {
-  console.log(`saving secret: ${data}`);
   sessionStorage.setItem("secret", data);
 };
 
