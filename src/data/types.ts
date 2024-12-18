@@ -1,5 +1,3 @@
-import type { argv0 } from "process";
-
 /* Generics */
 export interface Response<T> {
   result: T;
@@ -88,7 +86,11 @@ export interface Exchange {
   user: string;
 }
 
-/* Request Body definitions */
+/* Request Body definitions
+ * probably this code is a piece of shit. you have to separate
+ * UI state from the request body data structure and make required fields not optional.
+ * this fact is ignored for the MVP phase.
+ * */
 export class CostPayloadRequestBody {
   name: string | null = null;
   value: number | null = null;
@@ -256,3 +258,54 @@ export class CustomDatesRange {
     }
   }
 }
+
+export class CostShortcut {
+  id: number;
+  name: string;
+  value: number;
+  currency: Currency;
+  category: CostCategory;
+
+  constructor(
+    id: number,
+    name: string,
+    value: number,
+    currency: Currency,
+    costCategory: CostCategory,
+  ) {
+    this.id = id;
+    this.name = name;
+    this.value = value;
+    this.currency = currency;
+    this.category = costCategory;
+  }
+}
+
+export class CostShortcutCreateRequestBody {
+  name: string | null = null;
+  value: number | null = null;
+  currencyId: number | null = null;
+  categoryId: number | null = null;
+
+  constructor(configuration: Configuration | null = null) {
+    if (configuration != null) {
+      this.currencyId = configuration.defaultCurrency
+        ? configuration.defaultCurrency.id
+        : null;
+
+      this.categoryId = configuration.defaultCostCategory
+        ? configuration.defaultCostCategory.id
+        : null;
+    }
+  }
+
+  public readyToGo() {
+    if (!this.name || !this.categoryId || !this.currencyId) {
+      throw new Error("complete input");
+    }
+  }
+}
+
+export type PopupConfig = {
+  message: string;
+};

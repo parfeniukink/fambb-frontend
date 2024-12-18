@@ -169,11 +169,10 @@
         type="date"
         bind:value={$customDatesRangeStore.endDate}
       />
-      <button
-        class="submitButton"
-        onclick={handleFetchCustomRangeBasicAnalytics}>fetch</button
-      >
     </div>
+    <button class="submitButton" onclick={handleFetchCustomRangeBasicAnalytics}
+      >fetch</button
+    >
 
     {#if selectedRangeErrorMessage}
       <p class="red-text">{selectedRangeErrorMessage}</p>
@@ -291,15 +290,17 @@
     border: 0px solid #ccc; /* Add border for visibility */
     border-radius: 4px; /* Rounded corners */
     height: 40px;
+    font-size: small;
   }
 
   .submitButton {
+    margin-bottom: 20px;
     padding: 10px 20px; /* Adjust padding */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     background-color: #caf492;
-    color: gray;
-    height: 40px; /* Match input height */
+    color: #474747;
+    width: 100%;
   }
 </style>

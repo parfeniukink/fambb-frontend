@@ -1,6 +1,13 @@
 import { writable } from "svelte/store";
 import { fetchEquity, fetchCostCategories, fetchUser } from "./requests";
-import type { Equity, Transaction, CostCategory, User } from "./types";
+import type {
+  CostShortcut,
+  Equity,
+  Transaction,
+  CostCategory,
+  User,
+  PopupConfig,
+} from "./types";
 import * as sessionStorageRepository from "./sessionStorageRepository";
 
 // analytics
@@ -12,7 +19,7 @@ equityStore.subscribe(($equityStore) => {
   sessionStorageRepository.setEquity($equityStore);
 });
 
-export const lastTransactionsStore = writable<Transaction[]>([]);
+export const transactionsHistoryStore = writable<Transaction[]>([]);
 
 // cost categories
 export const costCategoriesStore = writable<CostCategory[]>(
@@ -23,6 +30,29 @@ export const costCategoriesStore = writable<CostCategory[]>(
 export const userStore = writable<User | null>(
   sessionStorageRepository.getUser(),
 );
+
+export const costShortcutsStore = writable<CostShortcut[]>([]);
+
+// popup store
+
+const createPoputStore = () => {
+  const { subscribe, set } = writable<PopupConfig | null>(null);
+
+  function showPopup(message: string) {
+    set({ message });
+
+    setTimeout(() => {
+      set(null); // Hide the popup after 2 seconds
+    }, 2000);
+  }
+
+  return {
+    subscribe,
+    showPopup,
+  };
+};
+
+export const popupStore = createPoputStore();
 
 // Populate the whole state on the first startup or fallback to sessionStorage data
 export async function initPersistentStore(secret: string) {

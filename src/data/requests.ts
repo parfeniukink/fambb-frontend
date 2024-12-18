@@ -9,10 +9,10 @@ import type {
   User,
   Transaction,
 } from "./types";
+import { PUBLIC_BASE_URL } from "$env/static/public";
 
-const BASE_URL = "http://localhost:8000";
-// const BASE_URL = "http://192.168.50.161:8000";
-// const BASE_URL = "http://192.168.0.130:8000";
+const BASE_URL = PUBLIC_BASE_URL;
+console.debug(BASE_URL)
 
 // **********************************************
 // HTTP request factory
@@ -21,7 +21,7 @@ async function makeRequest(
   url: string,
   method: string = "GET",
   headers: Record<string, string> = {},
-  body: Record<string, any> = {},
+  body: Record<string, any> | null = null,
 ): Promise<any> {
   const secret: string | null = sessionStorageRepository.getSecret();
 
@@ -108,10 +108,59 @@ export async function fetchCostCategories(): Promise<
 }
 
 // ==============================================
+// working with cost shortcuts
+// ==============================================
+export async function getCostShortcuts() {
+  return await makeRequest(`${BASE_URL}/costs/shortcuts`, "GET");
+}
+
+export async function addCostShortcut(requestBody: Record<string, any>) {
+  return await makeRequest(
+    `${BASE_URL}/costs/shortcuts`,
+    "POST",
+    {},
+    requestBody,
+  );
+}
+
+export async function applyCostShortcut(
+  shortcutId: number,
+  requestBody: { value: number } | null = null,
+) {
+  return await makeRequest(
+    `${BASE_URL}/costs/shortcuts/${shortcutId}`,
+    "POST",
+    {},
+    requestBody,
+  );
+}
+
+export async function deleteCostShortcut(shortcutId: number) {
+  return await makeRequest(
+    `${BASE_URL}/costs/shortcuts/${shortcutId}`,
+    "DELETE",
+  );
+}
+
+// ==============================================
 // fetch user information
 // ==============================================
 export async function fetchUser(): Promise<Response<User>> {
   return (await makeRequest(`${BASE_URL}/users`)) as Response<User>;
+}
+
+// ==============================================
+// configuration partial update
+// ==============================================
+export async function updateUserConfiguration(
+  requestBody: Record<string, any>,
+) {
+  await makeRequest(
+    `${BASE_URL}/users/configuration`,
+    "PATCH",
+    {},
+    requestBody,
+  );
 }
 
 // ==============================================

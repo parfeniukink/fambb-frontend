@@ -1,28 +1,53 @@
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
+  import { CostShortcut, type ResponseMulti } from "../../data/types";
+  import { getCostShortcuts } from "../../data/requests";
+  import { costShortcutsStore } from "../../data/store";
+  import CostShortcutCard from "../../components/CostShortcutCard.svelte";
+  import Popup from "../../components/Popup.svelte";
 
-  onMount(() => {
-    console.log("mounted");
+  onMount(async () => {
+    const response: ResponseMulti<CostShortcut> = await getCostShortcuts();
+    if (!response) {
+      console.error("no cost shortcuts from API");
+    } else {
+      $costShortcutsStore = response.result;
+    }
   });
-  onDestroy(() => {
-    console.log("destroy");
-  });
-
-  console.log("Hello");
 </script>
 
-<h1>Shortcuts</h1>
+<div class="container">
+  <div class="title">
+    <h2>Shortcuts</h2>
+    <a href="/shortcuts/create">[+]</a>
+  </div>
 
-<ul>
-  <li>Shortcut 1</li>
-  <li>Shortcut 2</li>
-  <li>Shortcut 3</li>
-</ul>
-
-<h1>content</h1>
+  <div class="shortcuts">
+    {#each $costShortcutsStore as shortcut}
+      <CostShortcutCard {shortcut} />
+    {/each}
+  </div>
+</div>
+<Popup />
 
 <style>
-  h1 {
-    color: red;
+  .container {
+    padding: 10px;
+    margin-bottom: 50px;
+  }
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  a {
+    color: #32c181;
+    font-weight: bold;
+  }
+  .shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    row-gap: 50px;
   }
 </style>

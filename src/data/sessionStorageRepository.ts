@@ -6,7 +6,7 @@
 //   return null; // or a default value
 // }
 //
-import type { CostCategory, Equity, User } from "./types";
+import type { CostCategory, CostShortcut, Equity, User } from "./types";
 
 function sessionStorageItemSerialized<T>(key: string): T | null {
   const payload: string | null = sessionStorage.getItem(key);

@@ -10,11 +10,13 @@
     updateIncome,
     deleteIncome,
   } from "../../../data/requests";
-  import { writable } from "svelte/store";
+  import { writable, type Writable } from "svelte/store";
 
   const incomeSources: string[] = ["revenue", "gift", "debt", "other"];
-  let body = writable(new IncomePayloadRequestBody());
-  let errorMessage = $state("");
+  let body: Writable<IncomePayloadRequestBody> = writable(
+    new IncomePayloadRequestBody(),
+  );
+  let errorMessage: Writable<string> = writable("");
   let instance: Income | null = $state(null);
 
   onMount(async () => {
@@ -39,7 +41,7 @@
 
     try {
       if ($body.readyToGo()) {
-        await updateIncome(instance!.id, $body);
+        updateIncome(instance!.id, $body);
       }
     } catch (e) {
       console.error(e);
@@ -48,7 +50,7 @@
 
   async function handleReset() {
     if (!instance) {
-      errorMessage = "server error";
+      $errorMessage = "server error";
     } else {
       $body.name = instance.name;
       $body.value = instance.value;
@@ -71,10 +73,9 @@
 <div class="content">
   <div class="section">
     <div class="title">
-      <p>income @{instance ? instance.user.toLowerCase() : ""}</p>
-      {#if errorMessage !== ""}
-        <p id="errorMessage">{errorMessage}</p>
-      {/if}
+      <div class="header">
+        income@{instance ? instance.user.toLowerCase() : ""}
+      </div>
       <button class="deleteButton" onclick={handleDelete}>delete</button>
     </div>
 
@@ -138,14 +139,25 @@
       <button class="confirm" onclick={handleUpdate}>update</button>
     </div>
   </div>
+  <p id="errorMessage">{$errorMessage}</p>
 </div>
 
 <style>
   @import "../page.css";
 
+  .title {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+  }
+  .header {
+    color: #32c181;
+    font-size: large;
+  }
+
   .deleteButton {
-    color: #ba535f;
     background-color: transparent;
     font-style: italic;
+    color: #ba535f;
   }
 </style>

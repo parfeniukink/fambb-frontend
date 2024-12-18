@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { writable } from "svelte/store";
   import { currencyExchange } from "../../data/requests";
-  import { equityStore, lastTransactionsStore } from "../../data/store";
+  import { equityStore } from "../../data/store";
   import { ExchangePayloadRequestBody } from "../../data/types";
 
   let body = writable(new ExchangePayloadRequestBody());

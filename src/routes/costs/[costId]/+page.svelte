@@ -13,7 +13,7 @@
   import { writable } from "svelte/store";
 
   let body = writable(new CostPayloadRequestBody());
-  let errorMessage = $state("");
+  let errorMessage = writable("");
   let instance: Cost | null = $state(null);
 
   onMount(async () => {
@@ -39,7 +39,7 @@
         await updateCost(instance!.id, $body);
         goto(`/analytics/transactions?currencyId=${instance!.currency.id}`);
       } else {
-        errorMessage = "some fields are invalid";
+        $errorMessage = "some fields are invalid";
       }
     } catch (e) {
       console.error(e);
@@ -49,7 +49,7 @@
 
   async function handleReset() {
     if (!instance) {
-      errorMessage = "server error";
+      $errorMessage = "server error";
     } else {
       $body.timestamp = instance.timestamp;
       $body.name = instance.name;
@@ -64,7 +64,7 @@
     try {
       deleteCost(instance!.id);
     } catch (e) {
-      console.error("Error", e)
+      console.error("Error", e);
     }
   }
 </script>
@@ -72,7 +72,9 @@
 <div class="content">
   <div class="section">
     <div class="title">
-      <p>cost #{instance ? instance.user.toLowerCase() : ""}</p>
+      <div class="header">
+        cost@{instance ? instance.user.toLowerCase() : ""}
+      </div>
       <button class="deleteButton" onclick={handleDelete}>delete</button>
     </div>
 
@@ -84,7 +86,7 @@
     <!-- select 'cost category' -->
     <div class="groupOfItems">
       <select class="categorySelector" bind:value={$body.categoryId}>
-        {#each $costCategoriesStore as category}
+        h {#each $costCategoriesStore as category}
           <option value={category.id}>{category.name}</option>
         {/each}
       </select>
@@ -133,11 +135,24 @@
     </div>
   </div>
 
-  {#if errorMessage !== ""}
-    <p id="errorMessage">{errorMessage}</p>
-  {/if}
+  <p id="errorMessage">{$errorMessage}</p>
 </div>
 
 <style>
   @import "../page.css";
+  .title {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+  }
+  .header {
+    font-size: large;
+    color: #ba535f;
+  }
+
+  .deleteButton {
+    background-color: transparent;
+    font-style: italic;
+    color: #ba535f;
+  }
 </style>

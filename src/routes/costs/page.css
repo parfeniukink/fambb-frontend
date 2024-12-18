@@ -82,8 +82,3 @@ button {
   background: #32c181;
   flex: 5;
 }
-.deleteButton {
-  color: #ba535f;
-  background-color: transparent;
-  font-style: italic;
-}

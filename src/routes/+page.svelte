@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { formatAmount } from "../services";
   import type { Transaction } from "../data/types";
-  import { equityStore, lastTransactionsStore } from "../data/store";
+  import { equityStore, transactionsHistoryStore } from "../data/store";
 
   import { fetchEquity, fetchTransactions } from "../data/requests";
   import Section from "../components/Section.svelte";
@@ -11,7 +11,7 @@
     const results = await Promise.all([fetchEquity(), fetchTransactions({})]);
 
     equityStore.set(results[0]["result"]);
-    lastTransactionsStore.set(results[1]["result"]);
+    transactionsHistoryStore.set(results[1]["result"]);
   });
 
   function transactionRepr(transaction: Transaction): string {
@@ -53,10 +53,10 @@
       {/if}
     </div>
   </Section>
-  <Section title="📝 Last Transactions">
+  <Section title="📝 History">
     <div class="lastTransactions">
-      {#if $lastTransactionsStore}
-        {#each $lastTransactionsStore as item}
+      {#if $transactionsHistoryStore}
+        {#each $transactionsHistoryStore as item}
           <p>
             {transactionRepr(item)} <span> by {item.user.toLowerCase()}</span>
           </p>
@@ -101,7 +101,7 @@
     font-weight: bold;
   }
 
-  /* Last Transactions Section */
+  /* History Section */
   .lastTransactions {
     display: flex;
     flex-direction: column;
@@ -135,12 +135,15 @@
     border-radius: 4px;
   }
   .addCostButton {
-    background: #ba535f;
+    background: transparent;
+    border: 4px solid #ba535f;
   }
   .addIncomeButton {
-    background: #32c181;
+    background: transparent;
+    border: 4px solid #32c181;
   }
   .addExchangeButton {
-    background: #2c7bb7;
+    background: transparent;
+    border: 4px solid #2c7bb7;
   }
 </style>
