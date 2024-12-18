@@ -27,10 +27,6 @@ button {
   font-size: x-large;
 }
 
-.section p {
-  color: #ba535f;
-}
-
 .title {
   display: flex;
   justify-content: space-between;

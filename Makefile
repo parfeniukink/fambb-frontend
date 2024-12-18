@@ -2,9 +2,17 @@
 run:
 	pnpm run dev
 
+.PHONY: build
+build:
+	pnpm run build
+
+.PHONY: live
+live:
+	pnpm run preview --host
+
 .PHONY: install 
 install:
-	pnpm install
+	pnpm install -D
 
 .PHONY: format 
 format:

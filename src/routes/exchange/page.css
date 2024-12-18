@@ -71,10 +71,3 @@ button {
   background: #32c181;
   flex: 5;
 }
-.delete {
-  background: #ba535f;
-  flex: 5;
-}
-.conversion {
-  color: white;
-}
