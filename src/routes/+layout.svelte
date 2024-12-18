@@ -30,6 +30,8 @@
       <input
         type="password"
         bind:value={secret}
+        inputmode="decimal"
+        pattern="\d*"
         placeholder="enter secret"
         required
       />
