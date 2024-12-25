@@ -10,7 +10,6 @@ on:
 
 jobs:
   deployment:
-    needs: build
     runs-on: self-hosted
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
