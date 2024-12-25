@@ -8,27 +8,27 @@ import type {
   User,
   PopupConfig,
 } from "./types";
-import * as sessionStorageRepository from "./sessionStorageRepository";
+import * as localStorageRepository from "./localStorageRepository";
 
 // analytics
 export const equityStore = writable<Equity[]>(
-  sessionStorageRepository.getEquity(),
+  localStorageRepository.getEquity(),
 );
 
 equityStore.subscribe(($equityStore) => {
-  sessionStorageRepository.setEquity($equityStore);
+  localStorageRepository.setEquity($equityStore);
 });
 
 export const transactionsHistoryStore = writable<Transaction[]>([]);
 
 // cost categories
 export const costCategoriesStore = writable<CostCategory[]>(
-  sessionStorageRepository.getCostCategories(),
+  localStorageRepository.getCostCategories(),
 );
 
 // user along with configuration
 export const userStore = writable<User | null>(
-  sessionStorageRepository.getUser(),
+  localStorageRepository.getUser(),
 );
 
 export const costShortcutsStore = writable<CostShortcut[]>([]);
@@ -54,10 +54,10 @@ const createPoputStore = () => {
 
 export const popupStore = createPoputStore();
 
-// Populate the whole state on the first startup or fallback to sessionStorage data
+// Populate the whole state on the first startup or fallback to localStorage data
 export async function initPersistentStore(secret: string) {
   // save the secret first
-  sessionStorageRepository.setSecret(secret);
+  localStorageRepository.setSecret(secret);
 
   const results = await Promise.all([
     fetchUser(),
@@ -65,10 +65,10 @@ export async function initPersistentStore(secret: string) {
     fetchCostCategories(),
   ]);
 
-  // save to the persistent session storage
-  sessionStorageRepository.setUser(results[0]["result"]);
-  sessionStorageRepository.setEquity(results[1]["result"]);
-  sessionStorageRepository.setCostCategories(results[2]["result"]);
+  // save to the persistent local storage
+  localStorageRepository.setUser(results[0]["result"]);
+  localStorageRepository.setEquity(results[1]["result"]);
+  localStorageRepository.setCostCategories(results[2]["result"]);
 
   // update Svelte internal store
   userStore.set(results[0]["result"]);

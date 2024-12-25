@@ -1,4 +1,4 @@
-import * as sessionStorageRepository from "./sessionStorageRepository";
+import * as localStorageRepository from "./localStorageRepository";
 import type {
   Equity,
   ResponseMultiPaginated,
@@ -23,10 +23,10 @@ async function makeRequest(
   headers: Record<string, string> = {},
   body: Record<string, any> | null = null,
 ): Promise<any> {
-  const secret: string | null = sessionStorageRepository.getSecret();
+  const secret: string | null = localStorageRepository.getSecret();
 
   if (!secret) {
-    sessionStorage.clear();
+    localStorage.clear();
     throw new Error("user unauthorized");
   }
 
@@ -49,7 +49,7 @@ async function makeRequest(
     return data;
   } else if (response.status == 401) {
     // clear data after unauthorized
-    sessionStorage.clear();
+    localStorage.clear();
     throw new Error("user unauthorized");
   } else if (response.status == 400 || response.status == 422) {
     if (response) {

@@ -1,4 +1,4 @@
-import * as sessionStorageRepository from "./data/sessionStorageRepository";
+import * as localStorageRepository from "./data/localStorageRepository";
 
 export function formatAmount(amount: number): string {
   let formatted = amount.toFixed(2);
@@ -16,8 +16,8 @@ export function formatAmount(amount: number): string {
 }
 
 export function isAuthorized(): boolean {
-  const user = sessionStorageRepository.getUser();
-  const costCategories = sessionStorageRepository.getCostCategories();
-  const secret = sessionStorageRepository.getSecret();
+  const user = localStorageRepository.getUser();
+  const costCategories = localStorageRepository.getCostCategories();
+  const secret = localStorageRepository.getSecret();
   return user && costCategories && secret ? true : false;
 }
