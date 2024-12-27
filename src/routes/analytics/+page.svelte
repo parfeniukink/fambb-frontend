@@ -43,7 +43,7 @@
       $customDatesRangeStore.validate();
       const response: ResponseMulti<TransactionBasicAnalytics> =
         await getBasicAnalyticsByRange(
-          $customDatesRangeStore.startDate,
+          $customDatesRangeStore.startDate!,
           $customDatesRangeStore.endDate,
         );
       customRangeBasicAnalytics = response.result;

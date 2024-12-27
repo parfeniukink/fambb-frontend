@@ -38,7 +38,7 @@
       display: none;
     }
 
-      /* Hide scrollbar for Firefox */
+    /* Hide scrollbar for Firefox */
     scrollbar-width: none;
     scroll-behavior: smooth;
   }

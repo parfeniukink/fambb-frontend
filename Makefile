@@ -14,6 +14,10 @@ live:
 install:
 	pnpm install -D
 
+.PHONY: check 
+check:
+	prettier .
+
 .PHONY: format 
 format:
 	prettier --write .

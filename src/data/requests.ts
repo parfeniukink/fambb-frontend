@@ -12,7 +12,7 @@ import type {
 import { PUBLIC_BASE_URL } from "$env/static/public";
 
 const BASE_URL = PUBLIC_BASE_URL;
-console.debug(BASE_URL)
+console.debug(BASE_URL);
 
 // **********************************************
 // HTTP request factory
