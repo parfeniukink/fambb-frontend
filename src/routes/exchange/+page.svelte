@@ -50,7 +50,7 @@
     <div class="groupOfItems price">
       <input
         id="value"
-        type="number"
+        type="text"
         inputmode="decimal"
         pattern="\d*"
         bind:value={$body.fromValue}
@@ -69,7 +69,7 @@
     <div class="groupOfItems price">
       <input
         id="value"
-        type="number"
+        type="text"
         inputmode="decimal"
         pattern="\d*"
         bind:value={$body.toValue}

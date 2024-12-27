@@ -1,3 +1,5 @@
+import { validateMoney } from "../services";
+
 /* Generics */
 export interface Response<T> {
   result: T;
@@ -93,7 +95,7 @@ export interface Exchange {
  * */
 export class CostPayloadRequestBody {
   name: string | null = null;
-  value: number | null = null;
+  value: string | number | null = null;
   timestamp: string = new Date().toISOString().slice(0, 10);
   currencyId: number | null = null;
   categoryId: number | null = null;
@@ -111,6 +113,8 @@ export class CostPayloadRequestBody {
 
   // defines if the data is ready to be sent
   public readyToGo() {
+    this.value = validateMoney(this.value);
+
     if (
       this.name &&
       this.value &&
@@ -127,7 +131,7 @@ export class CostPayloadRequestBody {
 
 export class IncomePayloadRequestBody {
   name: string | null = null;
-  value: number | null = null;
+  value: string | number | null = null;
   source: string = "revenue";
   timestamp: string = new Date().toISOString().slice(0, 10);
   currencyId: number | null = null;
@@ -142,6 +146,8 @@ export class IncomePayloadRequestBody {
 
   // defines if the data is ready to be sent
   public readyToGo() {
+    this.value = validateMoney(this.value);
+
     if (
       this.name &&
       this.value &&
@@ -155,14 +161,17 @@ export class IncomePayloadRequestBody {
 }
 
 export class ExchangePayloadRequestBody {
-  fromValue: number | null = null;
-  toValue: number | null = null;
+  fromValue: string | number | null = null;
+  toValue: string | number | null = null;
   timestamp: string = new Date().toISOString().slice(0, 10);
   fromCurrencyId: number | null = null;
   toCurrencyId: number | null = null;
 
   // defines if the data is ready to be sent
   public readyToGo() {
+    this.fromValue = validateMoney(this.fromValue);
+    this.toValue = validateMoney(this.toValue);
+
     if (
       this.fromValue &&
       this.toValue &&
@@ -283,7 +292,7 @@ export class CostShortcut {
 
 export class CostShortcutCreateRequestBody {
   name: string | null = null;
-  value: number | null = null;
+  value: string | number | null = null;
   currencyId: number | null = null;
   categoryId: number | null = null;
 
@@ -302,6 +311,9 @@ export class CostShortcutCreateRequestBody {
   public readyToGo() {
     if (!this.name || !this.categoryId || !this.currencyId) {
       throw new Error("complete input");
+    }
+    if (this.value) {
+      validateMoney(this.value);
     }
   }
 }

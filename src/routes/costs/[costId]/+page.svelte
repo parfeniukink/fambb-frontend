@@ -117,7 +117,7 @@
       <!-- Set 'cost value' -->
       <input
         id="value"
-        type="number"
+        type="text"
         inputmode="decimal"
         pattern="\d*"
         bind:value={$body.value}

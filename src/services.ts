@@ -21,3 +21,12 @@ export function isAuthorized(): boolean {
   const secret = localStorageRepository.getSecret();
   return user && costCategories && secret ? true : false;
 }
+
+export function validateMoney(data: any): number {
+  try {
+    return parseFloat(String(data).trim().replace(",", "."));
+  } catch (e) {
+    console.error("can't parse money: ", data);
+    throw Error(String(e));
+  }
+}

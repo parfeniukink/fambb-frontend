@@ -48,6 +48,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    row-gap: 50px;
+    row-gap: 30px;
   }
 </style>

@@ -1,13 +1,13 @@
 /* normal style */
 @font-face {
-  font-family: "Comic Mono";
-  src: url("/src/assets/fonts/ComicMono.ttf");
+  font-family: "IBMPlexMono";
+  src: url("/src/assets/fonts/IBMPlexMono-Light.ttf");
 }
 
 /* bold style */
 @font-face {
-  font-family: "Comic Mono";
-  src: url("/src/assets/fonts/ComicMono-Bold.ttf");
+  font-family: "IBMPlexMono Bold";
+  src: url("/src/assets/fonts/IBMPlexMono-Regular.ttf");
 }
 
 *,
@@ -17,7 +17,7 @@
   padding: 0;
   box-sizing: border-box;
   color: white;
-  font-family: "Comic Mono";
+  font-family: "IBMPlexMono";
   max-width: 1170px;
 }
 
@@ -27,7 +27,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Comic Mono";
+  font-family: "IBMPlexMono Bold";
   color: white;
 }
 

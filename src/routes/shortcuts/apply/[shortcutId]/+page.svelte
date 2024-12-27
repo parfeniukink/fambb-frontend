@@ -1,13 +1,14 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import { writable } from "svelte/store";
+  import { writable, type Writable } from "svelte/store";
   import Section from "../../../../components/Section.svelte";
   import { applyCostShortcut } from "../../../../data/requests";
+  import { validateMoney } from "../../../../services";
   import { onMount } from "svelte";
 
-  let value = writable(null);
-  let errorMessage = $state("");
+  let rawValue: Writable<string | null> = writable(null);
+  let errorMessage: Writable<string> = writable("");
 
   onMount(() => {
     if (!$page.params.shortcutId) {
@@ -16,13 +17,18 @@
   });
 
   async function handleSubmit() {
-    if (!$value) {
-      errorMessage = "no value";
-    } else if ($value <= 0) {
-      errorMessage = "value must be > 0";
+    if (!$rawValue) {
+      $errorMessage = "no value";
+      return;
+    }
+
+    const value: number = validateMoney($rawValue);
+
+    if (value <= 0) {
+      $errorMessage = "value must be > 0";
     } else {
-      console.log("body", { value: $value });
-      applyCostShortcut($page.params.shortcutId, { value: $value });
+      console.log("body", { value: value });
+      applyCostShortcut($page.params.shortcutId, { value: value });
       goto("/shortcuts");
     }
   }
@@ -33,11 +39,10 @@
     <div id="applyshortcutsendform">
       <input
         id="value"
-        type="number"
+        type="text"
         inputmode="decimal"
-        pattern="\d*"
-        bind:value={$value}
         placeholder="value..."
+        bind:value={$rawValue}
       />
       <br />
       <button id="applyShortcutSendValueButton" onclick={handleSubmit}
@@ -45,8 +50,8 @@
       >
     </div>
   </Section>
-  {#if errorMessage}
-    <p class="red-text">${errorMessage}</p>
+  {#if $errorMessage}
+    <p class="red-text">{$errorMessage}</p>
   {/if}
 </div>
 

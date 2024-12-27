@@ -43,7 +43,6 @@
   <button id="card" onclick={handleCardTap}>
     <p id="shortcut-name">{shortcut.name}</p>
     <p class="category-name">{shortcut.category.name}</p>
-    <br />
     {#if shortcut.value}
       <p class="money">{shortcut.value} {shortcut.currency.sign}</p>
     {:else}
