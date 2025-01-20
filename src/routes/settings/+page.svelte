@@ -10,6 +10,7 @@
   } from "../../data/store";
   import { updateUserConfiguration } from "../../data/requests";
   import Popup from "../../components/Popup.svelte";
+  import * as localStorageRepository from "../../data/localStorageRepository";
 
   // data state
   // probably ``derived()`` should be used here
@@ -33,6 +34,10 @@
       if ($userStore.configuration.costSnippets) {
         $costSnippetsRepr = $userStore.configuration.costSnippets.join(", ");
       }
+      if ($userStore.configuration.incomeSnippets) {
+        $incomeSnippetsRepr =
+          $userStore.configuration.incomeSnippets.join(", ");
+      }
     }
   });
 
@@ -41,6 +46,7 @@
     const item = $costCategoriesStore.find((item) => {
       item.id === defaultCostCategoryId;
     });
+
     if (item) {
       $userStore!.configuration.defaultCostCategory = item;
     } else {
@@ -64,6 +70,7 @@
   async function updateCostSnippets() {
     let snippets: string[] = [];
 
+    // ERROR FLOW
     if (!$costSnippetsRepr) {
       snippets = [];
       $userStore!.configuration.costSnippets = snippets;
@@ -81,10 +88,12 @@
       }
     }
 
+    // SUCCESS FLOW
     try {
       updateUserConfiguration({ costSnippets: snippets });
       $userStore!.configuration.costSnippets = snippets;
       $costSnippetsRepr = snippets.join(", ");
+      localStorageRepository.setUser($userStore!);
       popupStore.showPopup("updated");
     } catch (e) {
       popupStore.showPopup("can't update cost snippets");
@@ -101,11 +110,8 @@
   async function updateIncomeSnippets() {
     let snippets: string[] = [];
 
-    if (!$incomeSnippetsRepr) {
-      snippets = [];
-      $userStore!.configuration.incomeSnippets = snippets;
-      popupStore.showPopup("snippets removed");
-    } else {
+    // FAILED FLOW
+    if ($incomeSnippetsRepr) {
       try {
         snippets = $incomeSnippetsRepr
           .split(",")
@@ -113,16 +119,20 @@
           .filter((item) => item);
       } catch (e) {
         popupStore.showPopup("cant split incomes");
+
         $incomeSnippetsRepr =
           $userStore!.configuration.incomeSnippets!.join(",");
+
         return;
       }
     }
 
+    // SUCCESS FLOW
     try {
       updateUserConfiguration({ incomeSnippets: snippets });
       $userStore!.configuration.incomeSnippets = snippets;
       $incomeSnippetsRepr = snippets.join(", ");
+      localStorageRepository.setUser($userStore!);
       popupStore.showPopup("updated");
     } catch (e) {
       popupStore.showPopup("can't update income snippets");
