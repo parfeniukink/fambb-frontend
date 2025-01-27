@@ -236,9 +236,19 @@ export async function getBasicAnalytics(period: string) {
   );
 }
 
-export async function getBasicAnalyticsByRange(start: string, end: string) {
-  return await makeRequest(
-    `${BASE_URL}/analytics/basic?startDate=${start}&endDate=${end}`,
-    "GET",
-  );
+export async function getBasicAnalyticsFiltered(
+  start: string | null = null,
+  end: string | null = null,
+  pattern: string | null = null,
+) {
+  let url = `${BASE_URL}/analytics/basic`;
+  if (start && end) {
+    url = `${url}?startDate=${start}&endDate=${end}`;
+  }
+
+  if (pattern) {
+    url =
+      start && end ? `${url}&pattern=${pattern}` : `${url}?pattern=${pattern}`;
+  }
+  return await makeRequest(url, "GET");
 }

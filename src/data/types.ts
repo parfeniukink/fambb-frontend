@@ -255,17 +255,10 @@ export class TransactionBasicAnalytics {
   }
 }
 
-export class CustomDatesRange {
+export class FiltersStore {
   startDate: string | null = null;
   endDate: string = new Date().toISOString().slice(0, 10);
-
-  public validate() {
-    if (!this.startDate) {
-      throw Error("start date not specified");
-    } else if (this.startDate >= this.endDate) {
-      throw Error("start date > end date");
-    }
-  }
+  pattern: string | null = null;
 }
 
 export class CostShortcut {

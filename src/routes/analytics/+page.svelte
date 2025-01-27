@@ -4,13 +4,13 @@
   import { formatAmount } from "../../services";
   import {
     getBasicAnalytics,
-    getBasicAnalyticsByRange,
+    getBasicAnalyticsFiltered,
   } from "../../data/requests";
   import type {
     TransactionBasicAnalytics,
     ResponseMulti,
   } from "../../data/types";
-  import { CustomDatesRange } from "../../data/types";
+  import { FiltersStore } from "../../data/types";
   import { writable } from "svelte/store";
 
   let errorMessage: string | null = $state(null);
@@ -21,7 +21,7 @@
   let customRangeBasicAnalytics: TransactionBasicAnalytics[] = $state([]);
 
   // for seding requests for the basic analytics
-  let customDatesRangeStore = writable(new CustomDatesRange());
+  let filtersStore = writable(new FiltersStore());
 
   onMount(async () => {
     const response: ResponseMulti<TransactionBasicAnalytics>[] =
@@ -38,13 +38,13 @@
     }
   });
 
-  async function handleFetchCustomRangeBasicAnalytics() {
+  async function handleFetchBasicAnalytics() {
     try {
-      $customDatesRangeStore.validate();
       const response: ResponseMulti<TransactionBasicAnalytics> =
-        await getBasicAnalyticsByRange(
-          $customDatesRangeStore.startDate!,
-          $customDatesRangeStore.endDate,
+        await getBasicAnalyticsFiltered(
+          $filtersStore.startDate,
+          $filtersStore.endDate,
+          $filtersStore.pattern,
         );
       customRangeBasicAnalytics = response.result;
       selectedRangeErrorMessage = null;
@@ -161,16 +161,25 @@
         id="startDate"
         class="inputDate"
         type="date"
-        bind:value={$customDatesRangeStore.startDate}
+        bind:value={$filtersStore.startDate}
       />
       <input
         id="endDate"
         class="inputDate"
         type="date"
-        bind:value={$customDatesRangeStore.endDate}
+        bind:value={$filtersStore.endDate}
       />
     </div>
-    <button class="submitButton" onclick={handleFetchCustomRangeBasicAnalytics}
+    <div class="patternInput">
+      <input
+        id="pattern"
+        class="inputPattern"
+        type="text"
+        bind:value={$filtersStore.pattern}
+        placeholder="search..."
+      />
+    </div>
+    <button class="submitButton" onclick={handleFetchBasicAnalytics}
       >fetch</button
     >
 
