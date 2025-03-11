@@ -39,7 +39,6 @@
 	}
 
 	#card {
-		background-color: gray;
 		margin: 10px;
 		padding: 10px;
 		min-width: 100px;

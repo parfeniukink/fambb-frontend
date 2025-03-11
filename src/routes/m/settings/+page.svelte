@@ -156,11 +156,16 @@
 			<button type="submit">add</button>
 		</form>
 	</section>
+
+	<br />
+	<br />
+	<br />
 </main>
 
 <style>
 	main {
 		padding: 10px;
+		overflow-x: hidden;
 	}
 	section {
 		width: 100%;
@@ -170,7 +175,7 @@
 		font-size: large;
 		margin-bottom: 2rem;
 		color: darkgray;
-		flex: 4;
+		flex: 3;
 	}
 
 	section select {
@@ -195,6 +200,7 @@
 	}
 
 	.snippets {
+		margin: 3rem 0;
 		display: flex;
 		flex-direction: column;
 		gap: 30px;

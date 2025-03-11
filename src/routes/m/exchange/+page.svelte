@@ -62,7 +62,7 @@
 	<p>loading...</p>
 {:else}
 	<section>
-		<h1>add exchange</h1>
+		<h1>exchange</h1>
 		<p>-------------------------</p>
 
 		<div class="groupOfItems">

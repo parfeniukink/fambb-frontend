@@ -123,6 +123,7 @@
 	}
 
 	#exchangeCard {
+		width: 40%;
 		padding: 100px;
 		display: flex;
 		flex-direction: column;

@@ -63,7 +63,7 @@
 	<p>loading...</p>
 {:else}
 	<section>
-		<h1>add income</h1>
+		<h1>income</h1>
 		<p>-------------------------</p>
 
 		<div class="groupOfItems">

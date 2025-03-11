@@ -85,7 +85,7 @@
 		<div class="snippetsItems">
 			{#each dataProxy.userState!.configuration.costSnippets as item}
 				<button
-					class="budget"
+					class="badget"
 					onclick={() => {
 						dataProxy.userState!.configuration.costSnippets =
 							dataProxy.userState!.configuration.costSnippets.filter((element) => element != item);
@@ -123,7 +123,7 @@
 		<div class="snippetsItems">
 			{#each dataProxy.userState!.configuration.incomeSnippets as item}
 				<button
-					class="budget"
+					class="badget"
 					onclick={() => {
 						dataProxy.userState!.configuration.incomeSnippets =
 							dataProxy.userState!.configuration.incomeSnippets.filter(
@@ -161,6 +161,12 @@
 </main>
 
 <style>
+	main {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
 	label {
 		font-size: x-large;
 		margin-bottom: 2rem;
@@ -168,7 +174,7 @@
 	}
 	select {
 		background-color: transparent;
-		min-height: 100px;
+		min-height: 80px;
 		border: 3px solid lightgray;
 		font-size: large;
 	}
@@ -186,20 +192,24 @@
 	}
 
 	.snippets {
+		margin: 3rem 0;
 		display: flex;
 		gap: 20px;
 		align-content: center;
 		padding: 0 50px;
 	}
-	.budget {
+	.badget {
 		background-color: transparent;
 		border: 1px solid lightgray;
-		padding: 10px 20px;
+		padding: 6px 12px;
+		height: 50px;
+		min-width: 150px;
 		border-radius: 2rem;
+		overflow-x: hidden;
 	}
-	.budget:hover {
+	.badget:hover {
 		background-color: darksalmon;
-        opacity: 0.7;
+		opacity: 0.7;
 	}
 
 	.snippetsItems {
