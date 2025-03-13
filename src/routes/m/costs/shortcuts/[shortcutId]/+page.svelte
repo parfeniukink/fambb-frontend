@@ -23,7 +23,7 @@
 
 <section>
 	<input autofocus type="number" pattern="\d*" bind:value placeholder="value..." />
-	<button type="submit" onclick={applyShortcut}>add</button>
+	<button onclick={applyShortcut}>add</button>
 </section>
 
 <style>

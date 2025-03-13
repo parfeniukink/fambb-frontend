@@ -123,18 +123,6 @@
 		font-size: large;
 	}
 
-	#exchangeCard {
-		padding: 100px;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		gap: 10px;
-		border: solid 3px #eee;
-		border-radius: 1rem;
-	}
-
 	.groupOfItems {
 		display: flex;
 		width: 100%;
