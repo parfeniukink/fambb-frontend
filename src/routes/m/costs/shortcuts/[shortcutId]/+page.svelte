@@ -22,18 +22,8 @@
 </script>
 
 <section>
-	<form onsubmit={applyShortcut}>
-		<input
-			autofocus
-			id="value"
-			type="text"
-			inputmode="decimal"
-			pattern="\d*"
-			bind:value
-			placeholder="value..."
-		/>
-		<button type="submit">add</button>
-	</form>
+	<input autofocus type="number" pattern="\d*" bind:value placeholder="value..." />
+	<button type="submit" onclick={applyShortcut}>add</button>
 </section>
 
 <style>
@@ -45,7 +35,7 @@
 		align-items: center;
 		text-align: center;
 		gap: 10px;
-		padding: 0 40px;
+		padding: 0 10%;
 	}
 	input {
 		width: 100%;
