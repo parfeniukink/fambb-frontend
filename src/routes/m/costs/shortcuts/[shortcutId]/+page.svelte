@@ -22,7 +22,15 @@
 </script>
 
 <section>
-	<input autofocus type="number" pattern="\d*" bind:value placeholder="value..." />
+	<input
+		autofocus
+		type="text"
+		pattern="\d*"
+		inputmode="decimal"
+		bind:value
+		placeholder="value..."
+		required
+	/>
 	<button onclick={applyShortcut}>add</button>
 </section>
 
