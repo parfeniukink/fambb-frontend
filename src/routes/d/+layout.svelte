@@ -1,12 +1,36 @@
 <script lang="ts">
 	import NavDesktop from 'src/components/NavDesktop.svelte';
+	import type { Notification } from 'src/domain/entities';
 	import { getDataProxy, DataProxy } from 'src/operational/dataProvider.svelte';
+	import { onMount } from 'svelte';
+	import toast, { Toaster } from 'svelte-french-toast';
 
 	// UI STATE
 	let { children } = $props();
 	const dataProxy: DataProxy = getDataProxy();
 	let errorMessage = $state('');
 	let token = $state('');
+
+	let notifications: Notification[] = $state([]);
+	async function sleep(s: number): Promise<void> {
+		return new Promise((resolve) => setTimeout(resolve, s * 1000));
+	}
+
+	onMount(async () => {
+		notifications = await dataProxy.fetchNotifications();
+
+		// show toaster for 20 seconds
+		for (let item of notifications) {
+			await sleep(1);
+			toast(item.message, {
+				icon: item.level,
+				position: 'bottom-right',
+				duration: 20000,
+				style: 'opacity: 0.8'
+			});
+		}
+		notifications = [];
+	});
 
 	async function handleSubmit() {
 		if (dataProxy.authState?.authenticated === true) {
@@ -15,18 +39,17 @@
 			dataProxy.authState = { token: token, authenticated: false };
 
 			// note: try to fetch user to see if API server is live
-			await dataProxy.fetchUser();
+			try {
+				await dataProxy.fetchUser();
+			} catch (error) {
+				console.error(error);
+				toast.error('Can not authorize', { position: 'bottom-left' });
+				throw error;
+			}
 
 			dataProxy.authState = { token: token, authenticated: true };
 			await dataProxy.loadData();
 			dataProxy.refreshLocalStorage();
-		}
-
-		// validate if user could be obtained
-		try {
-		} catch (error) {
-			console.error(`Fetching user is failed: ${error}`);
-			throw error;
 		}
 	}
 </script>
@@ -55,6 +78,8 @@
 		</div>
 	</section>
 {/if}
+
+<Toaster />
 
 <style>
 	section {

@@ -16,8 +16,8 @@
 
 <main>
 	<div id="topSections">
-		<section id="defaultCurrency">
-			<label for="defaultCurrencySelector">default currency</label>
+		<section class="seletors">
+			<p>default currency</p>
 			<select
 				id="defaultCurrencySelector"
 				value={dataProxy.userState!.configuration.defaultCurrency
@@ -40,8 +40,8 @@
 				{/each}
 			</select>
 		</section>
-		<section id="defaultCostCategory">
-			<label for="defaultCostCategorySelector">default cost category</label>
+		<section class="seletors">
+			<p>default cost category</p>
 			<select
 				id="defaultCostCategorySelector"
 				value={dataProxy.userState!.configuration.defaultCostCategory
@@ -64,8 +64,8 @@
 				{/each}
 			</select>
 		</section>
-		<section id="showEquity">
-			<label for="defaultCostCategorySelector">show equity</label>
+		<section class="selectors">
+			<p>show equity</p>
 			<input
 				id="showEquityCheckbox"
 				type="checkbox"
@@ -78,7 +78,27 @@
 				}}
 			/>
 		</section>
+
+		<section class="inputs">
+			<p>cost notification threshold</p>
+			<input
+				id="costNotificationThreshold"
+				type="text"
+				inputmode="decimal"
+				pattern="\d*"
+				placeholder="value..."
+				bind:value={dataProxy.userState!.configuration.notifyCostThreshold}
+				onchange={() => {
+					console.log('updated local storage and configuration');
+					dataProxy.refreshLocalStorage();
+					dataProxy.updateUserConfiguration({
+						notifyCostThreshold: dataProxy.userState!.configuration.notifyCostThreshold
+					});
+				}}
+			/>
+		</section>
 	</div>
+
 	<hr />
 
 	<section class="snippets">
@@ -167,8 +187,19 @@
 		justify-content: center;
 	}
 
-	label {
-		font-size: x-large;
+	.selectors {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.inputs {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	p {
+		font-size: large;
 		margin-bottom: 2rem;
 		color: darkgray;
 	}
@@ -179,9 +210,12 @@
 		font-size: large;
 	}
 	#topSections {
+		padding: 0 3rem;
 		display: flex;
 		width: 100%;
-		justify-content: space-around;
+		justify-content: left;
+		gap: 5rem;
+		text-align: center;
 	}
 
 	#showEquityCheckbox {
@@ -192,11 +226,11 @@
 	}
 
 	.snippets {
-		margin: 3rem 0;
+		margin: 1rem 0;
 		display: flex;
 		gap: 20px;
 		align-content: center;
-		padding: 0 50px;
+		padding: 0 3rem;
 	}
 	.badget {
 		background-color: transparent;
@@ -218,6 +252,14 @@
 		flex: 8 0;
 		gap: 20px;
 	}
+	button {
+		background-color: transparent;
+	}
+	input {
+		background-color: transparent;
+		border: 2px solid lightgray;
+		height: 80px;
+	}
 	form {
 		display: flex;
 		align-items: center;
@@ -225,16 +267,10 @@
 		gap: 30px;
 	}
 	form > button {
-		background-color: transparent;
 		border: 2px solid lightgray;
 		height: 80px;
 	}
 	form > button:hover {
 		background-color: darkseagreen;
-	}
-	form > input {
-		background-color: transparent;
-		border: 2px solid lightgray;
-		height: 80px;
 	}
 </style>

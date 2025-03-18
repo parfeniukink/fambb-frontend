@@ -33,11 +33,11 @@ export async function makeRequest(
 		localStorage.clear();
 		throw new Error('user is not authorized');
 	} else if (response.status == 400 || response.status == 422) {
-		// todo: add ErrorResponse data structure
-		const data = (await response.json()) as { message: string };
-
-		if (response as {}) {
-			throw new Error(data.message);
+		const results = (await response.json()) as { result: { message: string }[] };
+		if (results.result) {
+			throw new Error(results.result.join(', '));
+		} else {
+			console.error('can not get error message from response');
 		}
 	}
 

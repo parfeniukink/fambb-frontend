@@ -117,10 +117,17 @@ export interface Configuration {
 	defaultCostCategory: CostCategory | null;
 	costSnippets: string[];
 	incomeSnippets: string[];
+	notifyCostThreshold: number | null;
 }
 
 export interface User {
 	id: number;
 	name: string;
 	configuration: Configuration;
+}
+
+// USER NOTIFICATIONS
+export interface Notification {
+	level: string;
+	message: string;
 }

@@ -2,6 +2,7 @@
 	import { DataProxy, getDataProxy } from 'src/operational/dataProvider.svelte';
 	import * as domain from 'src/domain/entities';
 	import { goto } from '$app/navigation';
+	import toast from 'svelte-french-toast';
 
 	const dataProxy: DataProxy = getDataProxy();
 
@@ -53,6 +54,11 @@
 				goto('/d');
 			} catch (err) {
 				console.error(err);
+				toast('form is invalid. check input values', {
+					icon: '⚠️',
+					position: 'bottom-left',
+					duration: 2000
+				});
 				submitBackButton();
 			}
 		}
@@ -211,4 +217,5 @@
 	#reset:hover {
 		background-color: darkcyan;
 	}
+
 </style>

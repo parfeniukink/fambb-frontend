@@ -86,6 +86,14 @@ export interface CostCreateRequestBody {
 	categoryId: number;
 }
 
+export interface CostUpdateRequestBody {
+	name?: string;
+	value?: number;
+	timestamp?: string;
+	currencyId?: number;
+	categoryId?: number;
+}
+
 export interface CostShortcut {
 	id: number;
 	name: string;
@@ -95,10 +103,10 @@ export interface CostShortcut {
 }
 
 export interface CostShortcutCreateRequestBody {
-	name: string | null;
+	name: string;
 	value: string | number | null;
-	currencyId: number | null;
-	categoryId: number | null;
+	currencyId: number;
+	categoryId: number;
 }
 
 // INCOMES
@@ -199,9 +207,15 @@ export interface FiltersStore {
 }
 
 export interface UserSettingsUpdatePartialRequestBody {
-    showEquity?:  boolean;
+	showEquity?: boolean;
 	defaultCurrencyId?: number | null;
 	defaultCostCategoryId?: number | null;
 	costSnippets?: string[];
 	incomeSnippets?: string[];
+	notifyCostThreshold?: number | null;
+}
+
+export interface Notification {
+	message: string;
+	level: string;
 }

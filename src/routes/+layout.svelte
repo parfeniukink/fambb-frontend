@@ -3,6 +3,7 @@
 	import '$styles/global.css';
 	import { DATA_PROXY, DataProxy } from 'src/operational/dataProvider.svelte';
 	import { setContext } from 'svelte';
+
 	let { children } = $props();
 
 	// set the data proxy to the global context to make it available

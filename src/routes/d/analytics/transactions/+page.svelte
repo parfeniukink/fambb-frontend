@@ -17,8 +17,29 @@
 	let transactionsByDates: Record<string, domain.Transaction[]> = $state(
 		{} as Record<string, domain.Transaction[]>
 	);
-	let context = $state(0);
-	let left = $state(0);
+	let transactionByDatesFiltered: Record<string, domain.Transaction[]> = $derived.by(() => {
+		if (showOnlyMine) {
+		    console.log('updated');
+			return Object.fromEntries(
+				Object.entries(transactionsByDates).map(([date, transactions]) => [
+					date,
+					transactions.filter(
+                        (transaction) => {
+                            return transaction.user.toLowerCase() === dataProxy.userState!.name.toLowerCase();
+                        }
+					)
+				])
+			);
+		} else {
+			return transactionsByDates;
+		}
+	});
+
+	let context: number = $state(0);
+	let left: number = $state(0);
+	let limit: number = $state(10);
+
+	let showOnlyMine: boolean = $state(false);
 
 	// dispatch the end of the link, based on the transaction information.
 	// depends on transaction type we redirect to the recpective page
@@ -45,7 +66,8 @@
 	const loadTransactions = async () => {
 		const response: ResponseMultiPaginated<domain.Transaction> = await dataProxy.fetchTransactions({
 			currencyId: Number(currencyId),
-			context: context
+			context: context,
+			limit: limit
 		});
 
 		if (transactionsByDates) {
@@ -68,13 +90,31 @@
 	{#if currencyId == null}
 		<p>loading...</p>
 	{:else}
-		<div class="transactions">
-			{#each Object.keys(transactionsByDates) as timestamp}
+		<section id="settings">
+			<div>
+				<p>pagination limit</p>
+				<input
+					id="paginationLimitSetting"
+					type="text"
+					inputmode="numeric"
+					pattern="\d*"
+					bind:value={limit}
+				/>
+			</div>
+
+			<div>
+				<p>only mine</p>
+				<input id="showOnlyMineSetting" type="checkbox" bind:checked={showOnlyMine} />
+			</div>
+		</section>
+		<hr />
+		<section>
+			{#each Object.keys(transactionByDatesFiltered) as timestamp}
 				<div class="timestampGroup">
 					<!-- Display the timestamp  -->
 					<h1>[ {timestamp} ]</h1>
 					<!-- Display each transaction in the block  -->
-					{#each transactionsByDates[timestamp] as transaction}
+					{#each transactionByDatesFiltered[timestamp] as transaction}
 						<a href={endRoute(transaction)}
 							><p class={transaction.operation}>
 								{#if transaction.operation === 'cost'}
@@ -95,12 +135,12 @@
 					{/each}
 				</div>
 			{/each}
-		</div>
-		<div id="navigation">
+		</section>
+		<section id="navigation">
 			{#if left > 0}
 				<button id="loadMoreButton" onclick={loadTransactions}>load more...</button>
 			{/if}
-		</div>
+		</section>
 	{/if}
 </main>
 
@@ -137,7 +177,7 @@
 		color: #9bdce8;
 	}
 	.timestampGroup h1 {
-		margin-top: 4rem;
+		margin-top: 2rem;
 		font-size: large;
 		font-weight: 500;
 	}
@@ -149,5 +189,23 @@
 		font-size: x-small;
 		color: gray;
 		margin-left: 20px;
+	}
+
+	#settings {
+		display: flex;
+		justify-content: left;
+		align-items: start;
+		gap: 3rem;
+	}
+	#paginationLimitSetting {
+		background: transparent;
+		border: 2px solid lightgray;
+		height: 80px;
+	}
+	#showOnlyMineSetting {
+		background-color: transparent;
+		border: 3px solid lightgray;
+		padding: 30px;
+		font-size: x-large;
 	}
 </style>

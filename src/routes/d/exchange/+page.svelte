@@ -2,6 +2,7 @@
 	import { DataProxy, getDataProxy } from 'src/operational/dataProvider.svelte';
 	import * as domain from 'src/domain/entities';
 	import { goto } from '$app/navigation';
+	import toast from 'svelte-french-toast';
 
 	const dataProxy: DataProxy = getDataProxy();
 
@@ -46,7 +47,7 @@
 	async function sumbitAddButton() {
 		if (createRequestBody) {
 			try {
-				dataProxy.addExchange({
+				await dataProxy.addExchange({
 					fromValue: createRequestBody.fromValue,
 					toValue: createRequestBody.toValue,
 					fromCurrencyId: createRequestBody.fromCurrencyId,
@@ -56,6 +57,11 @@
 				submitBackButton();
 			} catch (err) {
 				console.error(err);
+				toast('form is invalid. check input values', {
+					icon: '⚠️',
+					position: 'bottom-left',
+					duration: 2000
+				});
 				submitBackButton();
 			}
 		}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { DataProxy, getDataProxy } from 'src/operational/dataProvider.svelte';
 	import * as domain from 'src/domain/entities';
+	import toast from 'svelte-french-toast';
 
 	const dataProxy: DataProxy = getDataProxy();
 
@@ -29,12 +30,12 @@
 
 	async function sumbitAddButton() {
 		try {
-			dataProxy.addCost({
+			await dataProxy.addCost({
 				name: createRequestBody.name,
-				value: createRequestBody.value,
+				value: createRequestBody.value!,
 				timestamp: createRequestBody.timestamp,
-				currencyId: createRequestBody.currencyId,
-				categoryId: createRequestBody.categoryId
+				currencyId: createRequestBody.currencyId!,
+				categoryId: createRequestBody.categoryId!
 			});
 
 			// reset the form
@@ -46,7 +47,11 @@
 				categoryId: dataProxy.userState!.configuration.defaultCostCategory?.id ?? null
 			};
 		} catch (err) {
-			console.error(err);
+			toast('form is invalid. check input values', {
+				icon: '⚠️',
+				position: 'bottom-left',
+				duration: 2000
+			});
 			sumbitResetButton();
 		}
 	}

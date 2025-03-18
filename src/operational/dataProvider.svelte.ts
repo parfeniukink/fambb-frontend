@@ -13,14 +13,17 @@
  * all the persistent items are 'reactive'.
  */
 
-import type * as domain from 'src/domain/entities';
+import * as domain from 'src/domain/entities';
 import * as localStorageFacade from 'src/infrastructure/localStorage';
 import * as client from 'src/api/client';
-import {
-	type FiltersStore,
-	type ResponseMultiPaginated,
-	type Transaction,
-	type UserSettingsUpdatePartialRequestBody
+import type {
+	CostCreateRequestBody,
+	FiltersStore,
+	CostUpdateRequestBody,
+	ResponseMultiPaginated,
+	UserSettingsUpdatePartialRequestBody,
+	CostShortcut,
+	CostShortcutCreateRequestBody
 } from 'src/api/types';
 import { getContext } from 'svelte';
 
@@ -57,6 +60,7 @@ export class DataProxy {
 		this.userState = user;
 		this.currenciesState = equity.map((element) => element.currency);
 		this.costCategoriesState = costCategories;
+
 		this.refreshLocalStorage();
 	}
 
@@ -90,7 +94,7 @@ export class DataProxy {
 		currencyId?: number | null;
 		context?: number;
 		limit?: number;
-	}): Promise<ResponseMultiPaginated<Transaction>> {
+	}): Promise<ResponseMultiPaginated<domain.Transaction>> {
 		let url = `/analytics/transactions?context=${context}&limit=${limit}`;
 
 		if (currencyId != null) {
@@ -132,7 +136,7 @@ export class DataProxy {
 		const response = await client.makeRequest('/costs/categories', 'GET', this.authState?.token);
 		return response.result as domain.CostCategory[];
 	}
-	async addCost(requestBody: Record<string, any>): Promise<domain.Cost> {
+	async addCost(requestBody: CostCreateRequestBody): Promise<domain.Cost> {
 		const response = await client.makeRequest(`/costs`, 'POST', this.authState?.token, requestBody);
 		return response.result as domain.Cost;
 	}
@@ -158,7 +162,7 @@ export class DataProxy {
 		const response = await client.makeRequest('/costs/shortcuts', 'GET', this.authState?.token);
 		return response.result as domain.CostShortcut[];
 	}
-	async addCostShortcut(requestBody: Record<string, any>): Promise<domain.CostShortcut> {
+	async addCostShortcut(requestBody: CostShortcutCreateRequestBody): Promise<domain.CostShortcut> {
 		const response = await client.makeRequest(
 			`/costs/shortcuts`,
 			'POST',
@@ -230,6 +234,12 @@ export class DataProxy {
 	}
 	async deleteExchange(exchangeId: number): Promise<void> {
 		client.makeRequest(`/exchange/${exchangeId}`, 'DELETE', this.authState?.token);
+	}
+
+	// NOTIFICATIONS
+	async fetchNotifications(): Promise<domain.Notification[]> {
+		const response = await client.makeRequest(`/notifications`, 'GET', this.authState?.token);
+		return response.result as domain.Notification[];
 	}
 }
 

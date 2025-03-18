@@ -2,6 +2,7 @@
 	import { DataProxy, getDataProxy } from 'src/operational/dataProvider.svelte';
 	import * as domain from 'src/domain/entities';
 	import { goto } from '$app/navigation';
+	import toast from 'svelte-french-toast';
 
 	const dataProxy: DataProxy = getDataProxy();
 
@@ -38,14 +39,15 @@
 			createRequestBody.isValid();
 
 			await dataProxy.addCostShortcut({
-				name: createRequestBody.name,
-				value: createRequestBody.value,
-				currencyId: createRequestBody.currencyId,
-				categoryId: createRequestBody.categoryId
+				name: createRequestBody.name!,
+				value: createRequestBody.value!,
+				currencyId: createRequestBody.currencyId!,
+				categoryId: createRequestBody.categoryId!
 			});
 
 			goto('/d');
 			sumbitResetButton();
+			toast('added cost shortcut', { position: 'bottom-right' });
 		} catch (err) {
 			console.error(err);
 			sumbitResetButton();
