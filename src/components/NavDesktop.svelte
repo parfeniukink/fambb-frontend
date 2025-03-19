@@ -36,7 +36,7 @@
 		display: flex;
 		flex-flow: row;
 		justify-content: space-around;
-		font-size: xx-large;
+		font-size: x-large;
 	}
 
 	hr {

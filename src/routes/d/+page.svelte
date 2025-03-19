@@ -181,7 +181,8 @@
 			{/each}
 		{/if}
 	</section>
-	<section id="shortcutsSection">
+
+    <section id="shortcutsSection">
 		<h1>🗂️ Shortcuts</h1>
 		<div id="shortcutsItems">
 			{#each costShortcuts as shortcut}
@@ -194,7 +195,7 @@
 					}}
 				/>
 			{/each}
-			<section
+			<button
 				aria-hidden="true"
 				id="addCostShortcut"
 				onclick={() => {
@@ -202,7 +203,7 @@
 				}}
 			>
 				add
-			</section>
+			</button>
 		</div>
 	</section>
 
@@ -324,17 +325,16 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		align-items: center;
+		gap: 1rem;
 	}
 
 	#addCostShortcut {
-		padding: 20px;
 		background: transparent;
 		border: 2px solid lightgray;
 		min-width: 6rem;
-		max-width: 10rem;
 		font-weight: 400;
 		text-align: center;
+		margin-bottom: 1rem;
 	}
 
 	#addCostShortcut:hover {
@@ -355,7 +355,7 @@
 		background-color: transparent;
 	}
 	#costButton:hover {
-		border: solid 3px #eee;
+		border: solid 3px darksalmon;
 		background-color: darksalmon;
 	}
 
@@ -365,7 +365,7 @@
 		background-color: transparent;
 	}
 	#incomeButton:hover {
-		border: solid 3px #eee;
+		border: solid 3px darkseagreen;
 		background-color: darkseagreen;
 	}
 
@@ -375,7 +375,7 @@
 		background-color: transparent;
 	}
 	#exchangeButton:hover {
-		border: solid 3px #eee;
+		border: solid 3px lightskyblue;
 		background-color: lightskyblue;
 	}
 

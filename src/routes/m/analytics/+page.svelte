@@ -50,8 +50,8 @@
 </script>
 
 <div id="analyticsContent">
-	<AnalyticsSectionMobile title={'📊 current month'} analytics={currentMonthBasicAnalytics} />
-	<AnalyticsSectionMobile title={'📊 previous month'} analytics={previousMonthBasicAnalytics} />
+	<AnalyticsSectionMobile title={'📊 CURRENT MONTH'} analytics={currentMonthBasicAnalytics} />
+	<AnalyticsSectionMobile title={'📊 PREVIOUS MONTH'} analytics={previousMonthBasicAnalytics} />
 
 	{#each Object.entries(customRangeBasicAnalytics) as [timestamp, analytics]}
 		<div class="separator">

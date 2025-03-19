@@ -19,16 +19,16 @@
 	);
 	let transactionByDatesFiltered: Record<string, domain.Transaction[]> = $derived.by(() => {
 		if (showOnlyMine) {
-		    console.log('updated');
+			console.log('updated');
 			return Object.fromEntries(
-				Object.entries(transactionsByDates).map(([date, transactions]) => [
-					date,
-					transactions.filter(
-                        (transaction) => {
-                            return transaction.user.toLowerCase() === dataProxy.userState!.name.toLowerCase();
-                        }
-					)
-				])
+				Object.entries(transactionsByDates)
+					.map(([date, transactions]) => [
+						date,
+						transactions.filter((transaction) => {
+							return transaction.user.toLowerCase() === dataProxy.userState!.name.toLowerCase();
+						})
+					])
+					.filter(([, _transactions]) => _transactions.length > 0)
 			);
 		} else {
 			return transactionsByDates;
@@ -200,12 +200,13 @@
 	#paginationLimitSetting {
 		background: transparent;
 		border: 2px solid lightgray;
-		height: 80px;
+		height: 4rem;
 	}
 	#showOnlyMineSetting {
 		background-color: transparent;
 		border: 3px solid lightgray;
-		padding: 30px;
+		height: 4rem;
+		width: 4rem;
 		font-size: x-large;
 	}
 </style>

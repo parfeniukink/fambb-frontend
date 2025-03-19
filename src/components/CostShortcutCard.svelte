@@ -39,10 +39,7 @@
 	}
 
 	#card {
-		margin: 10px;
-		padding: 10px;
-		min-width: 100px;
-		height: 100%;
+		width: 115px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -63,12 +60,13 @@
 
 	#deleteButton {
 		position: absolute;
-		opacity: 0.6;
+		opacity: 0.1;
 		color: black;
 		background: darksalmon;
 		border: none;
 		padding: 1px 8px;
 		border-radius: 1rem;
+		transition: ease-in-out 0.1s;
 	}
 	#deleteButton:hover {
 		opacity: 1;

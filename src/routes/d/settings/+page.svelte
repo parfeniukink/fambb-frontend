@@ -17,7 +17,6 @@
 <main>
 	<div id="topSections">
 		<section class="seletors">
-			<p>default currency</p>
 			<select
 				id="defaultCurrencySelector"
 				value={dataProxy.userState!.configuration.defaultCurrency
@@ -39,9 +38,9 @@
 					<option value={currency.id}>{currency.sign} ({currency.name})</option>
 				{/each}
 			</select>
+			<p>default currency</p>
 		</section>
 		<section class="seletors">
-			<p>default cost category</p>
 			<select
 				id="defaultCostCategorySelector"
 				value={dataProxy.userState!.configuration.defaultCostCategory
@@ -63,24 +62,10 @@
 					<option value={category.id}>{category.name}</option>
 				{/each}
 			</select>
-		</section>
-		<section class="selectors">
-			<p>show equity</p>
-			<input
-				id="showEquityCheckbox"
-				type="checkbox"
-				bind:checked={dataProxy.userState!.configuration.showEquity}
-				onchange={() => {
-					dataProxy.refreshLocalStorage();
-					dataProxy.updateUserConfiguration({
-						showEquity: dataProxy.userState!.configuration.showEquity
-					});
-				}}
-			/>
+			<p>default cost category</p>
 		</section>
 
 		<section class="inputs">
-			<p>cost notification threshold</p>
 			<input
 				id="costNotificationThreshold"
 				type="text"
@@ -96,6 +81,22 @@
 					});
 				}}
 			/>
+			<p>cost notification threshold</p>
+		</section>
+
+		<section class="selectors">
+			<input
+				id="showEquityCheckbox"
+				type="checkbox"
+				bind:checked={dataProxy.userState!.configuration.showEquity}
+				onchange={() => {
+					dataProxy.refreshLocalStorage();
+					dataProxy.updateUserConfiguration({
+						showEquity: dataProxy.userState!.configuration.showEquity
+					});
+				}}
+			/>
+			<p>show equity</p>
 		</section>
 	</div>
 
@@ -134,7 +135,7 @@
 				}
 			}}
 		>
-			<input type="text" bind:value={newCostSnippet} placeholder="cost snippet.." required />
+			<input type="text" bind:value={newCostSnippet} placeholder="cost..." required />
 			<button type="submit">add</button>
 		</form>
 	</section>
@@ -174,7 +175,7 @@
 				}
 			}}
 		>
-			<input type="text" bind:value={newIncomeSnippet} placeholder="income snippet.." required />
+			<input type="text" bind:value={newIncomeSnippet} placeholder="income..." required />
 			<button type="submit">add</button>
 		</form>
 	</section>
@@ -187,10 +188,17 @@
 		justify-content: center;
 	}
 
+	hr {
+		margin-top: 5rem;
+		margin-left: 5rem;
+		margin-right: 5rem;
+	}
+
 	.selectors {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: space-between;
 	}
 	.inputs {
 		display: flex;
@@ -205,7 +213,7 @@
 	}
 	select {
 		background-color: transparent;
-		min-height: 80px;
+		height: 60px;
 		border: 3px solid lightgray;
 		font-size: large;
 	}
@@ -213,16 +221,8 @@
 		padding: 0 3rem;
 		display: flex;
 		width: 100%;
-		justify-content: left;
-		gap: 5rem;
+		justify-content: space-between;
 		text-align: center;
-	}
-
-	#showEquityCheckbox {
-		background-color: transparent;
-		padding: 30px;
-		font-size: xx-large;
-		border: 3px solid lightgray;
 	}
 
 	.snippets {
@@ -232,34 +232,46 @@
 		align-content: center;
 		padding: 0 3rem;
 	}
-	.badget {
-		background-color: transparent;
-		border: 1px solid lightgray;
-		padding: 6px 12px;
-		height: 50px;
-		min-width: 150px;
-		border-radius: 2rem;
-		overflow-x: hidden;
-	}
-	.badget:hover {
-		background-color: darksalmon;
-		opacity: 0.7;
-	}
 
 	.snippetsItems {
 		display: flex;
 		flex-wrap: wrap;
-		flex: 8 0;
 		gap: 20px;
+		flex: 8;
+	}
+	.addSnippet {
+		flex: 2;
+	}
+
+	.badget {
+		background-color: transparent;
+		border: 1px solid gray;
+		padding: 6px 12px;
+		height: 40px;
+		min-width: 150px;
+		border-radius: 2rem;
+		overflow-x: hidden;
+		color: darkgray;
+	}
+	.badget:hover {
+		background-color: darksalmon;
+		color: #eee;
+		opacity: 0.7;
 	}
 	button {
 		background-color: transparent;
 	}
 	input {
 		background-color: transparent;
-		border: 2px solid lightgray;
-		height: 80px;
+		border: 3px solid lightgray;
+		height: 60px;
 	}
+	#showEquityCheckbox {
+		background-color: transparent;
+		width: 60px;
+		font-size: x-large;
+	}
+
 	form {
 		display: flex;
 		align-items: center;
@@ -268,7 +280,7 @@
 	}
 	form > button {
 		border: 2px solid lightgray;
-		height: 80px;
+		height: 60px;
 	}
 	form > button:hover {
 		background-color: darkseagreen;
