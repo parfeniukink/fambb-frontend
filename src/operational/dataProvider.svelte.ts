@@ -86,8 +86,8 @@ export class DataProxy {
 	}
 	async fetchTransactions({
 		currencyId = null,
-		context,
-		limit = null
+		context = 0,
+		limit = 10
 	}: {
 		currencyId?: number | null;
 		context?: number;

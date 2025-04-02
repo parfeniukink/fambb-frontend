@@ -20,7 +20,7 @@
 
 	onMount(async () => {
 		const [transactionsHistoryPaginated, shortcuts, equity] = await Promise.all([
-            dataProxy.fetchTransactions({limit: 10}),  // history
+			dataProxy.fetchTransactions({ limit: 10 }), // history
 			dataProxy.fetchCostShortcuts(),
 			dataProxy.fetchEquity()
 		]);
@@ -182,7 +182,7 @@
 		{/if}
 	</section>
 
-    <section id="shortcutsSection">
+	<section id="shortcutsSection">
 		<h1>🗂️ Shortcuts</h1>
 		<div id="shortcutsItems">
 			{#each costShortcuts as shortcut}

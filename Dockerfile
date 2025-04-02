@@ -1,4 +1,4 @@
-FROM node:22 AS builder
+FROM node:22
 
 ENV PUBLIC_BASE_URL=https://api.budget.parfeniukink.space
 
