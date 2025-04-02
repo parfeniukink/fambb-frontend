@@ -12,7 +12,7 @@
 
 	onMount(async () => {
 		const [transactionsHistoryPaginated, equity] = await Promise.all([
-			dataProxy.fetchTransactions({}),
+			dataProxy.fetchTransactions({ limit: 10 }),
 			dataProxy.fetchEquity()
 		]);
 

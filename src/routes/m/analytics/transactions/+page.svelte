@@ -19,6 +19,7 @@
 	);
 	let context = $state(0);
 	let left = $state(0);
+	let limit = $state(10);
 
 	// dispatch the end of the link, based on the transaction information.
 	// depends on transaction type we redirect to the recpective page
@@ -45,7 +46,8 @@
 	const loadTransactions = async () => {
 		const response: ResponseMultiPaginated<domain.Transaction> = await dataProxy.fetchTransactions({
 			currencyId: Number(currencyId),
-			context: context
+			context: context,
+			limit: limit
 		});
 
 		if (transactionsByDates) {

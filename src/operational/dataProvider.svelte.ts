@@ -19,10 +19,8 @@ import * as client from 'src/api/client';
 import type {
 	CostCreateRequestBody,
 	FiltersStore,
-	CostUpdateRequestBody,
 	ResponseMultiPaginated,
 	UserSettingsUpdatePartialRequestBody,
-	CostShortcut,
 	CostShortcutCreateRequestBody
 } from 'src/api/types';
 import { getContext } from 'svelte';
@@ -88,12 +86,12 @@ export class DataProxy {
 	}
 	async fetchTransactions({
 		currencyId = null,
-		context = 0,
-		limit = 10
+		context,
+		limit = null
 	}: {
 		currencyId?: number | null;
 		context?: number;
-		limit?: number;
+		limit?: number | null;
 	}): Promise<ResponseMultiPaginated<domain.Transaction>> {
 		let url = `/analytics/transactions?context=${context}&limit=${limit}`;
 
