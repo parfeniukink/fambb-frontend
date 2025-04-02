@@ -1,14 +1,16 @@
-FROM node:latest AS builder
+FROM node:22 AS builder
 
-ENV PUBLIC_BASE_URL=http://api.budget.homecp:8000
+ENV PUBLIC_BASE_URL=https://api.budget.parfeniukink.space
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN npm install -g pnpm
 RUN pnpm install
+
 COPY . .
+
 RUN pnpm run build
 
-EXPOSE 80
+EXPOSE 4173
 ENTRYPOINT ["pnpm"]
-CMD ["run", "preview", "--host", "--port", "80"]
+CMD ["run", "preview", "--host"]

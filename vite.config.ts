@@ -6,6 +6,9 @@ import path from 'path';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
+	preview: {
+		allowedHosts: ['localhost', 'budget.parfeniukink.space'],
+	},
 	css: {
 		postcss: {
 			plugins: [autoprefixer()]
