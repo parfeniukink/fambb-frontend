@@ -16,10 +16,9 @@
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
-		"@sveltejs/adapter-auto": "^4.0.0",
+		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
-		"@tailwindcss/vite": "^4.0.3",
 		"@types/node": "^22.13.1",
 		"autoprefixer": "^10.4.20",
 		"eslint": "^9.18.0",
@@ -29,7 +28,6 @@
 		"postcss": "^8.5.1",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
-		"prettier-plugin-tailwindcss": "^0.6.11",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
@@ -38,8 +36,6 @@
 	},
 	"dependencies": {
 		"@picocss/pico": "^2.0.6",
-		"d3": "^7.9.0",
-		"d3-scale": "^4.0.2",
 		"svelte-french-toast": "^1.2.0"
 	}
 }
