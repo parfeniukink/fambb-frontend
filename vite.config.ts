@@ -5,6 +5,9 @@ import path from 'path';
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	build: {
+		assetsInlineLimit: Infinity
+	},
 	preview: {
 		allowedHosts: ['localhost', 'budget.parfeniukink.space']
 	},

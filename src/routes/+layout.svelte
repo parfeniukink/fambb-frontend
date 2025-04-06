@@ -3,6 +3,10 @@
 	import '$styles/global.css';
 	import { DATA_PROXY, DataProxy } from 'src/operational/dataProvider.svelte';
 	import { setContext } from 'svelte';
+	import favicon from '$src/static/favicon.ico';
+	import favicon16x16 from '$src/static/favicon-16x16.png';
+	import favicon32x32 from '$src/static/favicon-32x32.png';
+	import appleTouchIcon from '$src/static/apple-touch-icon.png';
 
 	let { children } = $props();
 
@@ -10,6 +14,14 @@
 	// for both: desktop and mobile applications.
 	setContext(DATA_PROXY, new DataProxy());
 </script>
+
+<svelte:head>
+	<link rel="icon" href={`${favicon}?v=M44lzPylqQ`} type="image/x-icon" sizes="any" />
+	<link rel="apple-touch-icon" sizes="180x180" href={appleTouchIcon} />
+	<link rel="icon" sizes="16x16" href={favicon16x16} />
+	<link rel="icon" sizes="32x32" href={favicon32x32} />
+</svelte:head>
+<!-- <!-1- <link rel="manifest" href="%svelte.assets%/site.webmaniflst" /> -1-> -->
 
 {@render children()}
 
