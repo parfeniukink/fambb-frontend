@@ -1,42 +1,42 @@
 <script lang="ts">
-	import '@picocss/pico';
-	import '$styles/global.css';
-	import { DATA_PROXY, DataProxy } from 'src/operational/dataProvider.svelte';
-	import { setContext } from 'svelte';
-	import favicon from '$src/static/favicon.ico';
-	import favicon16x16 from '$src/static/favicon-16x16.png';
-	import favicon32x32 from '$src/static/favicon-32x32.png';
-	import appleTouchIcon from '$src/static/apple-touch-icon.png';
+  let { children } = $props()
+  import "../app.css"
 
-	let { children } = $props();
-
-	// set the data proxy to the global context to make it available
-	// for both: desktop and mobile applications.
-	setContext(DATA_PROXY, new DataProxy());
+  const NAV_LI_STYLES = "hover:underline hover:text-teal-600 cursor-pointer"
 </script>
 
-<svelte:head>
-	<link rel="icon" href={`${favicon}?v=M44lzPylqQ`} type="image/x-icon" sizes="any" />
-	<link rel="apple-touch-icon" sizes="180x180" href={appleTouchIcon} />
-	<link rel="icon" sizes="16x16" href={favicon16x16} />
-	<link rel="icon" sizes="32x32" href={favicon32x32} />
-</svelte:head>
-<!-- <!-1- <link rel="manifest" href="%svelte.assets%/site.webmaniflst" /> -1-> -->
+<div class="flex h-screen">
+  <nav class="w-48 text-xl mt-20 text-center h-100">
+    <h1 class="text-2xl italic">🧮</h1>
+    <h1 class="text-2xl italic">Family Budget</h1>
+    <div class="mt-30"></div>
+    <ul class="flex flex-col space-y-2 gap-15 h-full justify-start">
+      <li><a href="/" class={NAV_LI_STYLES}>DASHBOARD</a></li>
+      <li><a href="/analytics" class={NAV_LI_STYLES}>ANALYTICS</a></li>
+      <li><a href="/settings" class={NAV_LI_STYLES}>SETTINGS</a></li>
+    </ul>
+  </nav>
 
-{@render children()}
+  <div
+    class="w-px bg-gray-500 mt-20 ml-5 mr-20 h-[80%] justify-self-center"
+  ></div>
 
-<style>
-	@font-face {
-		font-family: 'ComicMono';
-		src: url('/src/assets/fonts/ComicMono.ttf');
-	}
+  <div class="mt-20">
+    {@render children()}
+  </div>
+</div>
 
-	:root {
-		--pico-border-radius: 0.5rem;
-		--pico-typography-spacing-vertical: 1rem;
-		--pico-font-family: 'ComicMono';
-		--pico-font-weight: 400;
-		--pico-color: #eee;
-		background-color: #3a342e;
-	}
+<style lang="postcss">
+  @reference "tailwindcss";
+
+  @font-face {
+    font-family: "ComicMono";
+    src: url("/fonts/ComicMono.ttf");
+  }
+
+  :global(html) {
+    background-color: #3a342e;
+    color: #ebebeb;
+    font-family: "ComicMono";
+  }
 </style>
