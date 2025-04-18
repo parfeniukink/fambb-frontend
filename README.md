@@ -1,38 +1,54 @@
-# sv
+# ABOUT
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+**TLDR:** Python backend for [this frontend](https://github.com/parfeniukink/fambb-frontend)
+**APPROACHES:** DDD
+**REASONING:**
 
-## Creating a project
+    - tracking Transactions (Costs, Incomes, Exchanges) with proper calculations across multiple people
+    - this is "View V3". V1 was Telegram Bot, "V2 View" was a mobile application
+    - Svelte feels like a native application in Safari, so no reason to play with Apple shit (I don't have Android phone)
 
-If you're seeing this, you've probably already done this step. Congrats!
+**REFERENCES:**
 
-```bash
-# create a new project in the current directory
-npx sv create
+    - (v1 project for Telegram client)[https://github.com/parfeniukink/family_budget_bot] (`pytelegrambotapi`)
+    - (v2 project)[https://github.com/parfeniukink/family_budget_bot] for iPhone devices (`Flutter`)
 
-# create a new project in my-app
-npx sv create my-app
+# USER REQUEST
+
+1. not just "minimal", but "only required" UI
+2. separate UI for mobile and desktop for UX
+3. small build (no heavy frameworks, css libraries)
+
+# USER PATTERN
+
+1. 90% of the time user adds costs
+2. 9% of the time user adds incomes or make exchanges
+3. 1% of the time user observes analytics or change settings
+4. 60% of the time user interacts with "Desktop Version"
+5. 40% of the time user interacts with "Mobile Version"
+
+# ARCHITECTURE
+
+- authorization in the `+layout.svelte`
+- HTTP client and API types are in `/api`
+- data is persistent into the localStorage via `/operational/dataProvider.svelte.ts`
+- desktop and mobile versions are separated by routes
+  - most of CSS and HTML are duplicated from desktop version to the mobile
+- ...
+
+# DEV SETUP
+
+1. project tools configurations: `vite.config.ts`, `svelte.config.js`, `tsconfig.json`
+2. useful dev scripts are in the `Makefile`, use `make` command
+3. code quality: linter in CI
+4. CI/CD: github actions
+
+## COMMANDS
+
+```shell
+pnpm install -D --force
+pnpm run dev
+
+pnpm run build
+pnpm run preview --host
 ```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
