@@ -3,22 +3,45 @@
   import Button from "$lib/components/Button.svelte"
   import CostShortcutComponent from "$lib/components/CostShortcut.svelte"
 
-  import type { Transaction, CostShortcut, Currency } from "$lib/types/money"
+  import type {
+    Transaction,
+    CostShortcut,
+    Currency,
+    Equity,
+  } from "$lib/types/money"
 
   import { prettyMoney } from "$lib/services/finances"
+  import { goto } from "$app/navigation"
 
-  const currencies: Currency[] = [
+  const CURRENCIES: Currency[] = [
     {
       id: 1,
       name: "USD",
       sign: "$",
-      equity: 10000,
     },
     {
       id: 2,
       name: "UAH",
-      sign: "#",
-      equity: 20000,
+      sign: "₴",
+    },
+  ]
+
+  const equity: Equity[] = [
+    {
+      equity: 10000,
+      currency: {
+        id: 1,
+        name: "USD",
+        sign: "$",
+      },
+    },
+    {
+      equity: 25000,
+      currency: {
+        id: 2,
+        name: "UAH",
+        sign: "₴",
+      },
     },
   ]
 
@@ -28,37 +51,70 @@
       name: "Water",
       value: null,
       currency: {
-          id: ...
+        id: 1,
+        name: "USD",
+        sign: "$",
       },
-      category: "Food",
+      category: {
+        id: 1,
+        name: "Food",
+      },
     },
     {
       id: 2,
       name: "Subway",
       value: 12,
-      currency: "$",
-      category: "Roads",
+      currency: {
+        id: 2,
+        name: "UAH",
+        sign: "₴",
+      },
+      category: {
+        id: 3,
+        name: "Traveling",
+      },
     },
     {
       id: 3,
       name: "Lunch",
       value: null,
-      currency: "$",
-      category: "Restaurants",
+      currency: {
+        id: 2,
+        name: "UAH",
+        sign: "₴",
+      },
+      category: {
+        id: 2,
+        name: "Restaurants",
+      },
     },
     {
       id: 4,
       name: "Coach",
       value: 30,
-      currency: "$",
-      category: "Services",
+      currency: {
+        id: 1,
+        name: "USD",
+        sign: "$",
+      },
+      category: {
+        id: 5,
+        name: "Services",
+      },
     },
     {
       id: 5,
       name: "Fuel",
       value: 100,
-      currency: "$",
-      category: "Car",
+      currency: {
+        id: 1,
+        name: "USD",
+        sign: "$",
+      },
+      category: {
+        id: 4,
+        name: "Fuel",
+      },
     },
   ]
 
@@ -116,9 +172,9 @@
   <div class="flex flex-col gap-10">
     <Box title="🏦 Equity">
       <div class="flex flex-col items-center gap-2">
-        {#each currencies as currency}
+        {#each equity as item}
           <a href="/" class="cursor-pointer hover:text-emerald-500"
-            >{prettyMoney(currency.equity)} {currency.sign}</a
+            >{prettyMoney(item.equity)} {item.currency.sign}</a
           >
         {/each}
       </div>
@@ -155,10 +211,10 @@
       {#each costShortcuts as shortcut}
         <CostShortcutComponent shortcutId={shortcut.id} value={shortcut.value}>
           <h2 class="underline">{shortcut.name}</h2>
-          <p class="mb-2 italic text-sm">{shortcut.category}</p>
+          <p class="mb-2 italic text-sm">{shortcut.category.name}</p>
           <p>
             {shortcut.value ? prettyMoney(shortcut.value) : "..."}
-            {shortcut.currency}
+            {shortcut.currency.sign}
           </p>
         </CostShortcutComponent>
       {/each}
@@ -166,7 +222,7 @@
         type="button"
         class="border-2 p-2 w-32 rounded-md italic text-sm hover:bg-emerald-800 cursor-pointer"
         onclick={async () => {
-          console.log("redirect to create a cost shortcut")
+          goto("/transactions/costs/shortcuts")
         }}>Add Cost Shortcut</button
       >
     </div>
@@ -174,8 +230,11 @@
   <Box title="📝 History" width={120}>
     <div class="flex flex-col gap-2 text-sm text-gray-300">
       {#each historyItems as item}
-        <a href="/" class="hover:text-orange-300">
-          {`${TRANSACTION_OPERATIONS_MAPPER[item.operation]} ${item.name} ... ${prettyMoney(item.value)}${item.currency}  | ${item.user}`}
+        <a href="/" class="hover:text-gray-100 flex justify-between">
+          <p>
+            {`${TRANSACTION_OPERATIONS_MAPPER[item.operation]} ${item.name} ── ${prettyMoney(item.value)}${item.currency}`}
+          </p>
+          <p>{item.user}</p>
         </a>
         <hr class="" />
       {/each}
