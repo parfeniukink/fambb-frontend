@@ -36,3 +36,9 @@ export type CostShortcut = {
 
 // INCOME-specific types
 // CURRENCY EXCHANGE-specific types
+
+// INFRASTRUCTURE
+export type SelectionItem = {
+  value: number
+  content: string
+}
