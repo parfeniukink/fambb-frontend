@@ -210,7 +210,7 @@
     <div class="flex flex-wrap gap-3 content-center">
       {#each costShortcuts as shortcut}
         <CostShortcutComponent shortcutId={shortcut.id} value={shortcut.value}>
-          <h2 class="underline">{shortcut.name}</h2>
+          <h2>{shortcut.name}</h2>
           <p class="mb-2 italic text-sm">{shortcut.category.name}</p>
           <p>
             {shortcut.value ? prettyMoney(shortcut.value) : "..."}

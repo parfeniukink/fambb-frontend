@@ -17,11 +17,12 @@
   } from "../shared"
   import DateButtons from "$lib/components/DateButtons.svelte"
 
+  // used if user selects name from dropdown
+  let selectedCostSnippetIndex: number | null = $state(null)
+
   // create cost shortcut request body
   class RequestBody {
-    name: string | null = $derived(
-      selectedCostSnippetIndex ? COST_SNIPPETS[selectedCostSnippetIndex] : null
-    )
+    name: string | null = $state(null)
     value: number | null = $state(null)
     timestamp: string = $state(new Date().toISOString().slice(0, 10))
     currencyId: number | null = $state(CURRENCIES[0].id)
@@ -35,9 +36,10 @@
       this.currencyId = CURRENCIES[0].id
     }
 
-    validate() {
+    save() {
       if (!this.name || !this.value || !this.currencyId) {
         let requiredFields = []
+
         if (!this.name) {
           requiredFields.push("name")
         }
@@ -47,24 +49,24 @@
         if (!this.currencyId) {
           requiredFields.push("currency")
         }
+
         // todo: push the notification instead of console log
         const message = `fields: [${requiredFields.join(", ")}] are required`
         throw Error(message)
       } else {
-        return {
+        const payload = {
           name: this.name!,
           value: this.value!,
           timestamp: this.timestamp,
           currencyId: this.currencyId!,
           categoryId: this.categoryId,
         }
+
+        costCreate(payload)
       }
     }
   }
-  let requestBody = new RequestBody()
-
-  // used if user selects name from dropdown
-  let selectedCostSnippetIndex: number | null = $state(null)
+  const requestBody = new RequestBody()
 </script>
 
 <main class="flex justify-center text-center">
@@ -87,7 +89,7 @@
       <div class="flex gap-4">
         <Input bind:value={requestBody.name} placeholder="name..." />
         <Selection
-          bind:value={selectedCostSnippetIndex}
+          bind:value={requestBody.name}
           items={CostSnippetsToSelectionItems(COST_SNIPPETS)}
           width="24"
           cleanOnSelect={true}
@@ -102,12 +104,18 @@
         />
       </div>
       <div class="flex gap-4 mt-4">
-        <Button title="reset" color="red" onclick={() => requestBody.reset()} />
+        <Button
+          title="reset"
+          color="red"
+          onclick={() => {
+            requestBody.reset()
+          }}
+        />
         <Button
           title="save"
           color="green"
-          onclick={() => {
-            costCreate(requestBody.validate())
+          onclick={async () => {
+            requestBody.save()
           }}
         />
       </div>
