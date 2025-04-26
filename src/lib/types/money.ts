@@ -37,14 +37,15 @@ export type CostCreateRequestBody = {
 export type Cost = {
   id: number
   name: string
-  value: number | null
+  value: number
+  timestamp: string
   currency: Currency
   category: CostCategory
 }
 
 export type CostShortcutCreateRequestBody = {
   name: string
-  value: number
+  value: number | null
   currencyId: number
   categoryId: number
 }
@@ -60,23 +61,6 @@ export type CostShortcut = {
 // INCOME-related
 export type IncomeSource = "revenue" | "gift" | "debt" | "other"
 
-export type IncomeCreateRequestBody = {
-  name: string
-  value: number
-  source: IncomeSource
-  timestamp: string
-  currencyId: number
-}
-
-export type Income = {
-  id: number
-  name: string
-  value: number
-  srouce: IncomeSource
-  currency: Currency
-}
-
-// EXCHANGE-related
 export type IncomeCreateRequestBody = {
   name: string
   value: number

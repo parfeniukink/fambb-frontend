@@ -11,5 +11,5 @@ export function costCategoriesToSelectionItems(
 }
 
 export function CostSnippetsToSelectionItems(items: string[]): SelectionItem[] {
-  return items.map((item, index) => ({ value: index, content: item }))
+  return items.map((item, index) => ({ value: item, content: item }))
 }
