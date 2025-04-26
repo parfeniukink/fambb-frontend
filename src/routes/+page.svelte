@@ -186,21 +186,21 @@
           color="blue"
           title="Exchange"
           onclick={() => {
-            console.log("clicked exchange")
+            goto("/transactions/exchange")
           }}
         />
         <Button
           color="green"
           title="Income"
           onclick={() => {
-            console.log("clicked income")
+            goto("/transactions/incomes")
           }}
         />
         <Button
           color="red"
           title="Cost"
           onclick={() => {
-            console.log("clicked cost")
+            goto("/transactions/costs")
           }}
         />
       </div>

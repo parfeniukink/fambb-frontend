@@ -3,12 +3,11 @@
   import "../app.css"
   import logo from "$lib/assets/logo.png"
 
-  const NAV_LI_STYLES = "hover:underline hover:text-teal-600 cursor-pointer"
+  const NAV_LI_STYLES = "hover:text-teal-600 cursor-pointer"
 </script>
 
 <div class="flex h-screen">
-  <nav class="w-48 text-xl mt-20 text-center h-100">
-    <div class="mt-50"></div>
+  <nav class="w-48 text-xl mt-50 ml-10 text-center h-100">
     <ul class="flex flex-col space-y-2 gap-15 h-full justify-start">
       <li><a href="/analytics" class={NAV_LI_STYLES}>ANALYTICS</a></li>
       <li>
@@ -20,11 +19,9 @@
     </ul>
   </nav>
 
-  <div
-    class="w-px bg-gray-500 mt-20 ml-5 mr-20 h-[80%] justify-self-center"
-  ></div>
+  <div class="w-px bg-gray-200 mt-10 mr-10 h-[70%]"></div>
 
-  <main class="mt-50 w-full">
+  <main class="mt-10 w-full">
     {@render children()}
   </main>
 </div>

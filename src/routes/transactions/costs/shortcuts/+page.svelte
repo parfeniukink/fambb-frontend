@@ -5,35 +5,52 @@
   import Input from "$lib/components/Input.svelte"
   import DecimalInput from "$lib/components/DecimalInput.svelte"
   import type { CostCategory, Currency, SelectionItem } from "$lib/types/money"
-
-  const CURRENCIES: Currency[] = [
-    {
-      id: 1,
-      name: "USD",
-      sign: "$",
-    },
-    {
-      id: 2,
-      name: "UAH",
-      sign: "₴",
-    },
-  ]
-  const COST_CATEGORIES: CostCategory[] = [
-    { id: 1, name: "Food" },
-    { id: 2, name: "Transport" },
-    { id: 3, name: "Utilities" },
-    { id: 4, name: "Entertainment" },
-    { id: 5, name: "Health" },
-  ]
-  const COST_SNIPPETS: string[] = ["Water", "Welmart", "Pizza", "Other"]
+  import {
+    COST_CATEGORIES,
+    COST_SNIPPETS,
+    costShortcutCreate,
+    CURRENCIES,
+  } from "$lib/data/api"
 
   class RequestBody {
-    costName: string | null = $derived(
+    name: string | null = $derived(
       selectedCostSnippetIndex ? COST_SNIPPETS[selectedCostSnippetIndex] : null
     )
-    categoryId: number = $state(COST_CATEGORIES[0].id)
     value: number | null = $state(null)
     currencyId: number | null = $state(CURRENCIES[0].id)
+    categoryId: number = $state(COST_CATEGORIES[0].id)
+
+    reset() {
+      this.name = null
+      this.value = null
+      this.categoryId = COST_CATEGORIES[0].id
+      this.currencyId = CURRENCIES[0].id
+    }
+
+    validate() {
+      if (!this.name || !this.value || !this.currencyId) {
+        let requiredFields = []
+        if (!this.name) {
+          requiredFields.push("name")
+        }
+        if (!this.value) {
+          requiredFields.push("value")
+        }
+        if (!this.currencyId) {
+          requiredFields.push("currency")
+        }
+        // todo: push the notification instead of console log
+        const message = `fields: [${requiredFields.join(", ")}] are required`
+        throw Error(message)
+      } else {
+        return {
+          name: this.name!,
+          value: this.value!,
+          currencyId: this.currencyId!,
+          categoryId: this.categoryId,
+        }
+      }
+    }
   }
 
   let selectedCostSnippetIndex: number | null = $state(null)
@@ -63,7 +80,7 @@
         />
       </div>
       <div class="flex gap-4">
-        <Input bind:value={requestBody.costName} placeholder="name..." />
+        <Input bind:value={requestBody.name} placeholder="name..." />
         <Selection
           bind:value={selectedCostSnippetIndex}
           items={CostSnippetsToSelectionItems(COST_SNIPPETS)}
@@ -80,18 +97,12 @@
         />
       </div>
       <div class="flex gap-4 mt-4">
-        <Button
-          title="reset"
-          color="red"
-          onclick={() => {
-            console.log("RESET")
-          }}
-        />
+        <Button title="reset" color="red" onclick={() => requestBody.reset()} />
         <Button
           title="save"
           color="green"
           onclick={() => {
-            console.log("SAVE")
+            costShortcutCreate(requestBody.validate())
           }}
         />
       </div>
