@@ -1,4 +1,3 @@
-// general types
 export type Currency = {
   id: number
   name: string
@@ -10,12 +9,14 @@ export type Equity = {
   equity: number
 }
 
+export type OperationType = "cost" | "income" | "exchange"
+
 export type Transaction = {
   id: number
-  operation: string
+  operation: OperationType
   name: string
   value: number
-  // timestamp: string
+  timestamp: string
   currency: string
   user: string
 }
@@ -73,11 +74,12 @@ export type Income = {
   id: number
   name: string
   value: number
-  srouce: IncomeSource
+  source: IncomeSource
+  timestamp: string
   currency: Currency
 }
 
-// CURRENCY EXCHANGE-specific types
+// CURRENCY EXCHANGE-related types
 export type ExchangeCreateRequestBody = {
   fromValue: number
   toValue: number
@@ -92,9 +94,11 @@ export type Exchange = {
   toValue: number
   fromCurrency: Currency
   toCurrency: Currency
+  timestamp: string
 }
 
 // INFRASTRUCTURE
+// todo: move out from here
 export type SelectionItem = {
   value: number | string
   content: string

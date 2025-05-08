@@ -1,4 +1,4 @@
-import type { Currency, CostShortcut, CostCategory } from "./money"
+import type { Currency, CostCategory } from "./money"
 
 export type Configuration = {
   showEquity: boolean
@@ -13,4 +13,14 @@ export type User = {
   id: number
   name: string
   configuration: Configuration
+}
+
+export type UserLoginRequestBody = {
+  username: string
+  password: string
+}
+
+export type Identity = {
+  accessToken: string
+  user: User
 }
