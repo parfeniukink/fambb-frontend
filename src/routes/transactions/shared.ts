@@ -10,6 +10,6 @@ export function costCategoriesToSelectionItems(
   return items.map((item) => ({ value: item.id, content: item.name }))
 }
 
-export function CostSnippetsToSelectionItems(items: string[]): SelectionItem[] {
-  return items.map((item, index) => ({ value: item, content: item }))
+export function stringsToSelectionItems(items: string[]): SelectionItem[] {
+  return items.map((item, _) => ({ value: item, content: item }))
 }

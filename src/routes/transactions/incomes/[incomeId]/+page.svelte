@@ -6,40 +6,40 @@
   import Input from "$lib/components/Input.svelte"
   import DecimalInput from "$lib/components/DecimalInput.svelte"
   import DateButtons from "$lib/components/DateButtons.svelte"
-  import type { Cost } from "$lib/types/money"
+  import type { Income, IncomeSource } from "$lib/types/money"
   import {
-    COST_CATEGORIES,
-    COST_SNIPPETS,
+    INCOME_SNIPPETS,
     CURRENCIES,
-    costDelete,
-    costRetrieve,
-    costUpdate,
+    incomeRetrieve,
+    incomeUpdate,
+    incomeDelete,
   } from "$lib/data/api"
   import {
-    costCategoriesToSelectionItems,
-    costSnippetsToSelectionItems,
     currenciesToSelectionItems,
+    stringsToSelectionItems,
   } from "../../shared"
   import { goto } from "$app/navigation"
   import { onMount } from "svelte"
   import { notification } from "$lib/services/notifications"
 
-  const costId = Number(page.params.costId)
-  let cost: Cost | null = $state(null)
+  const INCOME_SOURCES: IncomeSource[] = ["revenue", "gift", "debt", "other"]
+
+  const incomeId = Number(page.params.incomeId)
+  let income: Income | null = $state(null)
 
   class RequestBody {
     name: string | null = $state(null)
     value: number | null = $state(null)
+    source: IncomeSource = $state("revenue")
     timestamp: string = $state(new Date().toISOString().slice(0, 10))
     currencyId: number | null = $state(null)
-    categoryId: number | null = $state(null)
 
-    updateFromCost(cost: Cost) {
-      this.name = cost.name
-      this.value = cost.value
-      this.timestamp = cost.timestamp
-      this.currencyId = cost.currency.id
-      this.categoryId = cost.category.id
+    updateFromIncome(income: Income) {
+      this.name = income.name
+      this.value = income.value
+      this.source = income.source
+      this.timestamp = income.timestamp
+      this.currencyId = income.currency.id
     }
 
     valid() {
@@ -48,22 +48,22 @@
         this.value &&
         this.timestamp &&
         this.currencyId &&
-        this.categoryId
+        this.source
       )
     }
 
     updatePayload() {
       const payload: Record<string, any> = {}
 
-      if (!cost) return payload
+      if (!income) return payload
 
-      if (this.name !== cost.name) payload.name = this.name
-      if (this.value !== cost.value) payload.value = this.value
-      if (this.timestamp !== cost.timestamp) payload.timestamp = this.timestamp
-      if (this.currencyId !== cost.currency.id)
+      if (this.name !== income.name) payload.name = this.name
+      if (this.value !== income.value) payload.value = this.value
+      if (this.timestamp !== income.timestamp)
+        payload.timestamp = this.timestamp
+      if (this.currencyId !== income.currency.id)
         payload.currencyId = this.currencyId
-      if (this.categoryId !== cost.category.id)
-        payload.categoryId = this.categoryId
+      if (this.source !== income.source) payload.source = this.source
 
       return payload
     }
@@ -71,17 +71,17 @@
   const requestBody = new RequestBody()
 
   onMount(async () => {
-    // get costId from page params
-    cost = await costRetrieve(costId)
-    requestBody.updateFromCost(cost)
+    // get incomeId from page params
+    income = await incomeRetrieve(incomeId)
+    requestBody.updateFromIncome(income)
   })
 </script>
 
-{#if !cost}
+{#if !income}
   <main>loading...</main>
 {:else}
   <main class="flex justify-center text-center">
-    <Box title="Edit Cost" width={120} border={4} padding="default">
+    <Box title="Edit Income" width={120} border={4} padding="default">
       <div class="flex flex-col gap-6">
         <div class="w-full mt-4 flex">
           <input
@@ -93,15 +93,15 @@
         </div>
         <div class="w-full">
           <Selection
-            bind:value={requestBody.categoryId}
-            items={costCategoriesToSelectionItems(COST_CATEGORIES)}
+            bind:value={requestBody.source}
+            items={stringsToSelectionItems(INCOME_SOURCES)}
           />
         </div>
         <div class="flex gap-4">
           <Input bind:value={requestBody.name} placeholder="name..." />
           <Selection
             bind:value={requestBody.name}
-            items={costSnippetsToSelectionItems(COST_SNIPPETS)}
+            items={stringsToSelectionItems(INCOME_SNIPPETS)}
             width="24"
             cleanOnSelect={true}
           />
@@ -120,8 +120,8 @@
             color="red"
             onclick={() => {
               goto("/")
-              costDelete(cost!.id)
-              notification(`Cost ${cost!.name} deleted`, "❌")
+              incomeDelete(income!.id)
+              notification(`Income ${income!.name} deleted`, "❌")
               // todo: update transactions history data
             }}
           />
@@ -131,10 +131,10 @@
             onclick={() => {
               goto("/")
               if (!requestBody.valid()) {
-                notification("Invalid Cost Data", "⚠️")
+                notification("Invalid Income Data", "⚠️")
               } else {
-                costUpdate(costId, requestBody.updatePayload())
-                notification(`Cost ${cost!.name} saved`, "✅")
+                incomeUpdate(incomeId, requestBody.updatePayload())
+                notification(`Income ${income!.name} saved`, "✅")
               }
             }}
           />

@@ -29,5 +29,8 @@
 		"onlyBuiltDependencies": [
 			"esbuild"
 		]
+	},
+	"dependencies": {
+		"svelte-french-toast": "^1.2.0"
 	}
 }

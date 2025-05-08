@@ -1,14 +1,21 @@
 <script lang="ts">
   let {
     value = $bindable(),
+    type = "text",
     placeholder,
-  }: { value: any; placeholder: string } = $props()
+    styles,
+  }: {
+    value: any
+    type?: string
+    styles?: string
+    placeholder: string
+  } = $props()
 </script>
 
 <input
-  type="text"
+  type={`${type}`}
   inputmode="text"
   bind:value
   {placeholder}
-  class="px-8 py-3 outline-none border-3 rounded-md w-full"
+  class={styles ? styles : "px-8 py-3 outline-none border-3 rounded-md w-full"}
 />
