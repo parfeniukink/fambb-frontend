@@ -47,7 +47,7 @@
             onclick={() => {
               goto("/")
               exchangeDelete(exchange!.id)
-              notification(`Exchange ${exchange!.timestamp} deleted`, "❌")
+              notification(`Exchange ${exchange!.timestamp} deleted`, "✅")
             }}
           />
         </div>

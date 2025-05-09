@@ -7,13 +7,7 @@
   import DecimalInput from "$lib/components/DecimalInput.svelte"
   import DateButtons from "$lib/components/DateButtons.svelte"
   import type { Income, IncomeSource } from "$lib/types/money"
-  import {
-    INCOME_SNIPPETS,
-    CURRENCIES,
-    incomeRetrieve,
-    incomeUpdate,
-    incomeDelete,
-  } from "$lib/data/api"
+  import { incomeRetrieve, incomeUpdate, incomeDelete } from "$lib/data/api"
   import {
     currenciesToSelectionItems,
     stringsToSelectionItems,
@@ -21,11 +15,15 @@
   import { goto } from "$app/navigation"
   import { onMount } from "svelte"
   import { notification } from "$lib/services/notifications"
-
-  const INCOME_SOURCES: IncomeSource[] = ["revenue", "gift", "debt", "other"]
+  import { INCOME_SOURCES } from "$lib/constants"
+  import { persistent } from "$lib/data/persistent.svelte"
 
   const incomeId = Number(page.params.incomeId)
   let income: Income | null = $state(null)
+
+  const dataLoaded: boolean = $derived(
+    income && persistent.currencies ? true : false
+  )
 
   class RequestBody {
     name: string | null = $state(null)
@@ -77,7 +75,7 @@
   })
 </script>
 
-{#if !income}
+{#if !dataLoaded}
   <main>loading...</main>
 {:else}
   <main class="flex justify-center text-center">
@@ -101,7 +99,9 @@
           <Input bind:value={requestBody.name} placeholder="name..." />
           <Selection
             bind:value={requestBody.name}
-            items={stringsToSelectionItems(INCOME_SNIPPETS)}
+            items={stringsToSelectionItems(
+              persistent.identity!.user.configuration.incomeSnippets
+            )}
             width="24"
             cleanOnSelect={true}
           />
@@ -110,7 +110,7 @@
           <DecimalInput bind:value={requestBody.value} placeholder="value..." />
           <Selection
             bind:value={requestBody.currencyId}
-            items={currenciesToSelectionItems(CURRENCIES)}
+            items={currenciesToSelectionItems(persistent.currencies!)}
             width="24"
           />
         </div>
@@ -121,7 +121,7 @@
             onclick={() => {
               goto("/")
               incomeDelete(income!.id)
-              notification(`Income ${income!.name} deleted`, "❌")
+              notification(`Income ${income!.name} deleted`, "✅")
               // todo: update transactions history data
             }}
           />
