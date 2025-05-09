@@ -7,25 +7,28 @@
   import DecimalInput from "$lib/components/DecimalInput.svelte"
   import DateButtons from "$lib/components/DateButtons.svelte"
   import type { Cost } from "$lib/types/money"
-  import {
-    COST_CATEGORIES,
-    COST_SNIPPETS,
-    CURRENCIES,
-    costDelete,
-    costRetrieve,
-    costUpdate,
-  } from "$lib/data/api"
+  import { costDelete, costRetrieve, costUpdate } from "$lib/data/api"
   import {
     costCategoriesToSelectionItems,
-    costSnippetsToSelectionItems,
+    stringsToSelectionItems,
     currenciesToSelectionItems,
   } from "../../shared"
   import { goto } from "$app/navigation"
   import { onMount } from "svelte"
   import { notification } from "$lib/services/notifications"
+  import { persistent } from "$lib/data/persistent.svelte"
 
   const costId = Number(page.params.costId)
   let cost: Cost | null = $state(null)
+
+  const dataLoaded: boolean = $derived(
+    cost &&
+      persistent.identity &&
+      persistent.costCategories &&
+      persistent.currencies
+      ? true
+      : false
+  )
 
   class RequestBody {
     name: string | null = $state(null)
@@ -77,7 +80,7 @@
   })
 </script>
 
-{#if !cost}
+{#if !dataLoaded}
   <main>loading...</main>
 {:else}
   <main class="flex justify-center text-center">
@@ -94,14 +97,16 @@
         <div class="w-full">
           <Selection
             bind:value={requestBody.categoryId}
-            items={costCategoriesToSelectionItems(COST_CATEGORIES)}
+            items={costCategoriesToSelectionItems(persistent.costCategories!)}
           />
         </div>
         <div class="flex gap-4">
           <Input bind:value={requestBody.name} placeholder="name..." />
           <Selection
             bind:value={requestBody.name}
-            items={costSnippetsToSelectionItems(COST_SNIPPETS)}
+            items={stringsToSelectionItems(
+              persistent.identity!.user.configuration.costSnippets
+            )}
             width="24"
             cleanOnSelect={true}
           />
@@ -110,7 +115,7 @@
           <DecimalInput bind:value={requestBody.value} placeholder="value..." />
           <Selection
             bind:value={requestBody.currencyId}
-            items={currenciesToSelectionItems(CURRENCIES)}
+            items={currenciesToSelectionItems(persistent.currencies!)}
             width="24"
           />
         </div>
@@ -121,7 +126,7 @@
             onclick={() => {
               goto("/")
               costDelete(cost!.id)
-              notification(`Cost ${cost!.name} deleted`, "❌")
+              notification(`Cost ${cost!.name} deleted`, "✅")
               // todo: update transactions history data
             }}
           />

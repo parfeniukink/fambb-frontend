@@ -14,6 +14,7 @@
   import { persistent } from "$lib/data/persistent.svelte"
   import { goto } from "$app/navigation"
   import { notification } from "$lib/services/notifications"
+  import { today } from "$lib/infrastructure/datetime"
 
   const dataLoaded: boolean = $derived(
     persistent.identity && persistent.costCategories && persistent.currencies
@@ -25,32 +26,27 @@
   class RequestBody {
     name: string | null = $state(null)
     value: number | null = $state(null)
-    timestamp: string = $state(new Date().toISOString().slice(0, 10))
+    timestamp: string = $state(today())
     currencyId: number | null = $state(persistent.defulatCurrencyId)
     categoryId: number | null = $state(persistent.defulatCostCategoryId)
 
     // note: date does not change on reset
-    reset() {
+    reset(): void {
       this.name = null
       this.value = null
       this.categoryId = persistent.defulatCurrencyId
       this.currencyId = persistent.defulatCurrencyId
     }
 
-    save() {
-      if (!this.name || !this.value || !this.currencyId) {
-        let requiredFields = []
+    async save(): Promise<void> {
+      const requiredFields = []
 
-        if (!this.name) {
-          requiredFields.push("name")
-        }
-        if (!this.value) {
-          requiredFields.push("value")
-        }
-        if (!this.currencyId) {
-          requiredFields.push("currency")
-        }
-        throw Error(`fields: [${requiredFields.join(", ")}] are required`)
+      if (!this.name) requiredFields.push("name")
+      if (!this.value) requiredFields.push("value")
+      if (!this.currencyId) requiredFields.push("currency")
+
+      if (requiredFields.length > 0) {
+        throw new Error(`fields ${requiredFields.join(", ")} are required`)
       } else {
         costCreate({
           name: this.name!,
@@ -116,9 +112,12 @@
             title="save"
             color="green"
             onclick={async () => {
-              goto("/")
-              requestBody.save()
-              notification("Cost saved")
+              try {
+                await requestBody.save()
+                notification("Cost saved")
+              } catch (error) {
+                notification(`${error ?? "something went wrong"}`, "❌", 5000)
+              }
             }}
           />
         </div>
