@@ -15,9 +15,8 @@ export type User = {
   configuration: Configuration
 }
 
-export type UserLoginRequestBody = {
-  username: string
-  password: string
+export type UserAuthRequestBody = {
+  token: string
 }
 
 export type Identity = {

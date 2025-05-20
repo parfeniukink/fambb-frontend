@@ -20,7 +20,7 @@
 {#if !exchange}
   <main>loading...</main>
 {:else}
-  <main class="flex justify-center text-center">
+  <main class="ml-10 text-center">
     <Box title="Edit Exchange" width={120} border={4} padding="default">
       <div class="flex flex-col gap-6">
         <input
@@ -47,7 +47,7 @@
             onclick={() => {
               goto("/")
               exchangeDelete(exchange!.id)
-              notification(`Exchange ${exchange!.timestamp} deleted`, "✅")
+              notification(`Exchange ${exchange!.timestamp} deleted`, "🗑️")
             }}
           />
         </div>

@@ -6,10 +6,12 @@
     items,
     cleanOnSelect = false,
     width = "full",
+    onchangeCallback,
   }: {
     value: any
     items: SelectionItem[]
     cleanOnSelect?: boolean
+    onchangeCallback?: CallableFunction
     width?: string
   } = $props()
 
@@ -28,6 +30,7 @@
     onchange={(
       event: Event & { currentTarget: EventTarget & HTMLSelectElement }
     ) => {
+      onchangeCallback()
       if (cleanOnSelect) {
         const target = event.target as HTMLSelectElement
         target.value = ""

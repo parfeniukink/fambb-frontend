@@ -7,7 +7,7 @@ export async function notification(
 ): Promise<void> {
   toast(message, {
     icon: icon,
-    position: "bottom-right",
+    position: duration < 3000 ? "top-right" : "bottom-center",
     duration: duration,
     style: "opacity: 0.7",
   })

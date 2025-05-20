@@ -86,7 +86,7 @@
       goto("/")
       notification(
         "Can't exchange. You must have at least 2 currencies",
-        "❌",
+        "🚧",
         4000
       )
     }
@@ -96,7 +96,7 @@
 {#if !dataLoaded}
   <p>loading data...</p>
 {:else}
-  <main class="flex justify-center text-center">
+  <main class="ml-10 text-center">
     <Box title="Add Exchange" width={120} border={4} padding="default">
       <div class="flex flex-col gap-6">
         <div class="w-full mt-4 flex">

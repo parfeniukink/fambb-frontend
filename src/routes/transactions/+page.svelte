@@ -1,35 +1,37 @@
 <script lang="ts">
+  import { goto } from "$app/navigation"
   import { page } from "$app/state"
-  import { transactionsList, userLogin } from "$lib/data/api"
+  import { notification } from "$lib/services/notifications"
   import type { Transaction } from "$lib/types/money"
-  import type { User } from "$lib/types/user"
+  import { onMount } from "svelte"
+  import { persistent } from "$lib/data/persistent.svelte"
+  import {
+    groupTransactionsByDate,
+    prettyMoney,
+    retrieveUrlFromTransaction,
+  } from "$lib/services/finances"
+  import { TRANSACTION_OPERATIONS_MAPPER } from "$lib/constants"
+  import { transactionsList } from "$lib/data/api"
+  import DecimalInput from "$lib/components/DecimalInput.svelte"
+  import Checkbox from "$lib/components/Checkbox.svelte"
+
+  let lastTransactionElement: HTMLElement
 
   const currencyId: string | null = page.url.searchParams.get("currencyId")
-
-  // the current representation of transactions
-  let transactionsByDates: Record<string, Transaction[]> = $state(
-    {} as Record<string, Transaction[]>
-  )
-  let transactionByDatesFiltered: Record<string, Transaction[]> = $derived.by(
-    () => {
-      if (showOnlyMine) {
-        console.log("updated")
-        return Object.fromEntries(
-          Object.entries(transactionsByDates)
-            .map(([date, transactions]) => [
-              date,
-              transactions.filter((transaction) => {
-                return (
-                  transaction.user.toLowerCase() === "john" // todo: change mocked user
-                )
-              }),
-            ])
-            .filter(([, _transactions]) => _transactions.length > 0)
+  let transactions: Transaction[] = $state([])
+  let showOnlyMine: boolean = $state(false)
+  const groupedTransactions = $derived.by(() => {
+    const filtered = showOnlyMine
+      ? transactions.filter(
+          (item) => item.user === persistent.identity!.user.name
         )
-      } else {
-        return transactionsByDates
-      }
-    }
+      : transactions
+
+    return groupTransactionsByDate(filtered)
+  })
+
+  let dataLoaded: boolean = $derived(
+    currencyId && persistent.identity && transactions ? true : false
   )
 
   // Pagination definition
@@ -37,113 +39,92 @@
   let left: number = $state(0)
   let limit: number = $state(10)
 
-  let showOnlyMine: boolean = $state(false)
-
-  // dispatch the end of the link, based on the transaction information.
-  // depends on transaction type we redirect to the recpective page
-  function endRoute(transaction: domain.Transaction) {
-    if (transaction.operation === "cost") {
-      return `/transactions/costs/${transaction.id.toString()}`
-    } else if (transaction.operation === "income") {
-      return `/transactions/incomes/${transaction.id.toString()}`
-    } else if (transaction.operation === "exchange") {
-      return `/transactions/exchange/${transaction.id.toString()}`
-    } else {
-      throw Error(
-        `Unrecognized transaction operation: ${transaction.operation}`
-      )
-    }
-  }
-
   onMount(async () => {
-    if (currencyId != null) {
-      await loadTransactions()
-    } else {
+    if (!currencyId) {
       goto("/")
+      notification("Currency is not specified for the transactions history")
     }
+
+    const transactionsResponse = await transactionsList(
+      context,
+      limit,
+      Number(currencyId!)
+    )
+    context = transactionsResponse.context
+    left = transactionsResponse.left
+    transactions = [...transactions, ...transactionsResponse.result]
   })
-
-  const loadTransactions = async () => {
-    const response: ResponseMultiPaginated<domain.Transaction> =
-      await dataProxy.fetchTransactions({
-        currencyId: Number(currencyId),
-        context: context,
-        limit: limit,
-      })
-
-    if (transactionsByDates) {
-      for (const item of response.result) {
-        const timestamp = item.timestamp.toString()
-
-        if (!transactionsByDates[timestamp]) {
-          transactionsByDates[timestamp] = [] // Initialize array if it doesn't exist
-        }
-        transactionsByDates[timestamp].push(item) // Add the transaction to the respective timestamp group
-      }
-
-      context = response.context
-      left = response.left
-    }
-  }
 </script>
 
-<main>
-  <section id="settings">
-    <div>
-      <p>pagination limit</p>
-      <input
-        id="paginationLimitSetting"
-        type="text"
-        inputmode="numeric"
-        pattern="\d*"
-        bind:value={limit}
-      />
-    </div>
-
-    <div>
-      <p>only mine</p>
-      <input
-        id="showOnlyMineSetting"
-        type="checkbox"
-        bind:checked={showOnlyMine}
-      />
-    </div>
-  </section>
-  <hr />
-  <section>
-    {#each Object.keys(transactionByDatesFiltered) as timestamp}
-      <div class="timestampGroup">
-        <!-- Display the timestamp  -->
-        <h1>[ {timestamp} ]</h1>
-        <!-- Display each transaction in the block  -->
-        {#each transactionByDatesFiltered[timestamp] as transaction}
-          <a href={endRoute(transaction)}
-            ><p class={transaction.operation}>
-              {#if transaction.operation === "cost"}
-                -
-              {:else if transaction.operation === "income"}
-                +
-              {:else if transaction.operation === "exchange"}
-                =
-              {/if}
-              {transaction.name}
-              <span class="money">
-                {formatAmount(transaction.value)}
-                {transaction.currency}
-                <span class="username">by {transaction.user.toLowerCase()}</span
-                >
-              </span>
-            </p>
-          </a>
+{#if !dataLoaded}
+  <p>loading data...</p>
+{:else}
+  <main class="flex justify-start items-end gap-10">
+    <!-- historical data -->
+    <section class="w-120">
+      <div class="flex flex-col gap-2 text-sm text-gray-300">
+        {#each Object.entries(groupedTransactions) as aggregatedItem}
+          <div
+            class="py-1 font-semibold text-gray-400 border-b border-gray-600"
+          >
+            {aggregatedItem[0]}
+          </div>
+          {#each aggregatedItem[1] as transaction}
+            <a
+              href={retrieveUrlFromTransaction(transaction)}
+              class="text-gray-100 hover:text-white flex justify-between"
+            >
+              <div class="flex justify-between w-full gap-5">
+                <p class="grow">
+                  {`${TRANSACTION_OPERATIONS_MAPPER[transaction.operation]} ${transaction.name}`}
+                </p>
+                <p>
+                  {prettyMoney(transaction.value)}{transaction.currency}
+                </p>
+                <p class="text-gray-500">{transaction.user}</p>
+              </div>
+            </a>
+          {/each}
+          <div class="mt-3"></div>
         {/each}
       </div>
-    {/each}
-  </section>
-  <section id="navigation">
-    {#if left > 0}
-      <button id="loadMoreButton" onclick={loadTransactions}
-        >load more...</button
-      >
-    {/if}
-  </section>
-</main>
+    </section>
+    <!-- operations -->
+    <section
+      class="flex items-center gap-10"
+      bind:this={lastTransactionElement}
+    >
+      {#if left > 0}
+        <button
+          class="w-32 px-4 py-2 rounded-lg cursor-pointer italic my-5 text-orange-400"
+          onclick={async () => {
+            const transactionsResponse = await transactionsList(
+              context,
+              limit,
+              Number(currencyId!)
+            )
+            context = transactionsResponse.context
+            left = transactionsResponse.left
+            transactions.push(...transactionsResponse.result)
+            // Scroll to bottom after new items
+            setTimeout(() => {
+              lastTransactionElement.scrollIntoView({ behavior: "smooth" })
+            }, 50)
+          }}>({`${left}`}) more...</button
+        >
+      {/if}
+      <div class="w-32">
+        <DecimalInput
+          bind:value={limit}
+          placeholder="limit pagination"
+          inputmode="decimal"
+        />
+      </div>
+
+      <p>only mine</p>
+      <Checkbox bind:checked={showOnlyMine} />
+    </section>
+    <!-- filters-->
+    <section class="flex gap-20 mb-20"></section>
+  </main>
+{/if}

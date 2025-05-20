@@ -6,7 +6,7 @@
   import Input from "$lib/components/Input.svelte"
   import DecimalInput from "$lib/components/DecimalInput.svelte"
   import DateButtons from "$lib/components/DateButtons.svelte"
-  import type { Cost } from "$lib/types/money"
+  import type { Cost, CostPartialUpdateRequestBody } from "$lib/types/money"
   import { costDelete, costRetrieve, costUpdate } from "$lib/data/api"
   import {
     costCategoriesToSelectionItems,
@@ -55,7 +55,7 @@
       )
     }
 
-    updatePayload() {
+    partialUpdatePayload(): CostPartialUpdateRequestBody {
       const payload: Record<string, any> = {}
 
       if (!cost) return payload
@@ -68,14 +68,14 @@
       if (this.categoryId !== cost.category.id)
         payload.categoryId = this.categoryId
 
-      return payload
+      return payload as CostPartialUpdateRequestBody
     }
   }
   const requestBody = new RequestBody()
 
   onMount(async () => {
     // get costId from page params
-    cost = await costRetrieve(costId)
+    cost = (await costRetrieve(costId)).result
     requestBody.updateFromCost(cost)
   })
 </script>
@@ -83,7 +83,7 @@
 {#if !dataLoaded}
   <main>loading...</main>
 {:else}
-  <main class="flex justify-center text-center">
+  <main class="ml-10 text-center">
     <Box title="Edit Cost" width={120} border={4} padding="default">
       <div class="flex flex-col gap-6">
         <div class="w-full mt-4 flex">
@@ -126,7 +126,7 @@
             onclick={() => {
               goto("/")
               costDelete(cost!.id)
-              notification(`Cost ${cost!.name} deleted`, "✅")
+              notification(`Cost ${cost!.name} deleted`, "🗑️")
               // todo: update transactions history data
             }}
           />
@@ -138,8 +138,8 @@
               if (!requestBody.valid()) {
                 notification("Invalid Cost Data", "⚠️")
               } else {
-                costUpdate(costId, requestBody.updatePayload())
-                notification(`Cost ${cost!.name} saved`, "✅")
+                costUpdate(costId, requestBody.partialUpdatePayload())
+                notification(`cost ${cost!.name} saved`)
               }
             }}
           />

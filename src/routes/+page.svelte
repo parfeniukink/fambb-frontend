@@ -3,64 +3,104 @@
   import Button from "$lib/components/Button.svelte"
   import CostShortcutComponent from "$lib/components/CostShortcut.svelte"
 
-  import type { Transaction, CostShortcut, Equity } from "$lib/types/money"
+  import type {
+    Transaction,
+    Equity,
+    CostShortcut,
+    Cost,
+  } from "$lib/types/money"
 
-  import { groupTransactionsByDate, prettyMoney } from "$lib/services/finances"
+  import {
+    groupTransactionsByDate,
+    prettyMoney,
+    retrieveUrlFromTransaction,
+  } from "$lib/services/finances"
   import { goto } from "$app/navigation"
-  import { persistent } from "$lib/data/persistent.svelte"
   import { onMount } from "svelte"
   import {
-    costShortcutsList,
+    costShortcutApply,
+    costShortcutDelete,
     equityList,
     transactionsList,
   } from "$lib/data/api"
+  import { TRANSACTION_OPERATIONS_MAPPER } from "$lib/constants"
+  import { persistent } from "$lib/data/persistent.svelte"
+  import { notification } from "$lib/services/notifications"
+  import { type Response } from "$lib/types/response"
 
   // ─────────────────────────────────────────────────────────
   // form the dataset to be provided as props to children
   // ─────────────────────────────────────────────────────────
   let equities: Equity[] | null = $state(null)
-  let costShortcuts: CostShortcut[] | null = $state(null)
   let transactionsHistory: Transaction[] | null = $state(null)
 
+  // cost shortcuts section
+  let costShortcutToApply: CostShortcut | null = $state(null)
+
   let dataLoaded: boolean = $derived(
-    equities && costShortcuts && transactionsHistory ? true : false
+    persistent.identity && equities && transactionsHistory ? true : false
   )
 
-  onMount(async () => {
-    const [equitiesResponse, costShortcutsResponse, transactionsResopnse] =
-      await Promise.all([equityList(), costShortcutsList(), transactionsList()])
-
-    equities = equitiesResponse.result
-    costShortcuts = costShortcutsResponse.result
-    transactionsHistory = transactionsResopnse.result
-  })
-
-  // ─────────────────────────────────────────────────────────
-  // CONSTANTS DEFINITION
-  // ─────────────────────────────────────────────────────────
-  const TRANSACTION_OPERATIONS_MAPPER: Record<string, string> = {
-    cost: "-",
-    income: "+",
-    exchange: "=",
-  }
-  // ─────────────────────────────────────────────────────────
-  // FUNCTIONS DEFINITION
-  // ─────────────────────────────────────────────────────────
-  function retrieveUrlFromTransaction(transaction: Transaction): string {
-    switch (transaction.operation) {
-      case "cost":
-        return `/transactions/costs/${transaction.id}`
-      case "income":
-        return `/transactions/incomes/${transaction.id}`
-      case "exchange":
-        return `/transactions/exchange/${transaction.id}`
-      default:
-        throw new Error(`Can't get URL from ${transaction}`)
-    }
-  }
   const groupedHistoryItems = $derived(
     groupTransactionsByDate(transactionsHistory!)
   )
+
+  onMount(async () => {
+    const [equitiesResponse, transactionsResopnse] = await Promise.all([
+      equityList(),
+      transactionsList(),
+    ])
+
+    equities = equitiesResponse.result
+    transactionsHistory = transactionsResopnse.result
+  })
+
+  async function handleConfirmShortcutValue() {
+    if (costShortcutToApply && costShortcutToApply.value) {
+      // 🤔 WHY WE CAN'T USE ``await`` FOR FUNCTION CALLS BELOW?
+      costShortcutApply(costShortcutToApply.id, {
+        value: costShortcutToApply.value,
+      })
+      notification(
+        `saved, ${costShortcutToApply!.name} ${costShortcutToApply!.value}${costShortcutToApply!.currency.sign}`
+      )
+    } else {
+      notification("not saved")
+    }
+    costShortcutToApply = null
+  }
+
+  function decreaseEquity(currencyId: number, amount: number) {
+    for (let item of equities!) {
+      if (item.currency.id == currencyId) {
+        item.amount -= amount
+        return
+      }
+    }
+    throw new Error(`can not find currency ${currencyId}`)
+  }
+
+  function increaseEquity(currencyId: number, amount: number) {
+    for (let item of equities!) {
+      if (item.currency.id == currencyId) {
+        item.amount += amount
+        return
+      }
+    }
+    throw new Error(`can not find currency ${currencyId}`)
+  }
+
+  function transactionFromCost(cost: Cost): Transaction {
+    return {
+      id: cost.id,
+      operation: "cost",
+      name: cost.name,
+      value: cost.value,
+      timestamp: cost.timestamp,
+      currency: cost.currency.sign,
+      user: cost.user,
+    }
+  }
 </script>
 
 {#if !dataLoaded}
@@ -68,16 +108,26 @@
 {:else}
   <main class="flex gap-10">
     <div class="flex flex-col gap-10">
+      <!-- ───────────────────────────────────────────────────────── -->
+      <!-- EQUITY SECTION -->
+      <!-- ───────────────────────────────────────────────────────── -->
       <Box title="🏦 Equity">
         <div class="flex flex-col items-center gap-2">
           {#each equities! as item}
-            <a href="/" class="cursor-pointer hover:text-emerald-500"
-              >{prettyMoney(item.equity)} {item.currency.sign}</a
+            <a
+              href={`/transactions?currencyId=${item.currency.id}`}
+              class="cursor-pointer hover:text-emerald-500"
+              >{persistent.identity!.user.configuration.showEquity
+                ? `${prettyMoney(item.amount)} ${item.currency.sign}`
+                : `***** ${item.currency.sign}`}</a
             >
           {/each}
         </div>
       </Box>
 
+      <!-- ───────────────────────────────────────────────────────── -->
+      <!-- ACTIONS SECTION -->
+      <!-- ───────────────────────────────────────────────────────── -->
       <Box title="🔘 Actions">
         <div class="flex flex-col gap-5">
           <Button
@@ -104,15 +154,48 @@
         </div>
       </Box>
     </div>
+
+    <!-- ───────────────────────────────────────────────────────── -->
+    <!-- SHORTCUTS SECTION -->
+    <!-- ───────────────────────────────────────────────────────── -->
     <Box title="📊 Shortcuts" width={120}>
       <div class="flex flex-wrap gap-3 content-center">
-        {#each costShortcuts! as shortcut}
+        {#each persistent.costShortcuts! as shortcut}
           <CostShortcutComponent
-            shortcutId={shortcut.id}
-            value={shortcut.value}
+            onclick={async () => {
+              if (!shortcut.value) {
+                costShortcutToApply = { ...shortcut }
+              } else {
+                const response: Response<Cost> = await costShortcutApply(
+                  shortcut.id
+                )
+                notification(
+                  `saved, ${shortcut.name} ${shortcut.value}${shortcut.currency.sign}`
+                )
+                decreaseEquity(shortcut.currency.id, shortcut.value)
+                transactionsHistory!.push(transactionFromCost(response.result))
+              }
+            }}
           >
+            <button
+              type="button"
+              class="text-[#3a342e] hover:text-white self-start"
+              style="font-size: 0.8rem;"
+              onclick={(e) => {
+                e.stopPropagation()
+                costShortcutDelete(shortcut.id)
+                persistent.costShortcuts = persistent.costShortcuts!.filter(
+                  (item) => item.id != shortcut.id
+                )
+                notification(
+                  `delete ${shortcut.name} ${shortcut.value ?? "__"}${shortcut.currency.sign}`,
+                  "❌"
+                )
+              }}
+              aria-label="Delete shortcut">x</button
+            >
             <h2>{shortcut.name}</h2>
-            <p class="mb-2 italic text-sm">{shortcut.category.name}</p>
+            <p class="mb-4 italic text-sm">{shortcut.category.name}</p>
             <p>
               {shortcut.value ? prettyMoney(shortcut.value) : "..."}
               {shortcut.currency.sign}
@@ -121,10 +204,10 @@
         {/each}
         <button
           type="button"
-          class="border-2 p-2 w-32 rounded-md italic text-sm hover:bg-emerald-800 cursor-pointer"
-          onclick={async () => {
+          class="border-2 p-2 w-32 rounded-md italic text-xl hover:bg-emerald-800 cursor-pointer"
+          onclick={() => {
             goto("/transactions/costs/shortcuts")
-          }}>Add Cost Shortcut</button
+          }}>➕</button
         >
       </div>
     </Box>
@@ -155,4 +238,32 @@
       </div>
     </Box>
   </main>
+{/if}
+
+{#if costShortcutToApply !== null}
+  <div
+    class="fixed inset-0 flex items-center justify-center bg-[#3a342e] z-50"
+    onclick={() => {
+      costShortcutToApply = null
+    }}
+  >
+    <div
+      class="bg-transparent rounded p-6 flex flex-col gap-3 justify-center items-center"
+    >
+      <input
+        type="number"
+        bind:value={costShortcutToApply.value}
+        class="border rounded-md w-full h-12 p-3 hover:border-amber-300"
+        autofocus
+        onkeydown={(e) => {
+          if (e.key === "Enter") handleConfirmShortcutValue()
+        }}
+      />
+      <button
+        onclick={handleConfirmShortcutValue}
+        class="w-full h-12 rounded-md bg-orange-700 hover:cursor-pointer"
+        >Confirm</button
+      >
+    </div>
+  </div>
 {/if}

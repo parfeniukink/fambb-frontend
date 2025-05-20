@@ -6,7 +6,11 @@
   import Input from "$lib/components/Input.svelte"
   import DecimalInput from "$lib/components/DecimalInput.svelte"
   import DateButtons from "$lib/components/DateButtons.svelte"
-  import type { Income, IncomeSource } from "$lib/types/money"
+  import type {
+    Income,
+    IncomePartialUpdateRequestBody,
+    IncomeSource,
+  } from "$lib/types/money"
   import { incomeRetrieve, incomeUpdate, incomeDelete } from "$lib/data/api"
   import {
     currenciesToSelectionItems,
@@ -50,7 +54,7 @@
       )
     }
 
-    updatePayload() {
+    partialUpdatePayload(): IncomePartialUpdateRequestBody {
       const payload: Record<string, any> = {}
 
       if (!income) return payload
@@ -63,7 +67,7 @@
         payload.currencyId = this.currencyId
       if (this.source !== income.source) payload.source = this.source
 
-      return payload
+      return payload as IncomePartialUpdateRequestBody
     }
   }
   const requestBody = new RequestBody()
@@ -78,7 +82,7 @@
 {#if !dataLoaded}
   <main>loading...</main>
 {:else}
-  <main class="flex justify-center text-center">
+  <main class="ml-10 text-center">
     <Box title="Edit Income" width={120} border={4} padding="default">
       <div class="flex flex-col gap-6">
         <div class="w-full mt-4 flex">
@@ -121,7 +125,7 @@
             onclick={() => {
               goto("/")
               incomeDelete(income!.id)
-              notification(`Income ${income!.name} deleted`, "✅")
+              notification(`Income ${income!.name} deleted`, "🗑️")
               // todo: update transactions history data
             }}
           />
@@ -133,8 +137,8 @@
               if (!requestBody.valid()) {
                 notification("Invalid Income Data", "⚠️")
               } else {
-                incomeUpdate(incomeId, requestBody.updatePayload())
-                notification(`Income ${income!.name} saved`, "✅")
+                incomeUpdate(incomeId, requestBody.partialUpdatePayload())
+                notification(`Income ${income!.name} saved`)
               }
             }}
           />
