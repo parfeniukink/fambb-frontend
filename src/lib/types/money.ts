@@ -6,7 +6,7 @@ export type Currency = {
 
 export type Equity = {
   currency: Currency
-  equity: number
+  amount: number
 }
 
 export type OperationType = "cost" | "income" | "exchange"
@@ -35,6 +35,14 @@ export type CostCreateRequestBody = {
   categoryId: number
 }
 
+export type CostPartialUpdateRequestBody = {
+  name?: string
+  value?: number
+  timestamp?: string
+  currencyId?: number
+  categoryId?: number
+}
+
 export type Cost = {
   id: number
   name: string
@@ -42,6 +50,7 @@ export type Cost = {
   timestamp: string
   currency: Currency
   category: CostCategory
+  user: string
 }
 
 export type CostShortcutCreateRequestBody = {
@@ -59,6 +68,10 @@ export type CostShortcut = {
   category: CostCategory
 }
 
+export type CostShortcutApplyRequestBody = {
+  value: number | null
+}
+
 // INCOME-related
 export type IncomeSource = "revenue" | "gift" | "debt" | "other"
 
@@ -70,6 +83,14 @@ export type IncomeCreateRequestBody = {
   currencyId: number
 }
 
+export type IncomePartialUpdateRequestBody = {
+  name?: string
+  value?: number
+  source?: IncomeSource
+  timestamp?: string
+  currencyId?: number
+}
+
 export type Income = {
   id: number
   name: string
@@ -77,6 +98,7 @@ export type Income = {
   source: IncomeSource
   timestamp: string
   currency: Currency
+  user: string
 }
 
 // CURRENCY EXCHANGE-related types
@@ -95,6 +117,7 @@ export type Exchange = {
   fromCurrency: Currency
   toCurrency: Currency
   timestamp: string
+  user: string
 }
 
 // INFRASTRUCTURE

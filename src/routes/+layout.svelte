@@ -8,8 +8,7 @@
 
   let { children } = $props()
 
-  let username: string = $state("")
-  let password: string = $state("")
+  let token: string = $state("")
 
   // styles
   const NAV_LI_STYLES = "hover:text-teal-600 cursor-pointer"
@@ -30,7 +29,7 @@
     </nav>
   {/if}
 
-  <div class="w-px bg-gray-200 mt-10 mr-10 h-[70%]"></div>
+  <div class="w-px bg-gray-200 mt-10 mr-20 h-[70%]"></div>
 
   {#if persistent.authenticated}
     <main class="mt-10 w-full">
@@ -40,19 +39,14 @@
     <main
       class="w-full flex flex-col justify-center content-center items-center gap-10 px-100"
     >
-      <h1 class="text-xl">Authorization</h1>
-      <Input bind:value={username} placeholder={"username..."} />
-      <Input
-        bind:value={password}
-        placeholder={"password..."}
-        type="password"
-      />
+      <h1 class="text-xl">AUTHENTICATION</h1>
+      <Input bind:value={token} placeholder={"token..."} />
       <Button
-        title="Authorization"
+        title="SUBMIT"
         color="blue"
-        onclick={() => {
-          persistent.loadIdentity(username, password)
-          persistent.initialize()
+        onclick={async () => {
+          await persistent.loadIdentity(token)
+          await persistent.initialize()
         }}
       />
     </main>
@@ -72,5 +66,6 @@
     background-color: #3a342e;
     color: #ebebeb;
     font-family: "ComicMono";
+    letter-spacing: 0.1em;
   }
 </style>

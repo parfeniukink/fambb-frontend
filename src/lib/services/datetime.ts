@@ -1,3 +1,5 @@
+// simple representation of date
+// ex: ``Jan 13``
 export function formatDate(
   dateStr: string,
   includeYear: boolean = false

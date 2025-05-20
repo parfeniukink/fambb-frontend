@@ -12,7 +12,6 @@
   } from "../shared"
   import DateButtons from "$lib/components/DateButtons.svelte"
   import { persistent } from "$lib/data/persistent.svelte"
-  import { goto } from "$app/navigation"
   import { notification } from "$lib/services/notifications"
   import { today } from "$lib/infrastructure/datetime"
 
@@ -64,7 +63,7 @@
 {#if !dataLoaded}
   <p>loading data...</p>
 {:else}
-  <main class="flex justify-center text-center">
+  <main class="ml-10 text-center">
     <Box title="Add Cost" width={120} border={4} padding="default">
       <div class="flex flex-col gap-6">
         <div class="w-full mt-4 flex">
@@ -114,6 +113,7 @@
             onclick={async () => {
               try {
                 await requestBody.save()
+                requestBody.reset()
                 notification("Cost saved")
               } catch (error) {
                 notification(`${error ?? "something went wrong"}`, "❌", 5000)

@@ -1,8 +1,13 @@
 <script lang="ts">
   let {
     value = $bindable(),
+    inputmode = "decimal",
     placeholder,
-  }: { value: any; placeholder: string } = $props()
+  }: {
+    value: any
+    placeholder: string
+    inputmode?: "decimal" | "numeric"
+  } = $props()
 
   function sanitizeDecimal(input: string): number {
     const result = input
@@ -15,7 +20,7 @@
 
 <input
   type="text"
-  inputmode="decimal"
+  inputmode={inputmode ?? "decimal"}
   pattern="\d*"
   bind:value
   {placeholder}

@@ -2,7 +2,9 @@ import type { Transaction } from "$lib/types/money"
 import { formatDate } from "./datetime"
 
 // convert number into pretty string to represent for user
-export function prettyMoney(value: number) {
+export function prettyMoney(value: number): string {
+  if (!value) throw new Error("no value provided")
+
   let formatted = value.toFixed(2)
   let [integerPart, decimalPart] = formatted.split(".")
 
@@ -18,27 +20,35 @@ export function prettyMoney(value: number) {
 }
 
 // returns groups of transactions, sorted by datetime
+// todo: group annually if more than 1 year appears
 export function groupTransactionsByDate(
   items: Transaction[]
 ): Record<string, Transaction[]> {
-  const grouped = items.reduce(
-    (acc, item) => {
-      const dateKey = formatDate(item.timestamp)
-      if (!acc[dateKey]) acc[dateKey] = []
-      acc[dateKey].push(item)
-      return acc
-    },
-    {} as Record<string, Transaction[]>
-  )
+  const grouped = new Map<string, Transaction[]>()
 
-  const sortedKeys = Object.keys(grouped).sort(
-    (a, b) => new Date(a).getTime() - new Date(b).getTime()
-  )
-
-  const sortedGrouped: Record<string, Transaction[]> = {}
-  for (const key of sortedKeys) {
-    sortedGrouped[key] = grouped[key]
+  for (const item of items) {
+    const dateKey = formatDate(item.timestamp)
+    if (!grouped.has(dateKey)) grouped.set(dateKey, [])
+    grouped.get(dateKey)!.push(item)
   }
 
-  return sortedGrouped
+  return Object.fromEntries(
+    Array.from(grouped.entries()).sort(
+      ([a], [b]) => new Date(b).getTime() - new Date(a).getTime()
+    )
+  )
+}
+
+// returns the DETAIL URL, based on the TRANSACTION
+export function retrieveUrlFromTransaction(transaction: Transaction): string {
+  switch (transaction.operation) {
+    case "cost":
+      return `/transactions/costs/${transaction.id}`
+    case "income":
+      return `/transactions/incomes/${transaction.id}`
+    case "exchange":
+      return `/transactions/exchange/${transaction.id}`
+    default:
+      throw new Error(`Can't get URL from ${transaction}`)
+  }
 }
