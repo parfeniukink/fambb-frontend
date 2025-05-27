@@ -12,7 +12,7 @@
   function sanitizeDecimal(input: string): number {
     const result = input
       .replace(" ", "")
-      .replace(/[^1-9.,]+/g, "")
+      .replace(/[^0-9.,]+/g, "")
       .replace(",", ".")
     return Number(result)
   }

@@ -14,7 +14,7 @@
   const NAV_LI_STYLES = "hover:text-teal-600 cursor-pointer"
 </script>
 
-<div class="flex h-screen">
+<main class="flex h-screen w-full m-0 p-0">
   {#if persistent.authenticated}
     <nav class="w-48 text-xl mt-10 ml-10 text-center h-100">
       <ul class="flex flex-col space-y-2 gap-15 h-full justify-start">
@@ -27,32 +27,31 @@
         <li><a href="/settings" class={NAV_LI_STYLES}>SETTINGS</a></li>
       </ul>
     </nav>
+    <div class="w-px bg-gray-200 mt-10 mr-20 h-[70%]"></div>
   {/if}
-
-  <div class="w-px bg-gray-200 mt-10 mr-20 h-[70%]"></div>
 
   {#if persistent.authenticated}
-    <main class="mt-10 w-full">
+    <div class="mt-10 mr-10 w-full">
       {@render children()}
-    </main>
+    </div>
   {:else}
-    <main
-      class="w-full flex flex-col justify-center content-center items-center gap-10 px-100"
-    >
-      <h1 class="text-xl">AUTHENTICATION</h1>
-      <Input bind:value={token} placeholder={"token..."} />
-      <Button
-        title="SUBMIT"
-        color="blue"
-        onclick={async () => {
-          await persistent.loadIdentity(token)
-          await persistent.initialize()
-        }}
-      />
-    </main>
+    <div class="flex w-full justify-center">
+      <div class="flex flex-col w-96 self-center gap-3 text-center">
+        <h1 class="text-xl mb-3 font-bold">AUTHENTICATION</h1>
+        <Input bind:value={token} placeholder={"token..."} />
+        <Button
+          title="SUBMIT"
+          color="blue"
+          onclick={async () => {
+            await persistent.loadIdentity(token)
+            await persistent.initialize()
+          }}
+        />
+      </div>
+    </div>
   {/if}
   <Toaster />
-</div>
+</main>
 
 <style lang="postcss">
   @reference "tailwindcss";

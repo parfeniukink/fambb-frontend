@@ -5,12 +5,16 @@
     width = 0,
     border = 3,
     padding = "default",
+    actionItemIcon = null,
+    actionItemCallback = null,
   }: {
     children: CallableFunction
     title: string
     width?: number
     border?: number
     padding?: string
+    actionItemIcon?: string | null
+    actionItemCallback?: any
   } = $props()
 
   const STYLES: Record<string, Record<string, string>> = {
@@ -20,6 +24,7 @@
       76: "w-76",
       100: "w-100",
       120: "w-120",
+      180: "w-180",
       240: "w-240",
     },
     border: {
@@ -38,6 +43,18 @@
 <main
   class={`flex flex-col gap-10 ${STYLES.padding[padding]} rounded-xl ${STYLES.width[width]} ${STYLES.border[border]}`}
 >
-  <h1 class="font-bold text-xl">{title}</h1>
+  {#if actionItemIcon && actionItemCallback}
+    <div class="flex justify-between">
+      <h1 class="font-bold text-xl">{title}</h1>
+      <h1
+        class="font-bold text-xl hover:cursor-pointer"
+        onclick={actionItemCallback}
+      >
+        {actionItemIcon}
+      </h1>
+    </div>
+  {:else}
+    <h1 class="font-bold text-xl">{title}</h1>
+  {/if}
   {@render children()}
 </main>

@@ -114,9 +114,13 @@
               try {
                 await requestBody.save()
                 requestBody.reset()
-                notification("Cost saved")
+                notification({ message: "Cost saved" })
               } catch (error) {
-                notification(`${error ?? "something went wrong"}`, "❌", 5000)
+                notification({
+                  message: `${error ?? "something went wrong"}`,
+                  icon: "❌",
+                  duration: 5000,
+                })
               }
             }}
           />

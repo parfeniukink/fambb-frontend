@@ -84,11 +84,11 @@
     // validate if user has enough currencies to perform such an operation
     if (dataLoaded && persistent.currencies!.length < 2) {
       goto("/")
-      notification(
-        "Can't exchange. You must have at least 2 currencies",
-        "🚧",
-        4000
-      )
+      notification({
+        message: "Can't exchange. You must have at least 2 currencies",
+        icon: "🚧",
+        duration: 4000,
+      })
     }
   })
 </script>
@@ -141,10 +141,14 @@
             onclick={async () => {
               try {
                 await requestBody.save()
-                notification("Exchange saved")
+                notification({ message: "Exchange saved" })
                 goto("/")
               } catch (error) {
-                notification(`${error ?? "something went wrong"}`, "❌", 5000)
+                notification({
+                  message: `${error ?? "something went wrong"}`,
+                  icon: "❌",
+                  duration: 5000,
+                })
               }
             }}
           />

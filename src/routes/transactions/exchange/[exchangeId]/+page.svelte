@@ -13,7 +13,7 @@
   let exchange: Exchange | null = $state(null)
 
   onMount(async () => {
-    exchange = await exchangeRetrieve(exchangeId)
+    exchange = (await exchangeRetrieve(exchangeId)).result
   })
 </script>
 
@@ -47,7 +47,11 @@
             onclick={() => {
               goto("/")
               exchangeDelete(exchange!.id)
-              notification(`Exchange ${exchange!.timestamp} deleted`, "🗑️")
+              notification({
+                message: `Exchange ${exchange!.fromValue}${exchange!.fromCurrency.sign} -> ${exchange!.toValue}${exchange?.toCurrency.sign} deleted`,
+                icon: "🗑️",
+              })
+              exchange = null
             }}
           />
         </div>
