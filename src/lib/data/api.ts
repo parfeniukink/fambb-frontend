@@ -27,7 +27,9 @@ import type {
   AnalyticsFiltersQueryParams,
 } from "$lib/types/analytics"
 
-const BASE_URL = "http://localhost:8000"
+import { PUBLIC_BASE_URL } from "$env/static/public"
+
+const BASE_URL = PUBLIC_BASE_URL
 
 export async function apiCall<T>(
   url: string,
