@@ -1,26 +1,20 @@
 <script lang="ts">
+  import { STYLES } from "$lib/constants"
   import type { SelectionItem } from "$lib/types/money"
 
   let {
     value = $bindable(),
     items,
     cleanOnSelect = false,
-    width = "full",
+    width = 0,
     onchangeCallback,
   }: {
     value: any
     items: SelectionItem[]
     cleanOnSelect?: boolean
     onchangeCallback?: CallableFunction
-    width?: string
+    width?: number
   } = $props()
-
-  const STYLES: Record<string, Record<string, string>> = {
-    width: {
-      full: "w-full",
-      "24": "w-24",
-    },
-  }
 </script>
 
 <main class="relative">
@@ -30,7 +24,7 @@
     onchange={(
       event: Event & { currentTarget: EventTarget & HTMLSelectElement }
     ) => {
-      onchangeCallback()
+      if (onchangeCallback) onchangeCallback()
       if (cleanOnSelect) {
         const target = event.target as HTMLSelectElement
         target.value = ""

@@ -123,10 +123,13 @@
           <Button
             title="delete"
             color="red"
-            onclick={() => {
+            onclick={async () => {
               goto("/")
-              costDelete(cost!.id)
-              notification(`Cost ${cost!.name} deleted`, "🗑️")
+              await costDelete(cost!.id)
+              notification({
+                message: `Cost ${cost!.name} deleted`,
+                icon: "🗑️",
+              })
               // todo: update transactions history data
             }}
           />
@@ -136,10 +139,10 @@
             onclick={() => {
               goto("/")
               if (!requestBody.valid()) {
-                notification("Invalid Cost Data", "⚠️")
+                notification({ message: "Invalid Cost Data", icon: "⚠️" })
               } else {
                 costUpdate(costId, requestBody.partialUpdatePayload())
-                notification(`cost ${cost!.name} saved`)
+                notification({ message: `cost ${cost!.name} saved` })
               }
             }}
           />

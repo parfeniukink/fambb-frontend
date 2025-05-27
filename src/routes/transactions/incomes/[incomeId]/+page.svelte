@@ -26,7 +26,7 @@
   let income: Income | null = $state(null)
 
   const dataLoaded: boolean = $derived(
-    income && persistent.currencies ? true : false
+    income && persistent.identity && persistent.currencies ? true : false
   )
 
   class RequestBody {
@@ -74,7 +74,7 @@
 
   onMount(async () => {
     // get incomeId from page params
-    income = await incomeRetrieve(incomeId)
+    income = (await incomeRetrieve(incomeId)).result
     requestBody.updateFromIncome(income)
   })
 </script>
@@ -106,7 +106,7 @@
             items={stringsToSelectionItems(
               persistent.identity!.user.configuration.incomeSnippets
             )}
-            width="24"
+            width={24}
             cleanOnSelect={true}
           />
         </div>
@@ -125,7 +125,10 @@
             onclick={() => {
               goto("/")
               incomeDelete(income!.id)
-              notification(`Income ${income!.name} deleted`, "🗑️")
+              notification({
+                message: `Income ${income!.name} deleted`,
+                icon: "🗑️",
+              })
               // todo: update transactions history data
             }}
           />
@@ -135,10 +138,10 @@
             onclick={() => {
               goto("/")
               if (!requestBody.valid()) {
-                notification("Invalid Income Data", "⚠️")
+                notification({ message: "Invalid Income Data", icon: "⚠️" })
               } else {
                 incomeUpdate(incomeId, requestBody.partialUpdatePayload())
-                notification(`Income ${income!.name} saved`)
+                notification({ message: `Income ${income!.name} saved` })
               }
             }}
           />

@@ -119,10 +119,14 @@
             onclick={async () => {
               try {
                 await requestBody.save()
-                notification("Income saved")
+                notification({ message: "Income saved" })
                 goto("/")
               } catch (error) {
-                notification(`${error ?? "something went wrong"}`, "❌", 5000)
+                notification({
+                  message: `${error ?? "something went wrong"}`,
+                  icon: "❌",
+                  duration: 5000,
+                })
               }
             }}
           />

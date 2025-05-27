@@ -3,13 +3,13 @@
   import Input from "$lib/components/Input.svelte"
   import Button from "$lib/components/Button.svelte"
   import Badge from "$lib/components/Badge.svelte"
-  import Checkbox from "$lib/components/Checkbox.svelte"
   import { persistent } from "$lib/data/persistent.svelte"
   import { notification } from "$lib/services/notifications"
   import {
     costCategoriesToSelectionItems,
     currenciesToSelectionItems,
   } from "../transactions/shared"
+  import ToggleButton from "$lib/components/ToggleButton.svelte"
 
   const dataLoaded: boolean = $derived(
     persistent.identity && persistent.currencies && persistent.costCategories
@@ -33,7 +33,7 @@
           width="full"
           cleanOnSelect={false}
           onchangeCallback={() => {
-            notification("default currency changed")
+            notification({ message: "default currency changed" })
             persistent.flush()
           }}
         />
@@ -48,7 +48,7 @@
           onchangeCallback={() => {
             // todo: api call
             persistent.flush()
-            notification("default cost category changed")
+            notification({ message: "default cost category changed" })
           }}
         />
         <span class="text-sm text-gray-300">default cost category</span>
@@ -64,21 +64,24 @@
           onchangeCallback={() => {
             // todo: api call
             persistent.flush()
-            notification("updated cost notification threshold", "🛎️")
+            notification({
+              message: "updated cost notification threshold",
+              icon: "🛎️",
+            })
           }}
         />
         <span class="text-sm text-gray-300 ml-2"
           >cost notification threshold</span
         >
       </div>
-      <div class="flex flex-col items-center gap-2">
-        <Checkbox
+      <div class="flex flex-col items-center justify-between">
+        <ToggleButton
           bind:checked={persistent.identity!.user.configuration.showEquity}
           onchangeCallback={() => {
             // todo: api call
             persistent.identity!.user.configuration.showEquity
-              ? notification("equity is shown", "👀")
-              : notification("equity is hidden", "🥷")
+              ? notification({ message: "equity is shown", icon: "👀" })
+              : notification({ message: "equity is hidden", icon: "🥷" })
             persistent.flush()
           }}
         />
@@ -95,7 +98,7 @@
             content={item}
             onclick={() => {
               // todo: perform API call
-              notification(`remove cost ${item}`, "✔️")
+              notification({ message: `remove cost ${item}`, icon: "✔️" })
               persistent.identity!.user.configuration.costSnippets =
                 persistent.identity!.user.configuration.costSnippets.filter(
                   (element) => element != item
@@ -115,7 +118,7 @@
               newCostSnippet
             )
             newCostSnippet = ""
-            notification("Add Cost Snippet")
+            notification({ message: "Add Cost Snippet" })
           }}
           styles="w-72 px-4 py-4 rounded-lg cursor-pointer bg-emerald-800"
         />
@@ -131,7 +134,7 @@
             content={item}
             onclick={() => {
               // todo: api call
-              notification(`remove snippet ${item}`, "✔️")
+              notification({ message: `remove snippet ${item}`, icon: "✔️" })
               persistent.identity!.user.configuration.incomeSnippets =
                 persistent.identity!.user.configuration.incomeSnippets.filter(
                   (element) => element != item
@@ -151,7 +154,7 @@
               newIncomeSnippet
             )
             newIncomeSnippet = ""
-            notification("Add Income Snippet")
+            notification({ message: "Add Income Snippet" })
           }}
           styles="w-72 px-4 py-4 rounded-lg cursor-pointer bg-emerald-800"
         />

@@ -21,12 +21,14 @@
     costShortcutApply,
     costShortcutDelete,
     equityList,
+    notificationsList,
     transactionsList,
   } from "$lib/data/api"
   import { TRANSACTION_OPERATIONS_MAPPER } from "$lib/constants"
   import { persistent } from "$lib/data/persistent.svelte"
   import { notification } from "$lib/services/notifications"
-  import { type Response } from "$lib/types/response"
+  import type { Response } from "$lib/types/response"
+  import type { Notification } from "$lib/types/notifications"
 
   // ─────────────────────────────────────────────────────────
   // form the dataset to be provided as props to children
@@ -53,7 +55,16 @@
 
     equities = equitiesResponse.result
     transactionsHistory = transactionsResopnse.result
+
+    loadNotifications()
   })
+
+  async function loadNotifications() {
+    const notifications: Notification[] = await notificationsList()
+    for (let notif of notifications) {
+      notification({ message: notif.message, duration: 10000 })
+    }
+  }
 
   async function handleConfirmShortcutValue() {
     if (costShortcutToApply && costShortcutToApply.value) {
@@ -61,11 +72,11 @@
       costShortcutApply(costShortcutToApply.id, {
         value: costShortcutToApply.value,
       })
-      notification(
-        `saved, ${costShortcutToApply!.name} ${costShortcutToApply!.value}${costShortcutToApply!.currency.sign}`
-      )
+      notification({
+        message: `saved, ${costShortcutToApply!.name} ${costShortcutToApply!.value}${costShortcutToApply!.currency.sign}`,
+      })
     } else {
-      notification("not saved")
+      notification({ message: "not saved" })
     }
     costShortcutToApply = null
   }
@@ -74,16 +85,6 @@
     for (let item of equities!) {
       if (item.currency.id == currencyId) {
         item.amount -= amount
-        return
-      }
-    }
-    throw new Error(`can not find currency ${currencyId}`)
-  }
-
-  function increaseEquity(currencyId: number, amount: number) {
-    for (let item of equities!) {
-      if (item.currency.id == currencyId) {
-        item.amount += amount
         return
       }
     }
@@ -111,7 +112,7 @@
       <!-- ───────────────────────────────────────────────────────── -->
       <!-- EQUITY SECTION -->
       <!-- ───────────────────────────────────────────────────────── -->
-      <Box title="🏦 Equity">
+      <Box title="Equity">
         <div class="flex flex-col items-center gap-2">
           {#each equities! as item}
             <a
@@ -128,7 +129,7 @@
       <!-- ───────────────────────────────────────────────────────── -->
       <!-- ACTIONS SECTION -->
       <!-- ───────────────────────────────────────────────────────── -->
-      <Box title="🔘 Actions">
+      <Box title="Actions">
         <div class="flex flex-col gap-5">
           <Button
             color="blue"
@@ -158,8 +159,8 @@
     <!-- ───────────────────────────────────────────────────────── -->
     <!-- SHORTCUTS SECTION -->
     <!-- ───────────────────────────────────────────────────────── -->
-    <Box title="📊 Shortcuts" width={120}>
-      <div class="flex flex-wrap gap-3 content-center">
+    <Box title="Shortcuts">
+      <div class="flex flex-wrap gap-3 justify-start">
         {#each persistent.costShortcuts! as shortcut}
           <CostShortcutComponent
             onclick={async () => {
@@ -169,34 +170,39 @@
                 const response: Response<Cost> = await costShortcutApply(
                   shortcut.id
                 )
-                notification(
-                  `saved, ${shortcut.name} ${shortcut.value}${shortcut.currency.sign}`
-                )
+                notification({
+                  message: `saved, ${shortcut.name} ${shortcut.value}${shortcut.currency.sign}`,
+                })
                 decreaseEquity(shortcut.currency.id, shortcut.value)
                 transactionsHistory!.push(transactionFromCost(response.result))
               }
             }}
           >
+            <!-- Delete Button -->
             <button
               type="button"
-              class="text-[#3a342e] hover:text-white self-start"
+              class="text-[#3a342e] hover:text-white self-start ml-3 mt-2 hover:cursor-pointer"
               style="font-size: 0.8rem;"
-              onclick={(e) => {
+              onclick={async (e) => {
                 e.stopPropagation()
+
+                // note: 🤔 why we can't use the `await` expression here?
                 costShortcutDelete(shortcut.id)
                 persistent.costShortcuts = persistent.costShortcuts!.filter(
                   (item) => item.id != shortcut.id
                 )
-                notification(
-                  `delete ${shortcut.name} ${shortcut.value ?? "__"}${shortcut.currency.sign}`,
-                  "❌"
-                )
+                persistent.flush()
+                notification({
+                  message: `delete ${shortcut.name} ${shortcut.value ?? "__"}${shortcut.currency.sign}`,
+                  icon: "🗑️",
+                })
               }}
-              aria-label="Delete shortcut">x</button
+              aria-label="Delete shortcut">X</button
             >
-            <h2>{shortcut.name}</h2>
-            <p class="mb-4 italic text-sm">{shortcut.category.name}</p>
-            <p>
+            <!-- Text -->
+            <h3>{shortcut.name}</h3>
+            <p class="mb-4 italic text-xs">{shortcut.category.name}</p>
+            <p class="italic text-xs">
               {shortcut.value ? prettyMoney(shortcut.value) : "..."}
               {shortcut.currency.sign}
             </p>
@@ -204,14 +210,21 @@
         {/each}
         <button
           type="button"
-          class="border-2 p-2 w-32 rounded-md italic text-xl hover:bg-emerald-800 cursor-pointer"
+          class="border-2 p-2 w-36 rounded-md italic text-xl hover:bg-emerald-800 cursor-pointer"
           onclick={() => {
             goto("/transactions/costs/shortcuts")
           }}>➕</button
         >
       </div>
     </Box>
-    <Box title="📝 History" width={120}>
+    <Box
+      title="History"
+      width={180}
+      actionItemIcon="📔"
+      actionItemCallback={() => {
+        goto("/transactions")
+      }}
+    >
       <div class="flex flex-col gap-2 text-sm text-gray-300">
         {#each Object.entries(groupedHistoryItems) as aggregatedItem}
           <div

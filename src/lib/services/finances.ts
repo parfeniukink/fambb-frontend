@@ -3,7 +3,7 @@ import { formatDate } from "./datetime"
 
 // convert number into pretty string to represent for user
 export function prettyMoney(value: number): string {
-  if (!value) throw new Error("no value provided")
+  if (value === null) throw new Error("no value provided")
 
   let formatted = value.toFixed(2)
   let [integerPart, decimalPart] = formatted.split(".")

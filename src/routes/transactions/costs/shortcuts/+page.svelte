@@ -114,11 +114,15 @@
               try {
                 const instance: CostShortcut = await requestBody.save()
                 goto("/")
-                notification("Cost shortcut saved")
+                notification({ message: "Cost shortcut saved" })
                 persistent.costShortcuts!.push(instance)
                 persistent.flush()
               } catch (error) {
-                notification(`${error ?? "something went wrong"}`, "❌", 5000)
+                notification({
+                  message: `${error ?? "something went wrong"}`,
+                  icon: "❌",
+                  duration: 5000,
+                })
               }
             }}
           />
