@@ -1,6 +1,9 @@
 <script lang="ts">
   import "../app.css"
-  import logo from "$lib/assets/logo.png"
+  import logoDashboard from "$lib/assets/dashboard.png"
+  import logoAnalytics from "$lib/assets/analytics.png"
+  import logoShortcuts from "$lib/assets/shortcuts.png"
+  import logoSettings from "$lib/assets/settings.png"
   import { Toaster } from "svelte-french-toast"
   import { persistent } from "$lib/data/persistent.svelte"
   import Button from "$lib/components/Button.svelte"
@@ -8,37 +11,84 @@
 
   let { children } = $props()
 
+  // define global state for device type
+  let isMobile = persistent.mobileDevice
+
+  // onMount(() => {
+  //   // note: for each window resize
+  //   //  ─────────────────────────────────────────────────────────
+  //   window.addEventListener("resize", mutateIsMobile)
+  //   return () => window.removeEventListener("resize", mutateIsMobile)
+  //   //  ─────────────────────────────────────────────────────────
+  // })
+
   let token: string = $state("")
 
-  // styles
-  const NAV_LI_STYLES = "hover:text-teal-600 cursor-pointer"
+  const STYLES: Record<string, string> = {
+    mobileNavLi: "w-14",
+  }
 </script>
 
-<main class="flex h-screen w-full m-0 p-0">
-  {#if persistent.authenticated}
-    <nav class="w-48 text-xl mt-10 ml-10 text-center h-100">
-      <ul class="flex flex-col space-y-2 gap-15 h-full justify-start">
-        <li>
-          <a href="/" class={NAV_LI_STYLES}
-            ><img src={logo} alt="Logo" class="w-32 h-32 inline-block" /></a
-          >
-        </li>
-        <li><a href="/analytics" class={NAV_LI_STYLES}>ANALYTICS</a></li>
-        <li><a href="/settings" class={NAV_LI_STYLES}>SETTINGS</a></li>
-      </ul>
-    </nav>
-    <div class="w-px bg-gray-200 mt-10 mr-20 h-[70%]"></div>
-  {/if}
+<!-- ───────────────────────────────────────────────────────── -->
+<!-- MOBILE LAYOUT -->
+<!-- ───────────────────────────────────────────────────────── -->
+{#if isMobile}
+  <main class="w-full m-0 p-0">
+    {#if persistent.authenticated}
+      <nav class="w-full">
+        <ul
+          class="w-full flex justify-around fixed bottom-0 bg-[#3a342e] border-t-5 pt-1"
+        >
+          <li>
+            <a href="/"
+              ><img
+                src={logoDashboard}
+                alt="Dashboard"
+                class={STYLES.mobileNavLi}
+              /></a
+            >
+          </li>
+          <li>
+            <a href="/analytics"
+              ><img
+                src={logoAnalytics}
+                alt="Analytics"
+                class={STYLES.mobileNavLi}
+              /></a
+            >
+          </li>
+          <li>
+            <a href="/transactions/costs/shortcuts"
+              ><img
+                src={logoShortcuts}
+                alt="Shortcuts"
+                class={STYLES.mobileNavLi}
+              /></a
+            >
+          </li>
+          <li>
+            <a href="/settings"
+              ><img
+                src={logoSettings}
+                alt="Settings"
+                class={STYLES.mobileNavLi}
+              /></a
+            >
+          </li>
+        </ul>
+      </nav>
+    {/if}
 
-  {#if persistent.authenticated}
-    <div class="mt-10 mr-10 w-full">
-      {@render children()}
-    </div>
-  {:else}
-    <div class="flex w-full justify-center">
-      <div class="flex flex-col w-96 self-center gap-3 text-center">
+    {#if persistent.authenticated}
+      <div class="pt-10 px-3 w-full">
+        {@render children()}
+      </div>
+    {:else}
+      <div
+        class="flex flex-col px-5 w-full h-screen justify-center self-center gap-3 text-center"
+      >
         <h1 class="text-xl mb-3 font-bold">AUTHENTICATION</h1>
-        <Input bind:value={token} placeholder={"token..."} />
+        <Input bind:value={token} placeholder={"token..."} type="password" />
         <Button
           title="SUBMIT"
           color="blue"
@@ -48,10 +98,76 @@
           }}
         />
       </div>
-    </div>
-  {/if}
-  <Toaster />
-</main>
+    {/if}
+    <Toaster />
+  </main>
+{/if}
+
+<!-- ───────────────────────────────────────────────────────── -->
+<!-- DESKTOP LAYOUT -->
+<!-- ───────────────────────────────────────────────────────── -->
+{#if !isMobile}
+  <main class="flex h-screen w-full m-0 p-0">
+    {#if persistent.authenticated}
+      <nav class="w-32 text-xl mt-10 ml-5 text-center h-100">
+        <ul class="flex flex-col space-y-2 gap-15 h-full justify-start">
+          <li>
+            <a href="/"
+              ><img
+                src={logoDashboard}
+                alt="Logo"
+                class="w-20 inline-block"
+              /></a
+            >
+          </li>
+          <li>
+            <a href="/analytics"
+              ><img
+                src={logoAnalytics}
+                alt="Logo"
+                class="w-20 inline-block"
+              /></a
+            >
+          </li>
+          <li>
+            <a href="/settings"
+              ><img
+                src={logoSettings}
+                alt="Logo"
+                class="w-20 inline-block"
+              /></a
+            >
+          </li>
+        </ul>
+      </nav>
+
+      <!-- DIVIDER -->
+      <div class="w-0.5 bg-gray-400 mt-10 mr-10 h-[70%]"></div>
+    {/if}
+
+    {#if persistent.authenticated}
+      <div class="pt-10 pr-3 w-full">
+        {@render children()}
+      </div>
+    {:else}
+      <div class="flex w-full justify-center">
+        <div class="flex flex-col w-96 self-center gap-3 text-center">
+          <h1 class="text-xl mb-3 font-bold">AUTHENTICATION</h1>
+          <Input bind:value={token} placeholder={"token..."} type="password" />
+          <Button
+            title="SUBMIT"
+            color="blue"
+            onclick={async () => {
+              await persistent.loadIdentity(token)
+              await persistent.initialize()
+            }}
+          />
+        </div>
+      </div>
+    {/if}
+    <Toaster />
+  </main>
+{/if}
 
 <style lang="postcss">
   @reference "tailwindcss";

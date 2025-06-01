@@ -1,6 +1,7 @@
 FROM node:22 AS builder
 
-ENV PUBLIC_BASE_URL=https://api.budget.parfeniukink.space
+ARG PUBLIC_BASE_URL
+ARG VITE_ALLOWED_HOST
 
 WORKDIR /app
 
@@ -11,8 +12,7 @@ COPY . .
 RUN pnpm run build
 
 
-FROM node:22 as static
-COPY --from=builder /app/build /app/build
+EXPOSE 4173
+ENTRYPOINT ["pnpm"]
+CMD ["run", "preview", "--host"]
 
-EXPOSE 3000
-CMD ["node", "/app/build/index.js"]

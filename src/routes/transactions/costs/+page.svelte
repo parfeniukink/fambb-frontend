@@ -63,17 +63,18 @@
 {#if !dataLoaded}
   <p>loading data...</p>
 {:else}
-  <main class="ml-10 text-center">
-    <Box title="Add Cost" width={120} border={4} padding="default">
+  <!-- ───────────────────────────────────────────────────────── -->
+  <!-- MOBILE LAYOUT -->
+  <!-- ───────────────────────────────────────────────────────── -->
+  {#if persistent.mobileDevice}
+    <Box title="Add Cost" border={0} padding="small" titleCenter={true}>
       <div class="flex flex-col gap-6">
-        <div class="w-full mt-4 flex">
-          <input
-            type="date"
-            bind:value={requestBody.timestamp}
-            class="px-8 py-3 outline-none border-3 rounded-md w-56"
-          />
-          <DateButtons bind:value={requestBody.timestamp} />
-        </div>
+        <DateButtons bind:value={requestBody.timestamp} />
+        <input
+          type="date"
+          bind:value={requestBody.timestamp}
+          class="px-8 py-3 outline-none border-3 rounded-md"
+        />
         <div class="w-full">
           <Selection
             bind:value={requestBody.categoryId}
@@ -87,7 +88,7 @@
             items={stringsToSelectionItems(
               persistent.identity!.user.configuration.costSnippets
             )}
-            width="24"
+            width={24}
             cleanOnSelect={true}
           />
         </div>
@@ -96,13 +97,14 @@
           <Selection
             bind:value={requestBody.currencyId}
             items={currenciesToSelectionItems(persistent.currencies!)}
-            width="24"
+            width={24}
           />
         </div>
-        <div class="flex gap-4 mt-4">
+        <div class="flex flex-col gap-4 mt-4">
           <Button
             title="reset"
             color="red"
+            size="large"
             onclick={() => {
               requestBody.reset()
             }}
@@ -110,6 +112,7 @@
           <Button
             title="save"
             color="green"
+            size="large"
             onclick={async () => {
               try {
                 await requestBody.save()
@@ -127,5 +130,77 @@
         </div>
       </div>
     </Box>
-  </main>
+  {:else}
+    <!-- ───────────────────────────────────────────────────────── -->
+    <!-- DESKTOP LAYOUT -->
+    <!-- ───────────────────────────────────────────────────────── -->
+    <section class="ml-10 text-center">
+      <Box title="Add Cost" width={140} border={4} padding="default">
+        <div class="flex flex-col gap-6">
+          <div class="w-full mt-4 flex">
+            <input
+              type="date"
+              bind:value={requestBody.timestamp}
+              class="px-8 py-3 outline-none border-3 rounded-md w-56"
+            />
+            <DateButtons bind:value={requestBody.timestamp} />
+          </div>
+          <div class="w-full">
+            <Selection
+              bind:value={requestBody.categoryId}
+              items={costCategoriesToSelectionItems(persistent.costCategories!)}
+            />
+          </div>
+          <div class="flex gap-4">
+            <Input bind:value={requestBody.name} placeholder="name..." />
+            <Selection
+              bind:value={requestBody.name}
+              items={stringsToSelectionItems(
+                persistent.identity!.user.configuration.costSnippets
+              )}
+              width={24}
+              cleanOnSelect={true}
+            />
+          </div>
+          <div class="flex gap-4">
+            <DecimalInput
+              bind:value={requestBody.value}
+              placeholder="value..."
+            />
+            <Selection
+              bind:value={requestBody.currencyId}
+              items={currenciesToSelectionItems(persistent.currencies!)}
+              width={24}
+            />
+          </div>
+          <div class="flex gap-4 mt-4">
+            <Button
+              title="reset"
+              color="red"
+              onclick={() => {
+                requestBody.reset()
+              }}
+            />
+            <Button
+              title="save"
+              color="green"
+              onclick={async () => {
+                try {
+                  await requestBody.save()
+                  requestBody.reset()
+                  notification({ message: "Cost saved" })
+                } catch (error) {
+                  notification({
+                    message: `${error ?? "something went wrong"}`,
+                    icon: "❌",
+                    duration: 5000,
+                  })
+                }
+              }}
+            />
+          </div>
+        </div>
+      </Box>
+    </section>
+  {/if}
 {/if}

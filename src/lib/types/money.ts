@@ -15,6 +15,7 @@ export type Transaction = {
   id: number
   operation: OperationType
   name: string
+  icon: string
   value: number
   timestamp: string
   currency: string

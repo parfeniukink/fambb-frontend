@@ -9,6 +9,15 @@ export type Configuration = {
   notifyCostThreshold: number | null
 }
 
+export type ConfigurationPartialUpdateRequestBody = {
+  showEquity?: boolean
+  defaultCurrency?: Currency
+  defaultCostCategory?: CostCategory
+  costSnippets?: string[]
+  incomeSnippets?: string[]
+  notifyCostThreshold?: number | null
+}
+
 export type User = {
   id: number
   name: string

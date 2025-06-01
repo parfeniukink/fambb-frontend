@@ -1,133 +1,93 @@
 <script lang="ts">
-  import Box from "$lib/components/Box.svelte"
-  import Button from "$lib/components/Button.svelte"
-  import Selection from "$lib/components/Selection.svelte"
-  import Input from "$lib/components/Input.svelte"
-  import DecimalInput from "$lib/components/DecimalInput.svelte"
-  import type {
-    CostCategory,
-    Currency,
-    SelectionItem,
-    CostShortcut,
-  } from "$lib/types/money"
-  import { costShortcutCreate } from "$lib/data/api"
+  import CostShortcutComponent from "$lib/components/CostShortcut.svelte"
   import { persistent } from "$lib/data/persistent.svelte"
-  import { goto } from "$app/navigation"
+  import type { CostShortcut } from "$lib/types/money"
+  import { costShortcutApply } from "$lib/data/api"
   import { notification } from "$lib/services/notifications"
-  import { stringsToSelectionItems } from "../../shared"
-  import type { Response } from "$lib/types/response"
+  import { prettyMoney } from "$lib/services/finances"
+  import { goto } from "$app/navigation"
 
-  const dataLoaded: boolean = $derived(
-    persistent.identity && persistent.costCategories && persistent.currencies
-      ? true
-      : false
-  )
+  const isMobile = persistent.mobileDevice
 
-  class RequestBody {
-    name: string | null = $state(null)
-    value: number | null = $state(null)
-    currencyId: number | null = $state(persistent.defulatCurrencyId)
-    categoryId: number | null = $state(persistent.defulatCostCategoryId)
+  // cost shortcuts section
+  let costShortcutToApply: CostShortcut | null = $state(null)
 
-    reset(): void {
-      this.name = null
-      this.value = null
-      this.currencyId = persistent.defulatCurrencyId
-      this.categoryId = persistent.defulatCostCategoryId
+  async function handleConfirmShortcutValue() {
+    if (costShortcutToApply && costShortcutToApply.value) {
+      costShortcutApply(costShortcutToApply.id, {
+        value: costShortcutToApply.value,
+      })
+      notification({
+        message: `saved, ${costShortcutToApply!.name} ${costShortcutToApply!.value}${costShortcutToApply!.currency.sign}`,
+      })
+    } else {
+      notification({ message: "not saved" })
     }
-
-    async save(): Promise<CostShortcut> {
-      const requiredFields = []
-
-      if (!this.name) requiredFields.push("name")
-      if (!this.currencyId) requiredFields.push("currency")
-      if (!this.categoryId) requiredFields.push("category")
-
-      if (requiredFields.length > 0) {
-        throw new Error(`fields ${requiredFields.join(", ")} are required`)
-      } else {
-        const response: Response<CostShortcut> = await costShortcutCreate({
-          name: this.name!,
-          value: this.value,
-          currencyId: this.currencyId!,
-          categoryId: this.categoryId!,
-        })
-        return response.result
-      }
-    }
-  }
-
-  let requestBody = new RequestBody()
-
-  function costCategoriesToSelectionItems(
-    items: CostCategory[]
-  ): SelectionItem[] {
-    return items.map((item) => ({ value: item.id, content: item.name }))
-  }
-
-  function currenciesToSelectionItems(items: Currency[]): SelectionItem[] {
-    return items.map((item) => ({ value: item.id, content: item.sign }))
+    costShortcutToApply = null
   }
 </script>
 
-{#if !dataLoaded}
+{#if !persistent.authenticated}
   <p>loading data...</p>
+{:else if !isMobile}
+  <p>are you mad? this page is available only for the mobile application</p>
 {:else}
-  <main class="ml-10 text-center">
-    <Box title="Add Cost Shortcut" width={120} border={4} padding="default">
-      <div class="flex flex-col gap-6">
-        <div class="w-full">
-          <Selection
-            bind:value={requestBody.categoryId}
-            items={costCategoriesToSelectionItems(persistent.costCategories!)}
-          />
-        </div>
-        <div class="flex gap-4">
-          <Input bind:value={requestBody.name} placeholder="name..." />
-          <Selection
-            bind:value={requestBody.name}
-            items={stringsToSelectionItems(
-              persistent.identity!.user.configuration.costSnippets
-            )}
-            width="24"
-            cleanOnSelect={true}
-          />
-        </div>
-        <div class="flex gap-4">
-          <DecimalInput bind:value={requestBody.value} placeholder="value..." />
-          <Selection
-            bind:value={requestBody.currencyId}
-            items={currenciesToSelectionItems(persistent.currencies!)}
-            width="24"
-          />
-        </div>
-        <div class="flex gap-4 mt-4">
-          <Button
-            title="reset"
-            color="red"
-            onclick={() => requestBody.reset()}
-          />
-          <Button
-            title="save"
-            color="green"
-            onclick={async () => {
-              try {
-                const instance: CostShortcut = await requestBody.save()
-                goto("/")
-                notification({ message: "Cost shortcut saved" })
-                persistent.costShortcuts!.push(instance)
-                persistent.flush()
-              } catch (error) {
-                notification({
-                  message: `${error ?? "something went wrong"}`,
-                  icon: "❌",
-                  duration: 5000,
-                })
-              }
-            }}
-          />
-        </div>
+  <div class="flex flex-wrap gap-y-5 justify-around">
+    {#each persistent.costShortcuts! as shortcut}
+      <CostShortcutComponent
+        onclick={async () => {
+          if (!shortcut.value) {
+            costShortcutToApply = { ...shortcut }
+          } else {
+            await costShortcutApply(shortcut.id)
+            notification({
+              message: `saved, ${shortcut.name} ${shortcut.value}${shortcut.currency.sign}`,
+            })
+          }
+        }}
+      >
+        <h4>{shortcut.name}</h4>
+        <p class="mb-4 italic text-xs">{shortcut.category.name}</p>
+        <p class="italic text-xs">
+          {shortcut.value ? prettyMoney(shortcut.value) : "..."}
+          {shortcut.currency.sign}
+        </p>
+      </CostShortcutComponent>
+    {/each}
+    <button
+      type="button"
+      class="border-2 p-2 w-32 rounded-md italic text-xl hover:bg-emerald-800 cursor-pointer"
+      onclick={() => {
+        goto("/transactions/costs/shortcuts/create")
+      }}>➕</button
+    >
+  </div>
+
+  <div class="mb-20"></div>
+
+  <!-- Modal With Input Value -->
+  {#if costShortcutToApply !== null}
+    <div
+      class="fixed inset-0 flex items-center justify-center bg-[#3a342e] z-50"
+      onclick={() => {
+        costShortcutToApply = null
+      }}
+    >
+      <div
+        class="bg-transparent rounded p-6 flex flex-col gap-3 justify-center items-center"
+      >
+        <input
+          type="number"
+          bind:value={costShortcutToApply.value}
+          class="border rounded-md w-full h-12 p-3 hover:border-amber-300"
+          autofocus
+        />
+        <button
+          onclick={handleConfirmShortcutValue}
+          class="w-full h-12 rounded-md bg-orange-700 hover:cursor-pointer"
+          >Confirm</button
+        >
       </div>
-    </Box>
-  </main>
+    </div>
+  {/if}
 {/if}

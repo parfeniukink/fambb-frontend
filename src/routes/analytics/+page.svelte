@@ -1,14 +1,16 @@
 <script lang="ts">
   import AnalyticsFilters from "$lib/components/AnalyticsFilters.svelte"
   import AnalyticsSection from "$lib/components/AnalyticsSection.svelte"
-  import DateSelection from "$lib/components/DateSelection.svelte"
   import {
     fetchBasicAnalyticsByPeriod,
     fetchBasicAnalyticsFiltered,
   } from "$lib/data/api"
+  import { persistent } from "$lib/data/persistent.svelte"
   import { notification } from "$lib/services/notifications"
   import type { TransactionsBasicAnalytics } from "$lib/types/analytics"
   import { onMount } from "svelte"
+
+  const isMobile = persistent.mobileDevice
 
   // just an error message to be displayed
   let errorMessage: string | null = $state(null)
@@ -61,7 +63,11 @@
   }
 </script>
 
-<main class="flex justify-start items-start gap-5 p-[10px]">
+<div
+  class={isMobile
+    ? "flex-col"
+    : "flex justify-start items-start gap-5 p-[10px]"}
+>
   <AnalyticsSection
     title={"📊 current month"}
     analytics={currentMonthBasicAnalytics}
@@ -81,4 +87,8 @@
     bind:searchPattern={filters.pattern}
     onClick={handleFetchBasicAnalyticsForCustomRange}
   />
-</main>
+  {#if isMobile}
+    <div class="mb-20"></div>
+  {/if}
+  <div></div>
+</div>

@@ -1,4 +1,5 @@
 import toast from "svelte-french-toast"
+import { persistent } from "$lib/data/persistent.svelte"
 
 export async function notification({
   message,
@@ -11,7 +12,11 @@ export async function notification({
 }): Promise<void> {
   toast(message, {
     icon: icon,
-    position: duration < 3000 ? "top-right" : "bottom-right",
+    position: persistent.mobileDevice
+      ? "top-center"
+      : duration < 3000
+        ? "top-right"
+        : "bottom-right",
     duration: duration,
     style: "opacity: 0.7",
   })

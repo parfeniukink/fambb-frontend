@@ -1,30 +1,27 @@
 <script lang="ts">
+  import { STYLES } from "$lib/constants"
   import type { MouseEventHandler } from "svelte/elements"
 
   const {
     onclick,
     title,
-    color,
+    color = "blue",
+    size = "default",
     styles,
   }: {
     onclick: MouseEventHandler<HTMLButtonElement>
     title: string
-    color: string
+    color?: string
+    size?: "default" | "large"
     styles?: string
   } = $props()
 
-  const stylesMapping: Record<string, Record<string, string>> = {
-    color: {
-      red: "bg-orange-800",
-      green: "bg-emerald-800",
-      blue: "bg-sky-800",
-    },
-  }
+  const buttonSizeStyles = size === "default" ? "px-4 py-4" : "px-4 py-8"
 </script>
 
 <button
   type="button"
   class={styles ??
-    `w-full px-4 py-4 rounded-lg cursor-pointer ${stylesMapping["color"][color]}`}
+    `w-full ${buttonSizeStyles} rounded-lg cursor-pointer ${STYLES.bgColor[color]}`}
   {onclick}>{title}</button
 >

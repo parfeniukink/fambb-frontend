@@ -18,6 +18,7 @@
   import { notification } from "$lib/services/notifications"
   import { persistent } from "$lib/data/persistent.svelte"
 
+  const isMobile = persistent.mobileDevice
   const costId = Number(page.params.costId)
   let cost: Cost | null = $state(null)
 
@@ -83,71 +84,86 @@
 {#if !dataLoaded}
   <main>loading...</main>
 {:else}
-  <main class="ml-10 text-center">
-    <Box title="Edit Cost" width={120} border={4} padding="default">
-      <div class="flex flex-col gap-6">
-        <div class="w-full mt-4 flex">
+  <Box
+    title="Edit Cost"
+    titleCenter={isMobile}
+    width={isMobile ? 0 : 140}
+    border={isMobile ? 0 : 4}
+    padding={isMobile ? "small" : "default"}
+  >
+    <div class="flex flex-col gap-7">
+      <div class={isMobile ? "w-full flex flex-col" : "w-full mt-4 flex"}>
+        {#if isMobile}
+          <DateButtons bind:value={requestBody.timestamp} />
+          <input
+            type="date"
+            bind:value={requestBody.timestamp}
+            class="px-8 py-3 outline-none border-3 rounded-md"
+          />
+        {:else}
           <input
             type="date"
             bind:value={requestBody.timestamp}
             class="px-8 py-3 outline-none border-3 rounded-md w-56"
           />
           <DateButtons bind:value={requestBody.timestamp} />
-        </div>
-        <div class="w-full">
-          <Selection
-            bind:value={requestBody.categoryId}
-            items={costCategoriesToSelectionItems(persistent.costCategories!)}
-          />
-        </div>
-        <div class="flex gap-4">
-          <Input bind:value={requestBody.name} placeholder="name..." />
-          <Selection
-            bind:value={requestBody.name}
-            items={stringsToSelectionItems(
-              persistent.identity!.user.configuration.costSnippets
-            )}
-            width="24"
-            cleanOnSelect={true}
-          />
-        </div>
-        <div class="flex gap-4">
-          <DecimalInput bind:value={requestBody.value} placeholder="value..." />
-          <Selection
-            bind:value={requestBody.currencyId}
-            items={currenciesToSelectionItems(persistent.currencies!)}
-            width="24"
-          />
-        </div>
-        <div class="flex gap-4 mt-4">
-          <Button
-            title="delete"
-            color="red"
-            onclick={async () => {
-              goto("/")
-              await costDelete(cost!.id)
-              notification({
-                message: `Cost ${cost!.name} deleted`,
-                icon: "🗑️",
-              })
-              // todo: update transactions history data
-            }}
-          />
-          <Button
-            title="save"
-            color="green"
-            onclick={() => {
-              goto("/")
-              if (!requestBody.valid()) {
-                notification({ message: "Invalid Cost Data", icon: "⚠️" })
-              } else {
-                costUpdate(costId, requestBody.partialUpdatePayload())
-                notification({ message: `cost ${cost!.name} saved` })
-              }
-            }}
-          />
-        </div>
+        {/if}
       </div>
-    </Box>
-  </main>
+      <div class="w-full">
+        <Selection
+          bind:value={requestBody.categoryId}
+          items={costCategoriesToSelectionItems(persistent.costCategories!)}
+        />
+      </div>
+      <div class="flex gap-4">
+        <Input bind:value={requestBody.name} placeholder="name..." />
+        <Selection
+          bind:value={requestBody.name}
+          items={stringsToSelectionItems(
+            persistent.identity!.user.configuration.costSnippets
+          )}
+          width={24}
+          cleanOnSelect={true}
+        />
+      </div>
+      <div class="flex gap-4">
+        <DecimalInput bind:value={requestBody.value} placeholder="value..." />
+        <Selection
+          bind:value={requestBody.currencyId}
+          items={currenciesToSelectionItems(persistent.currencies!)}
+          width={24}
+        />
+      </div>
+      <div class={`flex gap-4 mt-4 ${isMobile ? "flex-col" : ""}`}>
+        <Button
+          title="delete"
+          color="red"
+          size={isMobile ? "large" : "default"}
+          onclick={async () => {
+            goto("/")
+            await costDelete(cost!.id)
+            notification({
+              message: `Cost ${cost!.name} deleted`,
+              icon: "🗑️",
+            })
+            // todo: update transactions history data
+          }}
+        />
+        <Button
+          title="save"
+          color="green"
+          size={isMobile ? "large" : "default"}
+          onclick={() => {
+            goto("/")
+            if (!requestBody.valid()) {
+              notification({ message: "Invalid Cost Data", icon: "⚠️" })
+            } else {
+              costUpdate(costId, requestBody.partialUpdatePayload())
+              notification({ message: `cost ${cost!.name} saved` })
+            }
+          }}
+        />
+      </div>
+    </div>
+  </Box>
 {/if}

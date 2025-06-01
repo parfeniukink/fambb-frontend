@@ -14,7 +14,12 @@ import type {
   CostPartialUpdateRequestBody,
   IncomePartialUpdateRequestBody,
 } from "$lib/types/money"
-import type { Identity, UserAuthRequestBody } from "$lib/types/identity"
+import type {
+  ConfigurationPartialUpdateRequestBody,
+  Identity,
+  User,
+  UserAuthRequestBody,
+} from "$lib/types/identity"
 import type { Notification } from "$lib/types/notifications"
 import type {
   PaginatedResponse,
@@ -248,4 +253,14 @@ export async function fetchBasicAnalyticsFiltered(
     "GET"
   )
   return response.result
+}
+
+export async function configurationUpdate(
+  requestBody: ConfigurationPartialUpdateRequestBody
+): Promise<Response<User>> {
+  return await apiCall<Response<User>>(
+    `/identity/users/configuration`,
+    "PATCH",
+    requestBody
+  )
 }

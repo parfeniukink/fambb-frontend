@@ -1,10 +1,5 @@
 import type { Identity } from "$lib/types/identity"
-import type {
-  CostCategory,
-  CostShortcut,
-  Currency,
-  Equity,
-} from "$lib/types/money"
+import type { CostCategory, CostShortcut, Currency } from "$lib/types/money"
 import * as localStorageFacade from "$lib/infrastructure/localStorage"
 import {
   costCategoriesList,
@@ -29,6 +24,7 @@ class PersistentData {
   )
 
   // DERIVED STATE
+  mobileDevice: boolean = $derived(window.innerWidth <= 500)
   authenticated: boolean = $derived(
     this.identity && this.identity.accessToken ? true : false
   )

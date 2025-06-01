@@ -52,3 +52,22 @@ pnpm run dev
 pnpm run build
 pnpm run preview --host
 ```
+
+# DEPLOY
+
+Set Environment Variables
+
+```
+# .env
+# API Base URL
+PUBLIC_BASE_URL=
+
+# Public Domain (frontend itself)
+VITE_ALLOWED_HOST=
+```
+
+Build and push docker image to the cluster Docker Registry
+
+```sh
+docker build -t docker-registry.homecp/family-budget-ui:latest --platform linux/amd64 --push --build-arg PUBLIC_BASE_URL=$PUBLIC_BASE_URL --build-arg VITE_ALLOWED_HOST=${VITE_ALLOWED_HOST} .
+```

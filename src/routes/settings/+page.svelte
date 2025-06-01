@@ -10,6 +10,9 @@
     currenciesToSelectionItems,
   } from "../transactions/shared"
   import ToggleButton from "$lib/components/ToggleButton.svelte"
+  import { configurationUpdate } from "$lib/data/api"
+
+  const isMobile = persistent.mobileDevice
 
   const dataLoaded: boolean = $derived(
     persistent.identity && persistent.currencies && persistent.costCategories
@@ -24,13 +27,17 @@
 {#if !dataLoaded}
   <p>loading data...</p>
 {:else}
-  <main class="flex flex-col">
-    <div class="flex gap-20">
-      <div class="flex flex-col items-center gap-2">
+  <div class="flex flex-col">
+    <div class={isMobile ? "flex items-end flex-col gap-5" : "flex gap-20"}>
+      <!-- Default Currecy Selection Field -->
+      <div
+        class={isMobile
+          ? "flex flex-col  gap-2 text-right w-full"
+          : "flex flex-col items-center gap-2"}
+      >
         <Selection
           bind:value={persistent.defulatCurrencyId}
           items={currenciesToSelectionItems(persistent.currencies!)}
-          width="full"
           cleanOnSelect={false}
           onchangeCallback={() => {
             notification({ message: "default currency changed" })
@@ -39,11 +46,15 @@
         />
         <span class="text-sm text-gray-300">default currency</span>
       </div>
-      <div class="flex flex-col items-center gap-2">
+      <!-- Default Cost Category Selection Field -->
+      <div
+        class={isMobile
+          ? "flex flex-col  gap-2 text-right w-full"
+          : "flex flex-col items-center gap-2"}
+      >
         <Selection
           bind:value={persistent.defulatCostCategoryId}
           items={costCategoriesToSelectionItems(persistent.costCategories!)}
-          width="full"
           cleanOnSelect={false}
           onchangeCallback={() => {
             // todo: api call
@@ -53,32 +64,43 @@
         />
         <span class="text-sm text-gray-300">default cost category</span>
       </div>
-      <div class="flex flex-col items-center gap-2">
+      <!-- Notifications Threshold  Input Field -->
+      <div
+        class={isMobile
+          ? "flex flex-col gap-2 text-right w-full"
+          : "flex flex-col items-center gap-2"}
+      >
         <Input
           bind:value={
             persistent.identity!.user.configuration.notifyCostThreshold
           }
           type="text"
           placeholder="value..."
-          styles="px-8 py-3 outline-none border-3 rounded-md w-40"
-          onchangeCallback={() => {
-            // todo: api call
-            persistent.flush()
+          styles={`px-8 py-3 outline-none border-3 rounded-md ${isMobile ? "flex flex-col  gap-2 text-right w-full" : "w-40"}"`}
+          onchangeCallback={async () => {
+            await configurationUpdate({
+              notifyCostThreshold:
+                persistent.identity!.user.configuration.notifyCostThreshold,
+            })
             notification({
               message: "updated cost notification threshold",
               icon: "🛎️",
             })
+            persistent.flush()
           }}
         />
         <span class="text-sm text-gray-300 ml-2"
           >cost notification threshold</span
         >
       </div>
+      <!-- Show Equity Toogle Button -->
       <div class="flex flex-col items-center justify-between">
         <ToggleButton
           bind:checked={persistent.identity!.user.configuration.showEquity}
-          onchangeCallback={() => {
-            // todo: api call
+          onchangeCallback={async () => {
+            await configurationUpdate({
+              showEquity: persistent.identity!.user.configuration.showEquity,
+            })
             persistent.identity!.user.configuration.showEquity
               ? notification({ message: "equity is shown", icon: "👀" })
               : notification({ message: "equity is hidden", icon: "🥷" })
@@ -91,74 +113,108 @@
 
     <hr class="border-gray-600 my-10" />
 
-    <section class="flex justify-between mx-10">
-      <div class="flex flex-wrap gap-2 mb-4">
+    <!-- Cost Snippets Section -->
+    <section class={isMobile ? "flex flex-col" : "flex justify-between mx-20"}>
+      <div
+        class={isMobile ? "flex flex-wrap gap-3" : "flex flex-wrap gap-2 mb-4"}
+      >
         {#each persistent.identity!.user.configuration.costSnippets as item}
           <Badge
             content={item}
-            onclick={() => {
-              // todo: perform API call
-              notification({ message: `remove cost ${item}`, icon: "✔️" })
+            onclick={async () => {
               persistent.identity!.user.configuration.costSnippets =
                 persistent.identity!.user.configuration.costSnippets.filter(
                   (element) => element != item
                 )
+              await configurationUpdate({
+                costSnippets:
+                  persistent.identity!.user.configuration.costSnippets,
+              })
+              notification({
+                message: `removed cost snippet ${item}`,
+                icon: "🗑️",
+              })
+              persistent.flush()
             }}
           />
         {/each}
       </div>
-      <div class="flex flex-col gap-2 w-72">
+      <div
+        class={isMobile ? "flex gap-3 mt-3" : "flex flex-col w-72 mx-3 gap-3"}
+      >
         <Input bind:value={newCostSnippet} placeholder="cost..." />
         <Button
           title="add"
           color="green"
           onclick={async () => {
-            // todo: api call
             persistent.identity!.user.configuration.costSnippets.push(
               newCostSnippet
             )
+            await configurationUpdate({
+              costSnippets:
+                persistent.identity!.user.configuration.costSnippets,
+            })
+            notification({ message: "added cost snippet", icon: "✔️" })
             newCostSnippet = ""
-            notification({ message: "Add Cost Snippet" })
+            persistent.flush()
           }}
-          styles="w-72 px-4 py-4 rounded-lg cursor-pointer bg-emerald-800"
+          styles={`px-4 py-4 rounded-lg cursor-pointer bg-emerald-800 ${isMobile ? "w-full" : "w-72 "}`}
         />
       </div>
     </section>
 
     <hr class="border-gray-600 my-10" />
 
-    <section class="flex justify-between mx-10">
-      <div class="flex flex-wrap gap-2 mb-4">
+    <!-- Income Snippets Section -->
+    <section class={isMobile ? "flex flex-col" : "flex justify-between mx-20"}>
+      <div
+        class={isMobile ? "flex flex-wrap gap-3" : "flex flex-wrap gap-2 mb-4"}
+      >
         {#each persistent.identity!.user.configuration.incomeSnippets as item}
           <Badge
             content={item}
-            onclick={() => {
-              // todo: api call
-              notification({ message: `remove snippet ${item}`, icon: "✔️" })
+            onclick={async () => {
               persistent.identity!.user.configuration.incomeSnippets =
                 persistent.identity!.user.configuration.incomeSnippets.filter(
                   (element) => element != item
                 )
+              await configurationUpdate({
+                incomeSnippets:
+                  persistent.identity!.user.configuration.incomeSnippets,
+              })
+              notification({ message: `removed snippet ${item}`, icon: "🗑️" })
+              persistent.flush()
             }}
           />
         {/each}
       </div>
-      <div class="flex flex-col gap-2 w-72">
+
+      <div
+        class={isMobile ? "flex gap-3 mt-3" : "flex flex-col gap-3 w-72 mx-3"}
+      >
         <Input bind:value={newIncomeSnippet} placeholder="income..." />
         <Button
           title="add"
           color="green"
           onclick={async () => {
-            // todo: api call
             persistent.identity!.user.configuration.incomeSnippets.push(
               newIncomeSnippet
             )
+            await configurationUpdate({
+              incomeSnippets:
+                persistent.identity!.user.configuration.incomeSnippets,
+            })
+            notification({ message: "added income snippet" })
+            persistent.flush()
             newIncomeSnippet = ""
-            notification({ message: "Add Income Snippet" })
           }}
           styles="w-72 px-4 py-4 rounded-lg cursor-pointer bg-emerald-800"
         />
       </div>
     </section>
-  </main>
+  </div>
+
+  {#if isMobile}
+    <div class="mb-20"></div>
+  {/if}
 {/if}

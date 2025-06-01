@@ -8,7 +8,9 @@
   import { onMount } from "svelte"
   import { prettyMoney } from "$lib/services/finances"
   import { notification } from "$lib/services/notifications"
+  import { persistent } from "$lib/data/persistent.svelte"
 
+  const isMobile = persistent.mobileDevice
   const exchangeId = Number(page.params.exchangeId)
   let exchange: Exchange | null = $state(null)
 
@@ -20,42 +22,47 @@
 {#if !exchange}
   <main>loading...</main>
 {:else}
-  <main class="ml-10 text-center">
-    <Box title="Edit Exchange" width={120} border={4} padding="default">
-      <div class="flex flex-col gap-6">
-        <input
-          type="date"
-          value={exchange.timestamp}
-          class="px-8 py-3 outline-none border-3 rounded-md text-white"
-        />
-        <div class="flex justify-between mx-8">
-          <p>
-            {prettyMoney(exchange.fromValue)}
-            {exchange.fromCurrency.sign}
-          </p>
-          <p>{"-->"}</p>
-          <p>
-            {prettyMoney(exchange.toValue)}
-            {exchange.toCurrency.sign}
-          </p>
-        </div>
+  <Box
+    title="Edit Exchange"
+    titleCenter={isMobile}
+    width={isMobile ? 0 : 140}
+    border={isMobile ? 0 : 4}
+    padding={isMobile ? "small" : "default"}
+  >
+    <div class="flex flex-col gap-6">
+      <input
+        type="date"
+        value={exchange.timestamp}
+        class="px-8 py-3 outline-none border-3 rounded-md text-white"
+      />
+      <div class="flex justify-between mx-8">
+        <p>
+          {prettyMoney(exchange.fromValue)}
+          {exchange.fromCurrency.sign}
+        </p>
 
-        <div class="flex gap-4 mt-4">
-          <Button
-            title="delete"
-            color="red"
-            onclick={() => {
-              goto("/")
-              exchangeDelete(exchange!.id)
-              notification({
-                message: `Exchange ${exchange!.fromValue}${exchange!.fromCurrency.sign} -> ${exchange!.toValue}${exchange?.toCurrency.sign} deleted`,
-                icon: "🗑️",
-              })
-              exchange = null
-            }}
-          />
-        </div>
+        <p class="">{"💶"}</p>
+        <p>
+          {prettyMoney(exchange.toValue)}
+          {exchange.toCurrency.sign}
+        </p>
       </div>
-    </Box>
-  </main>
+
+      <div class="flex gap-4 mt-4">
+        <Button
+          title="delete"
+          color="red"
+          onclick={() => {
+            goto("/")
+            exchangeDelete(exchange!.id)
+            notification({
+              message: `Exchange ${exchange!.fromValue}${exchange!.fromCurrency.sign} -> ${exchange!.toValue}${exchange?.toCurrency.sign} deleted`,
+              icon: "🗑️",
+            })
+            exchange = null
+          }}
+        />
+      </div>
+    </div>
+  </Box>
 {/if}

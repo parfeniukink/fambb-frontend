@@ -13,6 +13,7 @@
   import { goto } from "$app/navigation"
   import { onMount } from "svelte"
 
+  const isMobile = persistent.mobileDevice
   const dataLoaded: boolean = $derived(
     persistent.identity && persistent.currencies ? true : false
   )
@@ -96,64 +97,79 @@
 {#if !dataLoaded}
   <p>loading data...</p>
 {:else}
-  <main class="ml-10 text-center">
-    <Box title="Add Exchange" width={120} border={4} padding="default">
-      <div class="flex flex-col gap-6">
-        <div class="w-full mt-4 flex">
+  <Box
+    title="Add Exchange"
+    titleCenter={isMobile}
+    width={isMobile ? 0 : 140}
+    border={isMobile ? 0 : 4}
+    padding={isMobile ? "small" : "default"}
+  >
+    <div class="flex flex-col gap-7">
+      <div class={isMobile ? "w-full flex flex-col" : "w-full mt-4 flex"}>
+        {#if isMobile}
+          <DateButtons bind:value={requestBody.timestamp} />
+          <input
+            type="date"
+            bind:value={requestBody.timestamp}
+            class="px-8 py-3 outline-none border-3 rounded-md"
+          />
+        {:else}
           <input
             type="date"
             bind:value={requestBody.timestamp}
             class="px-8 py-3 outline-none border-3 rounded-md w-56"
           />
           <DateButtons bind:value={requestBody.timestamp} />
-        </div>
-        <div class="flex gap-4">
-          <DecimalInput
-            bind:value={requestBody.fromValue}
-            placeholder="from value..."
-          />
-          <Selection
-            bind:value={requestBody.fromCurrencyId}
-            items={currenciesToSelectionItems(persistent.currencies!)}
-            width="24"
-          />
-        </div>
-        <div class="flex gap-4">
-          <DecimalInput
-            bind:value={requestBody.toValue}
-            placeholder="to value..."
-          />
-          <Selection
-            bind:value={requestBody.toCurrencyId}
-            items={currenciesToSelectionItems(persistent.currencies!)}
-            width="24"
-          />
-        </div>
-        <div class="flex gap-4 mt-4">
-          <Button
-            title="reset"
-            color="red"
-            onclick={() => requestBody.reset()}
-          />
-          <Button
-            title="save"
-            color="green"
-            onclick={async () => {
-              try {
-                await requestBody.save()
-                notification({ message: "Exchange saved" })
-                goto("/")
-              } catch (error) {
-                notification({
-                  message: `${error ?? "something went wrong"}`,
-                  icon: "❌",
-                  duration: 5000,
-                })
-              }
-            }}
-          />
-        </div>
+        {/if}
       </div>
-    </Box>
-  </main>
+      <div class="flex gap-4">
+        <DecimalInput
+          bind:value={requestBody.fromValue}
+          placeholder="from value..."
+        />
+        <Selection
+          bind:value={requestBody.fromCurrencyId}
+          items={currenciesToSelectionItems(persistent.currencies!)}
+          width={24}
+        />
+      </div>
+      <div class="flex gap-4">
+        <DecimalInput
+          bind:value={requestBody.toValue}
+          placeholder="to value..."
+        />
+        <Selection
+          bind:value={requestBody.toCurrencyId}
+          items={currenciesToSelectionItems(persistent.currencies!)}
+          width={24}
+        />
+      </div>
+      <div class={`flex gap-4 mt-4 ${isMobile ? "flex-col" : ""}`}>
+        <Button
+          title="reset"
+          size={isMobile ? "large" : "default"}
+          color="red"
+          onclick={() => requestBody.reset()}
+        />
+        <Button
+          title="save"
+          size={isMobile ? "large" : "default"}
+          color="green"
+          onclick={async () => {
+            try {
+              await requestBody.save()
+              notification({ message: "Exchange saved" })
+              goto("/")
+            } catch (error) {
+              notification({
+                message: `${error ?? "something went wrong"}`,
+                icon: "❌",
+                duration: 5000,
+              })
+            }
+          }}
+        />
+      </div>
+    </div>
+  </Box>
 {/if}

@@ -13,6 +13,7 @@
   import DecimalInput from "$lib/components/DecimalInput.svelte"
   import ToggleButton from "$lib/components/ToggleButton.svelte"
 
+  const isMobile = persistent.mobileDevice
   let lastTransactionElement: HTMLElement | null = $state(null)
 
   const currencyId: string | null = page.url.searchParams.get("currencyId")
@@ -52,10 +53,12 @@
 {#if !dataLoaded}
   <p>loading data...</p>
 {:else}
-  <main class="flex justify-start items-end gap-10">
-    <!-- historical data -->
-    <section class="w-120">
-      <div class="flex flex-col gap-2 text-sm text-gray-300">
+  <section
+    class={isMobile ? "w-full flex-col" : "flex justify-start items-end gap-10"}
+  >
+    <!-- DATA -->
+    <div class="">
+      <div class={`flex flex-col gap-2 text-xs ${isMobile ? "" : "w-120"}`}>
         {#each Object.entries(groupedTransactions) as aggregatedItem}
           <div
             class="py-1 font-semibold text-gray-400 border-b border-gray-600"
@@ -69,7 +72,7 @@
             >
               <div class="flex justify-between w-full gap-5">
                 <p class="grow">
-                  {`${TRANSACTION_OPERATIONS_MAPPER[transaction.operation]} ${transaction.name}`}
+                  {`${TRANSACTION_OPERATIONS_MAPPER[transaction.operation]} ${transaction.icon} ${transaction.name}`}
                 </p>
                 <p>
                   {prettyMoney(transaction.value)}{transaction.currency}
@@ -81,15 +84,18 @@
           <div class="mt-3"></div>
         {/each}
       </div>
-    </section>
-    <!-- operations -->
-    <section
-      class="flex items-center gap-10"
+    </div>
+
+    <!-- ACTIONS -->
+    <div
+      class={isMobile
+        ? "w-full flex-col text-center"
+        : "flex items-center gap-10"}
       bind:this={lastTransactionElement}
     >
       {#if left > 0}
         <button
-          class="w-32 px-4 py-2 rounded-lg cursor-pointer italic my-5 text-orange-400 hover:text-orange-500 text-center"
+          class="w-32 px-4 py-2 rounded-lg cursor-pointer italic my-5 text-orange-300 hover:text-orange-500 text-center"
           onclick={async () => {
             const transactionsResponse = await transactionsList(
               context,
@@ -107,18 +113,18 @@
           }}
           >more...({`${left}`})
         </button>
+        <div class={isMobile ? "mb-5" : "w-32"}>
+          <DecimalInput
+            bind:value={limit}
+            placeholder="limit"
+            inputmode="decimal"
+          />
+        </div>
       {/if}
-      <div class="w-32">
-        <DecimalInput
-          bind:value={limit}
-          placeholder="limit"
-          inputmode="numeric"
-        />
-      </div>
 
       <ToggleButton bind:checked={showOnlyMine} text="only mine" />
-    </section>
+    </div>
     <!-- filters-->
     <section class="flex gap-20 mb-20"></section>
-  </main>
+  </section>
 {/if}
