@@ -69,12 +69,14 @@
   {#if persistent.mobileDevice}
     <Box title="Add Cost" border={0} padding="small" titleCenter={true}>
       <div class="flex flex-col gap-6">
-        <DateButtons bind:value={requestBody.timestamp} />
-        <input
-          type="date"
-          bind:value={requestBody.timestamp}
-          class="px-8 py-3 outline-none border-3 rounded-md"
-        />
+        <div class={"w-full flex flex-col"}>
+          <DateButtons bind:value={requestBody.timestamp} />
+          <input
+            type="date"
+            bind:value={requestBody.timestamp}
+            class="px-8 py-3 outline-none border-3 rounded-md"
+          />
+        </div>
         <div class="w-full">
           <Selection
             bind:value={requestBody.categoryId}
@@ -100,7 +102,7 @@
             width={24}
           />
         </div>
-        <div class="flex flex-col gap-4 mt-4">
+        <div class={"flex gap-4 mt-4"}>
           <Button
             title="reset"
             color="red"

@@ -122,7 +122,7 @@
       <!-- EQUITY SECTION -->
       <Box
         title="Equity"
-        border={2}
+        border={3}
         padding="default"
         actionItemIcon="📔"
         actionItemCallback={() => {
@@ -143,11 +143,10 @@
       </Box>
 
       <br />
-      <br />
 
       <!-- ACTIONS SECTION -->
       <Box title="Actions" border={2}>
-        <div class="flex flex-col gap-5">
+        <div class="flex flex-col gap-3">
           <Button
             styles={`${mobileButtonStyle} ${STYLES.bgColor.blue}`}
             title="Exchange"

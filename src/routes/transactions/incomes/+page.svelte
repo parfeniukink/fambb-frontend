@@ -74,21 +74,14 @@
   >
     <div class="flex flex-col gap-6">
       <div class={isMobile ? "w-full flex flex-col" : "w-full mt-4 flex"}>
-        {#if isMobile}
-          <DateButtons bind:value={requestBody.timestamp} />
-          <input
-            type="date"
-            bind:value={requestBody.timestamp}
-            class="px-8 py-3 outline-none border-3 rounded-md"
-          />
-        {:else}
-          <input
-            type="date"
-            bind:value={requestBody.timestamp}
-            class="px-8 py-3 outline-none border-3 rounded-md w-56"
-          />
-          <DateButtons bind:value={requestBody.timestamp} />
-        {/if}
+        <DateButtons bind:value={requestBody.timestamp} />
+        <input
+          type="date"
+          bind:value={requestBody.timestamp}
+          class={isMobile
+            ? "px-8 py-3 outline-none border-3 rounded-md"
+            : "px-8 py-3 outline-none border-3 rounded-md w-56"}
+        />
       </div>
       <div class="w-full">
         <Selection
@@ -121,7 +114,7 @@
           width={24}
         />
       </div>
-      <div class={`flex gap-4 mt-4 ${isMobile ? "flex-col" : ""}`}>
+      <div class="flex gap-4 mt-4">
         <Button
           title="reset"
           color="red"
