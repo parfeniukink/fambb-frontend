@@ -1,6 +1,7 @@
 import type { Currency } from "./money"
 
 export type CostsByCategory = {
+  id: number
   name: string
   total: number // total money spent for the category
   ratio: number // ``category total / all categories total``
@@ -34,3 +35,5 @@ export type AnalyticsFiltersQueryParams = {
   endDate: string
   pattern: string | null
 }
+
+export type AnalyticsPeriod = "current-month" | "previous-month" | string

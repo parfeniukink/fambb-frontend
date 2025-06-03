@@ -45,7 +45,9 @@
   let costShortcutToApply: CostShortcut | null = $state(null)
 
   let dataLoaded: boolean = $derived(
-    persistent.identity && equities && transactionsHistory ? true : false
+    persistent.identity && equities && (isMobile ? true : transactionsHistory)
+      ? true
+      : false
   )
 
   const groupedHistoryItems = $derived(
@@ -55,13 +57,17 @@
   const mobileButtonStyle = "w-full px-4 py-4 rounded-lg"
 
   onMount(async () => {
-    const [equitiesResponse, transactionsResopnse] = await Promise.all([
-      equityList(),
-      transactionsList(),
-    ])
-
-    equities = equitiesResponse.result
-    transactionsHistory = transactionsResopnse.result
+    if (!isMobile) {
+      const [equitiesResponse, transactionsResopnse] = await Promise.all([
+        equityList(),
+        transactionsList({}),
+      ])
+      equities = equitiesResponse.result
+      transactionsHistory = transactionsResopnse.result
+    } else {
+      const equitiesResponse = await equityList()
+      equities = equitiesResponse.result
+    }
 
     loadNotifications()
   })
@@ -103,6 +109,7 @@
       id: cost.id,
       operation: "cost",
       name: cost.name,
+      icon: Array.from(cost.category.name)[0],
       value: cost.value,
       timestamp: cost.timestamp,
       currency: cost.currency.sign,
@@ -237,13 +244,16 @@
                     const response: Response<Cost> = await costShortcutApply(
                       shortcut.id
                     )
+                    const createdCost: Cost = response.result
+
+                    decreaseEquity(createdCost.currency.id, createdCost.value)
+                    transactionsHistory?.push(transactionFromCost(createdCost))
+
+                    const icon = Array.from(createdCost.category.name)[0]
+
                     notification({
-                      message: `saved, ${shortcut.name} ${shortcut.value}${shortcut.currency.sign}`,
+                      message: `saved, ${icon} ${createdCost.name} ${createdCost.value}${createdCost.currency.sign}`,
                     })
-                    decreaseEquity(shortcut.currency.id, shortcut.value)
-                    transactionsHistory!.push(
-                      transactionFromCost(response.result)
-                    )
                   }
                 }}
               >

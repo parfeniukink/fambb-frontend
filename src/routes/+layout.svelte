@@ -35,10 +35,8 @@
 {#if isMobile}
   <main class="w-full m-0 p-0">
     {#if persistent.authenticated}
-      <nav class="w-full">
-        <ul
-          class="w-full flex justify-around fixed bottom-0 bg-[#3a342e] border-t-5 pt-1"
-        >
+      <nav class="w-full bg-[#3a342e] fixed bottom-0 border-t-5 pt-1 z-40">
+        <ul class="flex justify-around">
           <li>
             <a href="/"
               ><img
@@ -109,7 +107,7 @@
 {#if !isMobile}
   <main class="flex h-screen w-full m-0 p-0">
     {#if persistent.authenticated}
-      <nav class="w-32 text-xl mt-10 ml-5 text-center h-100">
+      <nav class="min-w-32 text-xl mt-10 ml-5 text-center h-100">
         <ul class="flex flex-col space-y-2 gap-15 h-full justify-start">
           <li>
             <a href="/"
@@ -142,7 +140,7 @@
       </nav>
 
       <!-- DIVIDER -->
-      <div class="w-0.5 bg-gray-400 mt-10 mr-10 h-[70%]"></div>
+      <div class="min-w-0.5 bg-gray-400 mt-10 mr-10 h-[70%]"></div>
     {/if}
 
     {#if persistent.authenticated}

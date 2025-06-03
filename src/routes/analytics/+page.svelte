@@ -71,14 +71,20 @@
   <AnalyticsSection
     title={"📊 current month"}
     analytics={currentMonthBasicAnalytics}
+    period="current-month"
   />
   <AnalyticsSection
     title={"📊 previous month"}
     analytics={previousMonthBasicAnalytics}
+    period="previous-month"
   />
 
   {#each Object.entries(customRangeBasicAnalytics) as [timestamp, analytics]}
-    <AnalyticsSection title={`📊 ${timestamp}`} {analytics} />
+    <AnalyticsSection
+      title={`📊 ${timestamp}`}
+      {analytics}
+      period={timestamp}
+    />
   {/each}
 
   <AnalyticsFilters

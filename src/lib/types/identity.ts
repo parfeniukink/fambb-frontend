@@ -11,8 +11,8 @@ export type Configuration = {
 
 export type ConfigurationPartialUpdateRequestBody = {
   showEquity?: boolean
-  defaultCurrency?: Currency
-  defaultCostCategory?: CostCategory
+  defaultCurrencyId?: number
+  defaultCostCategoryId?: number
   costSnippets?: string[]
   incomeSnippets?: string[]
   notifyCostThreshold?: number | null

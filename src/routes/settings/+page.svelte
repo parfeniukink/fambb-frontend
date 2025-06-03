@@ -11,8 +11,16 @@
   } from "../transactions/shared"
   import ToggleButton from "$lib/components/ToggleButton.svelte"
   import { configurationUpdate } from "$lib/data/api"
+  import type { Response } from "$lib/types/response"
+  import { onMount } from "svelte"
+  import type { User } from "$lib/types/identity"
 
   const isMobile = persistent.mobileDevice
+
+  let newCostSnippet: string = $state("")
+  let newIncomeSnippet: string = $state("")
+  let defaultCurrencyId: number | null = $state(null)
+  let defaultCostCategoryId: number | null = $state(null)
 
   const dataLoaded: boolean = $derived(
     persistent.identity && persistent.currencies && persistent.costCategories
@@ -20,8 +28,17 @@
       : false
   )
 
-  let newCostSnippet: string = $state("")
-  let newIncomeSnippet: string = $state("")
+  onMount(() => {
+    // update cost category if available in settings
+    if (persistent.identity?.user.configuration.defaultCostCategory) {
+      defaultCostCategoryId =
+        persistent.identity.user.configuration.defaultCostCategory.id
+    }
+    if (persistent.identity?.user.configuration.defaultCurrency) {
+      defaultCurrencyId =
+        persistent.identity.user.configuration.defaultCurrency.id
+    }
+  })
 </script>
 
 {#if !dataLoaded}
@@ -36,12 +53,23 @@
           : "flex flex-col items-center gap-2"}
       >
         <Selection
-          bind:value={persistent.defulatCurrencyId}
+          bind:value={defaultCurrencyId}
           items={currenciesToSelectionItems(persistent.currencies!)}
           cleanOnSelect={false}
-          onchangeCallback={() => {
-            notification({ message: "default currency changed" })
-            persistent.flush()
+          onchangeCallback={async () => {
+            if (persistent.identity) {
+              const response: Response<User> = await configurationUpdate({
+                defaultCurrencyId: defaultCurrencyId
+                  ? defaultCurrencyId
+                  : undefined,
+              })
+              persistent.identity = {
+                accessToken: persistent.identity.accessToken,
+                user: response.result,
+              }
+              notification({ message: "default currency changed" })
+              persistent.flush()
+            }
           }}
         />
         <span class="text-sm text-gray-300">default currency</span>
@@ -53,13 +81,23 @@
           : "flex flex-col items-center gap-2"}
       >
         <Selection
-          bind:value={persistent.defulatCostCategoryId}
+          bind:value={defaultCostCategoryId}
           items={costCategoriesToSelectionItems(persistent.costCategories!)}
           cleanOnSelect={false}
-          onchangeCallback={() => {
-            // todo: api call
-            persistent.flush()
-            notification({ message: "default cost category changed" })
+          onchangeCallback={async () => {
+            if (persistent.identity) {
+              const response: Response<User> = await configurationUpdate({
+                defaultCostCategoryId: defaultCostCategoryId
+                  ? defaultCostCategoryId
+                  : undefined,
+              })
+              persistent.identity = {
+                accessToken: persistent.identity.accessToken,
+                user: response.result,
+              }
+              notification({ message: "default cost category changed" })
+              persistent.flush()
+            }
           }}
         />
         <span class="text-sm text-gray-300">default cost category</span>

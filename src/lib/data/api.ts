@@ -13,6 +13,7 @@ import type {
   CostShortcutApplyRequestBody,
   CostPartialUpdateRequestBody,
   IncomePartialUpdateRequestBody,
+  OperationType,
 } from "$lib/types/money"
 import type {
   ConfigurationPartialUpdateRequestBody,
@@ -30,6 +31,7 @@ import { persistent } from "./persistent.svelte"
 import type {
   TransactionsBasicAnalytics,
   AnalyticsFiltersQueryParams,
+  AnalyticsPeriod,
 } from "$lib/types/analytics"
 
 import { PUBLIC_BASE_URL } from "$env/static/public"
@@ -59,6 +61,12 @@ export async function apiCall<T>(
 
   if (!response.ok) {
     const error = await response.text()
+
+    if (response.status === 401) {
+      persistent.identity = null
+      persistent.flush()
+    }
+
     throw new Error(`API error: ${response.status} - ${error}`)
   }
 
@@ -79,16 +87,38 @@ export async function userAuth(
 // ─────────────────────────────────────────────────────────
 // TRANSACTIONS
 // ─────────────────────────────────────────────────────────
-export async function transactionsList(
-  context: number = 0,
-  limit: number = 15,
-  currencyId: number | null = null
-): Promise<PaginatedResponse<Transaction>> {
-  let url = `/analytics/transactions?context=${context}&limit=${limit}`
+export async function transactionsList({
+  currencyId = null,
+  costCategoryId = null,
+  period = null,
+  startDate = null,
+  endDate = null,
+  operation = null,
+  context = 0,
+  limit = 15,
+}: {
+  currencyId?: number | null
+  costCategoryId?: number | null
+  period?: AnalyticsPeriod | null
+  startDate?: string | null
+  endDate?: string | null
+  operation?: OperationType | null
+  context?: number
+  limit?: number
+}): Promise<PaginatedResponse<Transaction>> {
+  let urlParticles: string[] = [
+    `/analytics/transactions?context=${context}&limit=${limit}`,
+  ]
 
-  if (currencyId != null) {
-    url = [url, `&currencyId=${currencyId}`].join("")
-  }
+  if (currencyId != null) urlParticles.push(`&currencyId=${currencyId}`)
+  if (costCategoryId != null)
+    urlParticles.push(`&costCategoryId=${costCategoryId}`)
+  if (period != null) urlParticles.push(`&period=${period}`)
+  if (startDate != null) urlParticles.push(`&startDate=${startDate}`)
+  if (endDate != null) urlParticles.push(`&endDate=${endDate}`)
+  if (operation != null) urlParticles.push(`&operation=${operation}`)
+
+  const url = urlParticles.join("")
 
   const results: PaginatedResponse<Transaction> =
     await apiCall<PaginatedResponse<Transaction>>(url)
@@ -225,7 +255,7 @@ export async function equityList(): Promise<ResponseMulti<Equity>> {
 }
 
 export async function fetchBasicAnalyticsByPeriod(
-  period: string
+  period: AnalyticsPeriod
 ): Promise<TransactionsBasicAnalytics[]> {
   const response = await apiCall<ResponseMulti<TransactionsBasicAnalytics>>(
     `/analytics/basic?period=${period}`,
