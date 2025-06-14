@@ -56,7 +56,7 @@
     {/each}
     <button
       type="button"
-      class="border-2 p-2 w-32 rounded-md italic text-xl hover:bg-emerald-800 cursor-pointer"
+      class="border-2 p-2 w-40 rounded-md italic text-xl hover:bg-emerald-800 cursor-pointer"
       onclick={() => {
         goto("/transactions/costs/shortcuts/create")
       }}>➕</button

@@ -107,7 +107,7 @@ export async function transactionsList({
   limit?: number
 }): Promise<PaginatedResponse<Transaction>> {
   let urlParticles: string[] = [
-    `/analytics/transactions?context=${context}&limit=${limit}`,
+    `/transactions?context=${context}&limit=${limit}`,
   ]
 
   if (currencyId != null) urlParticles.push(`&currencyId=${currencyId}`)
