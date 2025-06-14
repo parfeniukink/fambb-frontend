@@ -102,7 +102,7 @@
             width={24}
           />
         </div>
-        <div class={"flex gap-4 mt-4"}>
+        <div class="flex gap-4 mt-4">
           <Button
             title="reset"
             color="red"

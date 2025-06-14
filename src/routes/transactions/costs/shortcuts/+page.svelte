@@ -78,6 +78,7 @@
       >
         <input
           type="decimal"
+          pattern="\d*"
           bind:value={costShortcutToApply.value}
           class="border rounded-md w-full h-12 p-3 hover:border-amber-300"
           autofocus
