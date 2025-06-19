@@ -77,7 +77,8 @@
         class="bg-transparent rounded p-6 flex flex-col gap-3 justify-center items-center"
       >
         <input
-          type="decimal"
+          type="text"
+          inputmode="decimal"
           pattern="\d*"
           bind:value={costShortcutToApply.value}
           class="border rounded-md w-full h-12 p-3 hover:border-amber-300"
