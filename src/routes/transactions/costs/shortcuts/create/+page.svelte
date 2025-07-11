@@ -120,11 +120,9 @@
           size={isMobile ? "large" : "default"}
           onclick={async () => {
             try {
-              const instance: CostShortcut = await requestBody.save()
+              await requestBody.save()
               goto("/")
               notification({ message: "Cost shortcut saved" })
-              persistent.costShortcuts!.push(instance)
-              persistent.flush()
             } catch (error) {
               notification({
                 message: `${error ?? "something went wrong"}`,

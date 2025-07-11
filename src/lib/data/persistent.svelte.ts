@@ -1,12 +1,7 @@
 import type { Identity } from "$lib/types/identity"
-import type { CostCategory, CostShortcut, Currency } from "$lib/types/money"
+import type { CostCategory, Currency } from "$lib/types/money"
 import * as localStorageFacade from "$lib/infrastructure/localStorage"
-import {
-  costCategoriesList,
-  costShortcutsList,
-  equityList,
-  userAuth,
-} from "./api"
+import { costCategoriesList, equityList, userAuth } from "./api"
 import type { Response } from "$lib/types/response"
 
 class PersistentData {
@@ -18,9 +13,6 @@ class PersistentData {
   )
   costCategories: CostCategory[] | null = $state(
     localStorageFacade.get<CostCategory[]>("costCategories")
-  )
-  costShortcuts: CostShortcut[] | null = $state(
-    localStorageFacade.get<CostShortcut[]>("costShortcuts")
   )
 
   // DERIVED STATE
@@ -72,23 +64,19 @@ class PersistentData {
   }
 
   async initialize(): Promise<void> {
-    const [equitiesResponse, costCategoriesResopnse, costShortcutsResponse] =
-      await Promise.all([
-        equityList(),
-        costCategoriesList(),
-        costShortcutsList(),
-      ])
+    const [equitiesResponse, costCategoriesResopnse] = await Promise.all([
+      equityList(),
+      costCategoriesList(),
+    ])
 
     this.currencies = equitiesResponse.result.map((item) => item.currency)
     this.costCategories = costCategoriesResopnse.result
-    this.costShortcuts = costShortcutsResponse.result
 
     localStorageFacade.set<Currency[]>("currencies", this.currencies)
     localStorageFacade.set<CostCategory[]>(
       "costCategories",
       this.costCategories
     )
-    localStorageFacade.set<CostShortcut[]>("costShortcuts", this.costShortcuts)
   }
 
   // flush the LocalStorage according to the application state
@@ -101,11 +89,6 @@ class PersistentData {
       localStorageFacade.set<CostCategory[]>(
         "costCategories",
         this.costCategories
-      )
-    if (this.costShortcuts)
-      localStorageFacade.set<CostShortcut[]>(
-        "costShortcuts",
-        this.costShortcuts
       )
   }
 }

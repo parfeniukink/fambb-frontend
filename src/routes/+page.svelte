@@ -20,6 +20,7 @@
   import {
     costShortcutApply,
     costShortcutDelete,
+    costShortcutsList,
     equityList,
     notificationsList,
     transactionsList,
@@ -39,6 +40,16 @@
   // form the dataset to be provided as props to children
   // ─────────────────────────────────────────────────────────
   let equities: Equity[] | null = $state(null)
+  let shortcuts: CostShortcut[] | null = $state(null)
+  let sortedShortcuts: CostShortcut[] | null = $derived.by(() => {
+    if (!shortcuts) {
+      return null
+    } else {
+      return shortcuts
+        .slice()
+        .sort((a, b) => a.ui.positionIndex - b.ui.positionIndex)
+    }
+  })
   let transactionsHistory: Transaction[] | null = $state(null)
 
   // cost shortcuts section
@@ -58,11 +69,14 @@
 
   onMount(async () => {
     if (!isMobile) {
-      const [equitiesResponse, transactionsResopnse] = await Promise.all([
-        equityList(),
-        transactionsList({}),
-      ])
+      const [equitiesResponse, shortcutrsResponse, transactionsResopnse] =
+        await Promise.all([
+          equityList(),
+          costShortcutsList(),
+          transactionsList({}),
+        ])
       equities = equitiesResponse.result
+      shortcuts = shortcutrsResponse.result
       transactionsHistory = transactionsResopnse.result
     } else {
       const equitiesResponse = await equityList()
@@ -235,7 +249,7 @@
       <div class="w-full">
         <Box title="Shortcuts">
           <div class="flex flex-wrap gap-3 justify-center">
-            {#each persistent.costShortcuts! as shortcut}
+            {#each sortedShortcuts! as shortcut}
               <CostShortcutComponent
                 onclick={async () => {
                   if (!shortcut.value) {
@@ -267,7 +281,7 @@
 
                     // note: 🤔 why we can't use the `await` expression here?
                     costShortcutDelete(shortcut.id)
-                    persistent.costShortcuts = persistent.costShortcuts!.filter(
+                    shortcuts = shortcuts!.filter(
                       (item) => item.id != shortcut.id
                     )
                     persistent.flush()
@@ -287,6 +301,8 @@
                 </p>
               </CostShortcutComponent>
             {/each}
+
+            <!-- ADD SHORTCUT BUTTON -->
             <button
               type="button"
               class="border-2 p-2 w-32 rounded-md italic text-xl hover:bg-emerald-800 cursor-pointer"

@@ -61,12 +61,17 @@ export type CostShortcutCreateRequestBody = {
   categoryId: number
 }
 
+export type CostShortcutUI = {
+  positionIndex: number
+}
+
 export type CostShortcut = {
   id: number
   name: string
   value: number | null
   currency: Currency
   category: CostCategory
+  ui: CostShortcutUI
 }
 
 export type CostShortcutApplyRequestBody = {
