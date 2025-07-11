@@ -14,6 +14,7 @@
   import type { Response } from "$lib/types/response"
   import { onMount } from "svelte"
   import type { User } from "$lib/types/identity"
+  import { STYLES } from "$lib/constants"
 
   const isMobile = persistent.mobileDevice
 
@@ -147,6 +148,16 @@
         />
         <span class="text-sm text-gray-300 ml-2">show equity</span>
       </div>
+
+      {#if !isMobile}
+        <Button
+          title="sign out"
+          styles={`w-30 h-15 rounded-lg cursor-pointer ${STYLES.bgColor["red"]}`}
+          onclick={async () => {
+            persistent.unauthorize()
+          }}
+        />
+      {/if}
     </div>
 
     <hr class="border-gray-600 my-10" />
@@ -252,7 +263,20 @@
     </section>
   </div>
 
+  <!-- Sign Out Button -->
   {#if isMobile}
-    <div class="mb-20"></div>
+    <hr class="border-gray-600 my-10" />
+
+    <Button
+      title="sign out"
+      color="red"
+      onclick={async () => {
+        persistent.unauthorize()
+      }}
+    />
+  {/if}
+
+  {#if isMobile}
+    <div class="mb-30"></div>
   {/if}
 {/if}
