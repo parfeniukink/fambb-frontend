@@ -7,10 +7,10 @@ export function currenciesToSelectionItems(items: Currency[]): SelectionItem[] {
 export function costCategoriesToSelectionItems(
   items: CostCategory[]
 ): SelectionItem[] {
-  return items.map((item) => ({ value: item.id, content: item.name }))
+  return items ? items.map((item) => ({ value: item.id, content: item.name })) : []
 }
 
 // todo: move to the infrastructure
 export function stringsToSelectionItems(items: string[]): SelectionItem[] {
-  return items.map((item, _) => ({ value: item, content: item }))
+  return items ? items.map((item, _) => ({ value: item, content: item })) : []
 }
