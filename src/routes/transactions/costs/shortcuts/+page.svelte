@@ -2,15 +2,24 @@
   import CostShortcutComponent from "$lib/components/CostShortcut.svelte"
   import { persistent } from "$lib/data/persistent.svelte"
   import type { CostShortcut } from "$lib/types/money"
-  import { costShortcutApply } from "$lib/data/api"
+  import { costShortcutApply, costShortcutsList } from "$lib/data/api"
   import { notification } from "$lib/services/notifications"
   import { prettyMoney } from "$lib/services/finances"
   import { goto } from "$app/navigation"
+  import { onMount } from "svelte"
 
   const isMobile = persistent.mobileDevice
 
   // cost shortcuts section
+  let shortcuts: CostShortcut[] | null = $state(null)
   let costShortcutToApply: CostShortcut | null = $state(null)
+
+  onMount(async () => {
+    if (isMobile) {
+      const shortcutrsResponse = await costShortcutsList()
+      shortcuts = shortcutrsResponse.result
+    }
+  })
 
   async function handleConfirmShortcutValue() {
     if (costShortcutToApply && costShortcutToApply.value) {
@@ -33,7 +42,7 @@
   <p>are you mad? this page is available only for the mobile application</p>
 {:else}
   <div class="flex flex-wrap gap-y-5 justify-around">
-    {#each persistent.costShortcuts! as shortcut}
+    {#each shortcuts! as shortcut}
       <CostShortcutComponent
         onclick={async () => {
           if (!shortcut.value) {
